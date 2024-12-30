@@ -3,14 +3,37 @@
 @tailwind utilities;
 
 @layer components {
+  :root {
+    --color-primary: #3162ad;
+  }
   html {
     height: 100%;
     line-height: 1.2;
   }
 
   body {
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-    font-weight: 400;
     min-width: 440px;
+  }
+
+  .card {
+    @apply rounded-lg bg-white px-6 py-4;
+  }
+
+  .table-icon {
+    @apply h-6 w-6 cursor-pointer;
+  }
+
+  .table-row-light,
+  .table-row-light .ant-table-cell.ant-table-column-sort {
+    @apply bg-white;
+  }
+
+  .table-row-gray,
+  .table-row-gray .ant-table-cell.ant-table-column-sort {
+    @apply bg-gray-100;
+  }
+
+  .ant-timeline-item.timeline-item-content {
+    @apply pb-[4rem];
   }
 }
