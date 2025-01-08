@@ -4,6 +4,7 @@ import {
   useNavigate,
   useRouteError,
 } from "react-router-dom";
+import { useDynamicTitle } from "../utils";
 
 const ErrorPage: React.FC = () => {
   const routeError = useRouteError();
@@ -26,10 +27,10 @@ const ErrorPage: React.FC = () => {
     <div className="flex min-h-screen flex-col">
       <div className="flex flex-1 flex-col items-center justify-center text-center">
         <img
-          src="/sth-went-wrong.png"
+          src="error.jpg"
           alt="Something went wrong"
-          width={300}
-          height={300}
+          width={550}
+          height={100}
         />
 
         <p className="my-4">{errorMessage}</p>

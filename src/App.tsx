@@ -11,15 +11,15 @@ import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
 import { Toaster } from "react-hot-toast";
 import AppRouter from "./router/AppRouter";
+import { PRIMARY_COLOR, VIETNAM_TIMEZONE } from "./interfaces/common/constants";
 
-export const TIME_ZONE = "Asia/Ho_Chi_Minh";
 dayjs.locale("vi");
 dayjs.extend(utc);
 dayjs.extend(timezone);
 dayjs.extend(isBetween);
 dayjs.extend(isoWeek);
 dayjs.extend(quarterOfYear);
-dayjs.tz.setDefault(TIME_ZONE);
+dayjs.tz.setDefault(VIETNAM_TIMEZONE);
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -35,7 +35,15 @@ function App() {
       locale={viVN}
       theme={{
         token: {
-          colorPrimary: "#3162ad",
+          colorPrimary: PRIMARY_COLOR,
+        },
+        components: {
+          Table: {
+            headerBg: PRIMARY_COLOR,
+            headerColor: "#fff",
+            headerSortActiveBg: PRIMARY_COLOR,
+            headerSortHoverBg: PRIMARY_COLOR,
+          },
         },
       }}
     >
