@@ -17,12 +17,12 @@ export interface ApiResponse<T> {
 
 export interface PaginationParams {
     page: number;
-    page_size: number;
+    pageSize: number;
 }
 
 export interface PaginationMeta {
     page: number;
-    page_size: number;
+    pageSize: number;
     pages: number;
     total: number;
 }

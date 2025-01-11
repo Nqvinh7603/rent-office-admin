@@ -1,4 +1,5 @@
 import axios from "axios";
+import applyCaseMiddleware from "axios-case-converter";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -10,10 +11,13 @@ export function createApiClient(
     resourceUrl: string,
     options: ApiOptions = { auth: true },
 ) {
-    const axiosInstance = axios.create({
-        baseURL: `${API_URL}/${resourceUrl}`,
-        withCredentials: true,
-    });
+    const axiosInstance = applyCaseMiddleware(
+        axios.create({
+            baseURL: `${API_URL}/${resourceUrl}`,
+            withCredentials: true,
+        })
+    );
+
     if (options.auth) {
         axiosInstance.interceptors.request.use((config) => {
             const accessToken = localStorage.getItem("access_token");
@@ -39,7 +43,7 @@ export function createApiClient(
                                 withCredentials: true,
                             },
                         );
-                        const newAccessToken = response.data.payload.accessToken;
+                        const newAccessToken = response.data.payload.access_token;
                         localStorage.setItem("access_token", newAccessToken);
                         return axiosInstance(originalRequest);
                     } catch (error) {
@@ -52,5 +56,6 @@ export function createApiClient(
             },
         );
     }
+
     return axiosInstance;
 }

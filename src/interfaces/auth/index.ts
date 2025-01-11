@@ -11,18 +11,18 @@ export interface IAuthResponse {
 
 
 export interface IUser {
-    user_id: string;
+    userId: string;
     email: string;
-    first_name: string;
-    last_name: string;
+    firstName: string;
+    lastName: string;
     gender: "MALE" | "FEMALE" | "OTHER";
     password?: string;
-    phone_number: string;
+    phoneNumber: string;
     avatar?: string;
     active: boolean;
     role: IRole;
-    created_at: string;
-    updated_at?: string;
+    createdAt: string;
+    updatedAt?: string;
 }
 
 export interface IRole {
@@ -31,8 +31,8 @@ export interface IRole {
     active: boolean;
     description?: string;
     permissions: IPermission[];
-    created_at: string;
-    updated_at?: string;
+    createdAt: string;
+    updatedAt?: string;
 }
 
 export interface IPermission {
@@ -43,4 +43,11 @@ export interface IPermission {
     module: string;
     createdAt: string;
     updatedAt?: string;
+}
+
+
+
+export interface PermissionFilterCriteria {
+    method?: string;
+    module?: string;
 }

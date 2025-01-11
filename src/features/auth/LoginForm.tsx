@@ -88,6 +88,7 @@ const LoginForm: React.FC = () => {
           >
             Đăng nhập
           </Button>
+          <input type="submit" style={{ display: "none" }} />
         </Form.Item>
         <div className="flex flex-col gap-5 text-center text-xs">
           <a href="#" className="text-sm font-semibold hover:text-[#3162ad]">

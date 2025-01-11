@@ -3,12 +3,15 @@ import React, { useEffect, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Avatar, Button, Dropdown, Layout, Menu, MenuProps, theme } from "antd";
 import { AiOutlineMenuFold, AiOutlineMenuUnfold } from "react-icons/ai";
-import { FaUserCircle } from "react-icons/fa";
+import { FaKey, FaUserCircle, FaUserCog, FaUsers } from "react-icons/fa";
+import { IoShieldCheckmark } from "react-icons/io5";
 import { MdDashboard } from "react-icons/md";
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router";
 import Loading from "../common/components/Loading";
 import { useAvatarUrl } from "../features/auth/hooks/useAvatarUrl";
 import { useLoggedInUser } from "../features/auth/hooks/useLoggedInUser";
+import { PERMISSIONS } from "../interfaces/common/constants";
+import { Module } from "../interfaces/common/enums";
 import { authService } from "../services";
 const { Header, Sider } = Layout;
 
@@ -52,27 +55,27 @@ const AdminLayout: React.FC = () => {
     if (user?.role.permissions) {
       const permissions = user.role.permissions;
 
-      // const viewUsers = permissions.find(
-      //   (item) =>
-      //     item.apiPath === PERMISSIONS[Module.USERS].GET_PAGINATION.apiPath &&
-      //     item.method === PERMISSIONS[Module.USERS].GET_PAGINATION.method,
-      // );
-      // const viewRoles = permissions.find(
-      //   (item) =>
-      //     item.apiPath === PERMISSIONS[Module.ROLES].GET_PAGINATION.apiPath &&
-      //     item.method === PERMISSIONS[Module.ROLES].GET_PAGINATION.method,
-      // );
+      const viewUsers = permissions.find(
+        (item) =>
+          item.apiPath === PERMISSIONS[Module.USERS].GET_PAGINATION.apiPath &&
+          item.method === PERMISSIONS[Module.USERS].GET_PAGINATION.method,
+      );
+      const viewRoles = permissions.find(
+        (item) =>
+          item.apiPath === PERMISSIONS[Module.ROLES].GET_PAGINATION.apiPath &&
+          item.method === PERMISSIONS[Module.ROLES].GET_PAGINATION.method,
+      );
 
-      // const viewPermissions = permissions.find(
-      //   (item) =>
-      //     item.apiPath ===
-      //       PERMISSIONS[Module.PERMISSIONS].GET_PAGINATION.apiPath &&
-      //     item.method === PERMISSIONS[Module.PERMISSIONS].GET_PAGINATION.method,
-      // );
+      const viewPermissions = permissions.find(
+        (item) =>
+          item.apiPath ===
+            PERMISSIONS[Module.PERMISSIONS].GET_PAGINATION.apiPath &&
+          item.method === PERMISSIONS[Module.PERMISSIONS].GET_PAGINATION.method,
+      );
 
-      // const hasAuthChildren: boolean = Boolean(
-      //   viewUsers || viewRoles || viewPermissions,
-      // );
+      const hasAuthChildren: boolean = Boolean(
+        viewUsers || viewRoles || viewPermissions,
+      );
 
       const menuItems = [
         {
@@ -84,44 +87,44 @@ const AdminLayout: React.FC = () => {
           key: "dashboard",
           icon: <MdDashboard />,
         },
-        // ...(hasAuthChildren
-        //   ? [
-        //       {
-        //         label: "Xác thực",
-        //         key: "auth",
-        //         icon: <IoShieldCheckmark />,
-        //         children: [
-        //           ...(viewUsers
-        //             ? [
-        //                 {
-        //                   label: <NavLink to="/users">Người dùng</NavLink>,
-        //                   key: "users",
-        //                   icon: <FaUsers />,
-        //                 },
-        //               ]
-        //             : []),
-        //           ...(viewRoles
-        //             ? [
-        //                 {
-        //                   label: <NavLink to="/roles">Vai trò</NavLink>,
-        //                   key: "roles",
-        //                   icon: <FaUserCog />,
-        //                 },
-        //               ]
-        //             : []),
-        //           ...(viewPermissions
-        //             ? [
-        //                 {
-        //                   label: <NavLink to="/permissions">Quyền hạn</NavLink>,
-        //                   key: "permissions",
-        //                   icon: <FaKey />,
-        //                 },
-        //               ]
-        //             : []),
-        //         ],
-        //       },
-        //     ]
-        //   : []),
+        ...(hasAuthChildren
+          ? [
+              {
+                label: "Xác thực",
+                key: "auth",
+                icon: <IoShieldCheckmark />,
+                children: [
+                  ...(viewUsers
+                    ? [
+                        {
+                          label: <NavLink to="/users">Người dùng</NavLink>,
+                          key: "users",
+                          icon: <FaUsers />,
+                        },
+                      ]
+                    : []),
+                  ...(viewRoles
+                    ? [
+                        {
+                          label: <NavLink to="/roles">Vai trò</NavLink>,
+                          key: "roles",
+                          icon: <FaUserCog />,
+                        },
+                      ]
+                    : []),
+                  ...(viewPermissions
+                    ? [
+                        {
+                          label: <NavLink to="/permissions">Quyền hạn</NavLink>,
+                          key: "permissions",
+                          icon: <FaKey />,
+                        },
+                      ]
+                    : []),
+                ],
+              },
+            ]
+          : []),
       ];
 
       setMenuItems(menuItems);
@@ -189,7 +192,7 @@ const AdminLayout: React.FC = () => {
       >
         <div className="demo-logo-vertical flex flex-col items-center pb-6">
           <img src="/logo.png" alt="Logo" className="w-48 p-2" />
-          {!collapsed && <h1 className="font-bold">Admin</h1>}
+          {!collapsed && <h1 className="font-semibold">Admin</h1>}
         </div>
         <Menu
           theme="light"
@@ -219,32 +222,31 @@ const AdminLayout: React.FC = () => {
               }}
             />
             <div className="relative mr-5 flex items-center gap-2">
-              <Button
-                type="text"
-                icon={
-                  avatarUrl ? (
-                    <Avatar src={avatarUrl} className="m-2" />
-                  ) : (
-                    <FaUserCircle />
-                  )
-                }
-                // onClick={}
-                style={{
-                  fontSize: "30px",
-                }}
-              />
               <Dropdown
                 menu={{ items }}
                 placement="bottom"
                 overlayStyle={{
                   position: "absolute",
-                  top: "50px",
+                  top: "60px",
                 }}
               >
-                <p className="text-semibold cursor-pointer">
-                  {user ? `${user.last_name} ${user.first_name}` : ""}
-                </p>
+                <Button
+                  type="text"
+                  icon={
+                    avatarUrl ? (
+                      <Avatar src={avatarUrl} className="m-2" />
+                    ) : (
+                      <FaUserCircle />
+                    )
+                  }
+                  style={{
+                    fontSize: "30px",
+                  }}
+                />
               </Dropdown>
+              <p className="text-semibold cursor-pointer">
+                {user ? `${user.lastName} ${user.firstName}` : ""}
+              </p>
             </div>
           </div>
         </Header>

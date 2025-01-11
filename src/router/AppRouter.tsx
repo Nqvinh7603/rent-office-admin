@@ -4,6 +4,9 @@ import AdminLayout from "../layout/AdminLayout";
 import ErrorPage from "../pages/ErrorPage";
 import Home from "../pages/Home";
 import Login from "../pages/Login";
+import Permissions from "../pages/Permissions";
+import Roles from "../pages/Roles";
+import Users from "../pages/Users";
 
 const router = createBrowserRouter([
   {
@@ -22,6 +25,18 @@ const router = createBrowserRouter([
         path: "/",
         index: true,
         element: <Home />,
+      },
+      {
+        path: "/users",
+        element: <Users />,
+      },
+      {
+        path: "/roles",
+        element: <Roles />,
+      },
+      {
+        path: "/permissions",
+        element: <Permissions />,
       },
     ],
   },
