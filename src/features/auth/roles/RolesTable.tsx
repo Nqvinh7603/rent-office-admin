@@ -1,20 +1,36 @@
+import {
+  CaretDownFilled,
+  CaretUpFilled,
+  FilterFilled,
+} from "@ant-design/icons";
 import { useQuery } from "@tanstack/react-query";
 import { Space, Table, TablePaginationConfig, TableProps, Tag } from "antd";
+import { SorterResult } from "antd/es/table/interface";
+import { GetProp } from "antd/lib";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { IRole } from "../../../interfaces";
+import { IRole, RoleFilterCriteria, SortParams } from "../../../interfaces";
 import { PERMISSIONS } from "../../../interfaces/common/constants";
 import { Module } from "../../../interfaces/common/enums";
 import { roleService } from "../../../services/auth/role-service";
-import { formatTimestamp } from "../../../utils";
+import {
+  colorFilterIcon,
+  colorSortDownIcon,
+  colorSortUpIcon,
+  formatTimestamp,
+  getDefaultFilterValue,
+  getDefaultSortOrder,
+  getSortDirection,
+} from "../../../utils";
 import Access from "../Access";
 import { useLoggedInUser } from "../hooks/useLoggedInUser";
 import DeleteRole from "./DeleteRole";
 import UpdateRole from "./UpdateRole";
 import ViewRole from "./ViewRole";
-
 interface TableParams {
   pagination: TablePaginationConfig;
+  sorter?: SorterResult<IRole> | SorterResult<IRole>[];
+  filters?: Parameters<GetProp<TableProps, "onChange">>[1];
 }
 
 const RolesTable: React.FC = () => {
@@ -33,9 +49,30 @@ const RolesTable: React.FC = () => {
     page: Number(searchParams.get("page")) || 1,
     pageSize: Number(searchParams.get("pageSize")) || 10,
   };
+  const filter: RoleFilterCriteria = {
+    active:
+      searchParams.get("active") === "true"
+        ? true
+        : searchParams.get("active") === "false"
+          ? false
+          : undefined,
+  };
+  const sort: SortParams = {
+    sortBy: searchParams.get("sortBy") || "",
+    direction: searchParams.get("direction") || "",
+  };
+
   const { data, isLoading } = useQuery({
-    queryKey: ["roles", pagination],
-    queryFn: () => roleService.getRoles(pagination),
+    queryKey: ["roles", pagination, filter, sort].filter((key) => {
+      if (typeof key === "string") {
+        return key !== "";
+      } else if (key instanceof Object) {
+        return Object.values(key).some(
+          (value) => value !== undefined && value !== "",
+        );
+      }
+    }),
+    queryFn: () => roleService.getRoles(pagination, filter, sort),
   });
 
   useEffect(() => {
@@ -62,8 +99,45 @@ const RolesTable: React.FC = () => {
       sorter,
       filters,
     }));
+
     searchParams.set("page", String(pagination.current));
     searchParams.set("pageSize", String(pagination.pageSize));
+
+    if (filters) {
+      Object.entries(filters).forEach(([key, value]) => {
+        if (Array.isArray(value)) {
+          searchParams.set(key, value.join(","));
+        } else {
+          if (value) {
+            searchParams.set(key, `${value}`);
+          } else {
+            searchParams.delete(key);
+          }
+        }
+      });
+    }
+
+    let sortBy;
+    let direction;
+
+    if (sorter) {
+      if (Array.isArray(sorter)) {
+        sortBy = sorter[0].field as string;
+        direction = getSortDirection(sorter[0].order as string);
+      } else {
+        sortBy = sorter.field as string;
+        direction = getSortDirection(sorter.order as string);
+      }
+    }
+
+    if (sortBy && direction) {
+      searchParams.set("sortBy", sortBy);
+      searchParams.set("direction", direction);
+    } else {
+      searchParams.delete("direction");
+      searchParams.delete("sortBy");
+    }
+
     setSearchParams(searchParams);
   };
 
@@ -96,6 +170,14 @@ const RolesTable: React.FC = () => {
           {active ? "ACTIVE" : "INACTIVE"}
         </Tag>
       ),
+      filters: [
+        { text: "ACTIVE", value: true },
+        { text: "INACTIVE", value: false },
+      ],
+      defaultFilteredValue: getDefaultFilterValue(searchParams, "active"),
+      filterIcon: (filtered) => (
+        <FilterFilled style={{ color: colorFilterIcon(filtered) }} />
+      ),
     },
     {
       title: "Ngày tạo",
@@ -104,6 +186,14 @@ const RolesTable: React.FC = () => {
       width: "15%",
       render: (createdAt: string) =>
         createdAt ? formatTimestamp(createdAt) : "",
+      sorter: true,
+      defaultSortOrder: getDefaultSortOrder(searchParams, "createdAt"),
+      sortIcon: ({ sortOrder }) => (
+        <div className="flex flex-col text-[10px]">
+          <CaretUpFilled style={{ color: colorSortUpIcon(sortOrder) }} />
+          <CaretDownFilled style={{ color: colorSortDownIcon(sortOrder) }} />
+        </div>
+      ),
     },
     {
       title: "Ngày cập nhật",
@@ -112,6 +202,14 @@ const RolesTable: React.FC = () => {
       width: "15%",
       render: (updatedAt: string) =>
         updatedAt ? formatTimestamp(updatedAt) : "",
+      sorter: true,
+      defaultSortOrder: getDefaultSortOrder(searchParams, "updatedAt"),
+      sortIcon: ({ sortOrder }) => (
+        <div className="flex flex-col text-[10px]">
+          <CaretUpFilled style={{ color: colorSortUpIcon(sortOrder) }} />
+          <CaretDownFilled style={{ color: colorSortDownIcon(sortOrder) }} />
+        </div>
+      ),
     },
     {
       title: "Hành động",

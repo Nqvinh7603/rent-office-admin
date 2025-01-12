@@ -1,8 +1,10 @@
-import { ApiResponse, IRole, Page, PaginationParams } from "../../interfaces";
+import { ApiResponse, IRole, Page, PaginationParams, RoleFilterCriteria, SortParams } from "../../interfaces";
 import { createApiClient } from "../api-client";
 
 interface IRoleService {
-    getRoles(pagination: PaginationParams): Promise<ApiResponse<Page<IRole>>>;
+    getRoles(pagination: PaginationParams,
+        filter?: RoleFilterCriteria,
+        sort?: SortParams,): Promise<ApiResponse<Page<IRole>>>;
     getAllRoles(): Promise<ApiResponse<IRole[]>>;
     create(newRole: Omit<IRole, "roleId">): Promise<ApiResponse<IRole>>;
     update(roleId: number, updatedRole: IRole): Promise<ApiResponse<IRole>>;
@@ -18,8 +20,19 @@ class RoleService implements IRoleService {
     }
     async getRoles(
         pagination: PaginationParams,
+        filter?: RoleFilterCriteria,
+        sort?: SortParams,
     ): Promise<ApiResponse<Page<IRole>>> {
-        return (await apiClient.get("", { params: pagination })).data;
+        return (
+            await apiClient.get("", {
+                params: {
+                    ...pagination,
+                    ...filter,
+                    sortBy: sort?.sortBy !== "" ? sort?.sortBy : undefined,
+                    direction: sort?.direction !== "" ? sort?.direction : undefined,
+                },
+            })
+        ).data;
     }
 
     async getAllRoles(): Promise<ApiResponse<IRole[]>> {

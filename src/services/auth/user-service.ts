@@ -1,11 +1,11 @@
 import { AxiosInstance } from "axios";
-import { IUser } from "../../interfaces/auth";
-import { ApiResponse, Page, PaginationParams } from "../../interfaces/common";
+import { IUser, UserFilterCriteria } from "../../interfaces/auth";
+import { ApiResponse, Page, PaginationParams, SortParams } from "../../interfaces/common";
 import { createApiClient } from "../api-client";
 
 interface IUserService {
     getLoggedInUser(): Promise<ApiResponse<IUser>>;
-    getUsers(pagination: PaginationParams): Promise<ApiResponse<Page<IUser>>>;
+    getUsers(pagination: PaginationParams, filter?: UserFilterCriteria, sort?: SortParams): Promise<ApiResponse<Page<IUser>>>;
     create(newUser: Omit<IUser, "userId">): Promise<ApiResponse<IUser>>;
     update(userId: string, updatedUser: IUser): Promise<ApiResponse<IUser>>;
     delete(userId: string): Promise<ApiResponse<void>>;
@@ -18,9 +18,18 @@ class UserService implements IUserService {
     }
 
     async getUsers(
-        pagination: PaginationParams,
+        pagination: PaginationParams, filter?: UserFilterCriteria, sort?: SortParams
     ): Promise<ApiResponse<Page<IUser>>> {
-        return (await apiClient.get("", { params: pagination })).data;
+        return (
+            await apiClient.get("", {
+                params: {
+                    ...pagination,
+                    ...filter,
+                    sortBy: sort?.sortBy !== "" ? sort?.sortBy : undefined,
+                    direction: sort?.direction !== "" ? sort?.direction : undefined,
+                },
+            })
+        ).data;
     }
 
     async create(newUser: Omit<IUser, "userId">): Promise<ApiResponse<IUser>> {

@@ -27,7 +27,7 @@ export function colorMethod(method: "GET" | "POST" | "PUT" | "DELETE") {
 
 
 export function colorFilterIcon(filtered: boolean) {
-    return filtered ? "#1890ff" : "#fff";
+    return filtered ? "#1a3d66" : "#fff";
 }
 
 export function colorSortUpIcon(sortOrder: SortOrder | undefined) {

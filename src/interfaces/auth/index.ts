@@ -25,6 +25,11 @@ export interface IUser {
     updatedAt?: string;
 }
 
+export interface UserFilterCriteria {
+    query?: string;
+    active?: boolean;
+}
+
 export interface IRole {
     roleId: number;
     roleName: string;
@@ -35,6 +40,9 @@ export interface IRole {
     updatedAt?: string;
 }
 
+export interface RoleFilterCriteria {
+    active?: boolean;
+}
 export interface IPermission {
     permissionId: number;
     name: string;
