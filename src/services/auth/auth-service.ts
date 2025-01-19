@@ -1,7 +1,7 @@
 import { AxiosInstance } from "axios";
-import { createApiClient } from "../api-client";
 import { IAuthRequest, IAuthResponse } from "../../interfaces/auth";
 import { ApiResponse } from "../../interfaces/common";
+import { createApiClient } from "../api-client";
 
 interface IAuthService {
     login(authRequest: IAuthRequest): Promise<ApiResponse<IAuthResponse>>;

@@ -29,5 +29,5 @@ export const PERMISSIONS = {
         CREATE: { method: "POST", apiPath: "/api/v1/permissions" },
         UPDATE: { method: "PUT", apiPath: "/api/v1/permissions/{id}" },
         DELETE: { method: "DELETE", apiPath: "/api/v1/permissions/{id}" },
-    },
+    }
 };

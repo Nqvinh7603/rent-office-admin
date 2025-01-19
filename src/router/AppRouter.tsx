@@ -5,6 +5,7 @@ import ErrorPage from "../pages/ErrorPage";
 import Home from "../pages/Home";
 import Login from "../pages/Login";
 import Permissions from "../pages/Permissions";
+import Profiles from "../pages/Profiles";
 import Roles from "../pages/Roles";
 import Users from "../pages/Users";
 
@@ -28,7 +29,17 @@ const router = createBrowserRouter([
       },
       {
         path: "/users",
-        element: <Users />,
+        children: [
+          {
+            path: "",
+            index: true,
+            element: <Users />,
+          },
+          {
+            path: ":id",
+            element: <Profiles />,
+          },
+        ],
       },
       {
         path: "/roles",
@@ -37,6 +48,10 @@ const router = createBrowserRouter([
       {
         path: "/permissions",
         element: <Permissions />,
+      },
+      {
+        path: "*",
+        element: <ErrorPage />,
       },
     ],
   },

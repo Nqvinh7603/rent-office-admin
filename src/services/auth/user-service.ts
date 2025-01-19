@@ -6,8 +6,8 @@ import { createApiClient } from "../api-client";
 interface IUserService {
     getLoggedInUser(): Promise<ApiResponse<IUser>>;
     getUsers(pagination: PaginationParams, filter?: UserFilterCriteria, sort?: SortParams): Promise<ApiResponse<Page<IUser>>>;
-    create(newUser: Omit<IUser, "userId">): Promise<ApiResponse<IUser>>;
-    update(userId: string, updatedUser: IUser): Promise<ApiResponse<IUser>>;
+    create(newUser: FormData): Promise<ApiResponse<IUser>>;
+    update(userId: string, updatedUser: FormData): Promise<ApiResponse<IUser>>;
     delete(userId: string): Promise<ApiResponse<void>>;
 }
 
@@ -32,13 +32,13 @@ class UserService implements IUserService {
         ).data;
     }
 
-    async create(newUser: Omit<IUser, "userId">): Promise<ApiResponse<IUser>> {
+    async create(newUser: FormData): Promise<ApiResponse<IUser>> {
         return (await apiClient.post("", newUser)).data;
     }
 
     async update(
         userId: string,
-        updatedUser: IUser,
+        updatedUser: FormData,
     ): Promise<ApiResponse<IUser>> {
         return (await apiClient.put(`/${userId}`, updatedUser)).data;
     }

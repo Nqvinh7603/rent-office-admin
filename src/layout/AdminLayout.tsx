@@ -42,6 +42,14 @@ const AdminLayout: React.FC = () => {
 
   const items: MenuProps["items"] = [
     {
+      key: "profile",
+      label: (
+        <NavLink to={`/users/${user?.userId}`} className="px-1">
+          Chỉnh sửa hồ sơ
+        </NavLink>
+      ),
+    },
+    {
       key: "logout",
       label: (
         <span onClick={() => logout()} className="px-1">
@@ -152,6 +160,18 @@ const AdminLayout: React.FC = () => {
     };
   }, []);
 
+  useEffect(() => {
+    if (location.pathname === `/users/${user?.userId}`) {
+      setSelectedKeys([]);
+    } else {
+      setSelectedKeys(
+        location.pathname === "/"
+          ? ["dashboard"]
+          : location.pathname.slice(1).split("/"),
+      );
+    }
+  }, [location, user]);
+
   if (isLoading) {
     return <Loading />;
   }
@@ -234,7 +254,7 @@ const AdminLayout: React.FC = () => {
                   type="text"
                   icon={
                     avatarUrl ? (
-                      <Avatar src={avatarUrl} className="m-2" />
+                      <Avatar src={avatarUrl} className="m-2" size={"large"} />
                     ) : (
                       <FaUserCircle />
                     )

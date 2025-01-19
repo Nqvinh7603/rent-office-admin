@@ -6,6 +6,7 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { Space, Table, TablePaginationConfig, TableProps, Tag } from "antd";
 import React, { useEffect, useState } from "react";
+import { FcCancel } from "react-icons/fc";
 import { useSearchParams } from "react-router-dom";
 import { IUser, Page } from "../../../interfaces";
 import { PERMISSIONS } from "../../../interfaces/common/constants";
@@ -121,16 +122,11 @@ const UsersTable: React.FC<UserTableProps> = ({ userPage, isLoading }) => {
   }));
   const columns: TableProps<IUser>["columns"] = [
     {
-      title: "Họ",
-      key: "lastName",
-      dataIndex: "lastName",
-      width: "10%",
-    },
-    {
-      title: "Tên đệm và tên",
-      key: "firstName",
-      dataIndex: "firstName",
-      width: "15%",
+      title: "Họ và tên",
+      key: "fullName",
+      dataIndex: ["lastName", "firstName"],
+      width: "20%",
+      render: (_, record) => `${record.lastName} ${record.firstName}`,
     },
     {
       key: "email",
@@ -208,15 +204,26 @@ const UsersTable: React.FC<UserTableProps> = ({ userPage, isLoading }) => {
       width: "8%",
 
       render: (record: IUser) => (
-        <Space>
-          <ViewUser user={record} />
-          <Access permission={PERMISSIONS[Module.USERS].UPDATE} hideChildren>
-            <UpdateUser user={record} />
-          </Access>
-          {currentUser?.userId !== record.userId && (
-            <Access permission={PERMISSIONS[Module.USERS].DELETE} hideChildren>
-              <DeleteUser userId={record.userId} />
-            </Access>
+        <Space style={{ display: "flex", justifyContent: "center" }}>
+          {currentUser?.userId !== record.userId ? (
+            <>
+              <ViewUser user={record} />
+
+              <Access
+                permission={PERMISSIONS[Module.USERS].UPDATE}
+                hideChildren
+              >
+                <UpdateUser user={record} />
+              </Access>
+              <Access
+                permission={PERMISSIONS[Module.USERS].DELETE}
+                hideChildren
+              >
+                <DeleteUser userId={record.userId} />
+              </Access>
+            </>
+          ) : (
+            <FcCancel size={24} />
           )}
         </Space>
       ),

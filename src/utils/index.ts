@@ -3,7 +3,7 @@ import { SortOrder } from "antd/es/table/interface";
 import dayjs from "dayjs";
 import { useEffect } from "react";
 import { FileType } from "../interfaces";
-
+import { snakeCase } from "change-case";
 export function useDynamicTitle(title: string) {
     useEffect(() => {
         document.title = title;
@@ -117,4 +117,18 @@ export function isInDateRange(
     endDate: string,
 ): boolean {
     return dayjs(date).tz().isBetween(startDate, endDate, null, "[]");
+}
+
+
+
+export function toSnakeCase(obj: any): any {
+    if (Array.isArray(obj)) {
+        return obj.map(toSnakeCase);
+    } else if (obj !== null && typeof obj === "object") {
+        return Object.entries(obj).reduce((acc, [key, value]) => {
+            acc[snakeCase(key)] = toSnakeCase(value);
+            return acc;
+        }, {} as Record<string, any>);
+    }
+    return obj;
 }

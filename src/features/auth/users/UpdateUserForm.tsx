@@ -1,22 +1,27 @@
+import { PlusOutlined } from "@ant-design/icons";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Button,
   DatePicker,
   DatePickerProps,
   Form,
+  Image,
   Input,
   Radio,
   Select,
   Space,
   Switch,
+  Upload,
+  UploadProps,
 } from "antd";
+import { UploadFile } from "antd/lib";
 import dayjs, { Dayjs } from "dayjs";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import Loading from "../../../common/components/Loading";
-import { IUser } from "../../../interfaces";
+import { FileType, IUser } from "../../../interfaces";
 import { roleService, userService } from "../../../services";
-
+import { getBase64, toSnakeCase } from "../../../utils";
 interface UpdateUserFormProps {
   userToUpdate?: IUser;
   onCancel: () => void;
@@ -31,7 +36,10 @@ const genderOptions = [
 
 interface UpdateUserArgs {
   userId: string;
-  updatedUser: IUser;
+  updatedUser: FormData;
+}
+interface UpdateUserFormValues extends IUser {
+  userImg?: UploadFile[];
 }
 
 const UpdateUserForm: React.FC<UpdateUserFormProps> = ({
@@ -39,14 +47,30 @@ const UpdateUserForm: React.FC<UpdateUserFormProps> = ({
   onCancel,
   viewOnly = false,
 }) => {
-  const [form] = Form.useForm<IUser>();
   const queryClient = useQueryClient();
+  const [form] = Form.useForm<UpdateUserFormValues>();
+  const [fileList, setFileList] = useState<UploadFile[]>([]);
+  const [previewOpen, setPreviewOpen] = useState<boolean>(false);
+  const [previewImage, setPreviewImage] = useState<string>("");
 
   useEffect(() => {
     if (userToUpdate) {
       form.setFieldsValue({
         ...userToUpdate,
       });
+      setPreviewImage(userToUpdate.avatarUrl ?? "");
+      setFileList(
+        userToUpdate.avatarUrl
+          ? [
+              {
+                uid: "-1",
+                name: userToUpdate.email,
+                status: "done",
+                url: userToUpdate.avatarUrl,
+              },
+            ]
+          : [],
+      );
     }
   }, [userToUpdate, form]);
 
@@ -88,7 +112,19 @@ const UpdateUserForm: React.FC<UpdateUserFormProps> = ({
     return current && dayjs(current).isAfter(dayjs().endOf("day"));
   };
 
-  function handleFinish(values: IUser) {
+  async function handlePreview(file: UploadFile) {
+    if (!file.url && !file.preview) {
+      file.preview = await getBase64(file.originFileObj as FileType);
+    }
+    setPreviewImage(file.url || file.preview || "");
+    setPreviewOpen(true);
+  }
+
+  const handleUploadChange: UploadProps["onChange"] = ({ fileList }) => {
+    setFileList(fileList);
+  };
+
+  function handleFinish(values: UpdateUserFormValues) {
     if (userToUpdate) {
       const updatedUser = {
         ...userToUpdate,
@@ -96,31 +132,46 @@ const UpdateUserForm: React.FC<UpdateUserFormProps> = ({
         firstName: values.firstName.toUpperCase(),
         lastName: values.lastName.toUpperCase(),
       };
+      const formData = new FormData();
+      formData.append("user", JSON.stringify(toSnakeCase(updatedUser)));
+
+      if (fileList.length > 0) {
+        formData.append("userImg", fileList[0].originFileObj as FileType);
+      }
       updateUser(
-        { userId: userToUpdate.userId, updatedUser },
+        { userId: userToUpdate.userId, updatedUser: formData },
         {
           onSuccess: () => {
             toast.success("Cập nhật người dùng thành công");
             onCancel();
             form.resetFields();
+            setFileList([]);
           },
           onError: () => {
             toast.error("Cập nhật người dùng thất bại");
           },
         },
       );
-      //console.log("updateUser", { userId: userToUpdate.userId, updatedUser });
     } else {
+      const formData = new FormData();
       const newUser = {
         ...values,
         firstName: values.firstName.toUpperCase(),
         lastName: values.lastName.toUpperCase(),
+        role: {
+          role_id: values.role.roleId,
+        },
       };
-      createUser(newUser, {
+      formData.append("user", JSON.stringify(newUser));
+      if (fileList.length > 0) {
+        formData.append("userImg", fileList[0].originFileObj as File);
+      }
+      createUser(formData, {
         onSuccess: () => {
           toast.success("Thêm mới người dùng thành công");
           onCancel();
           form.resetFields();
+          setFileList([]);
         },
         onError: () => {
           toast.error("Thêm mới người dùng thất bại");
@@ -140,6 +191,45 @@ const UpdateUserForm: React.FC<UpdateUserFormProps> = ({
       onFinish={handleFinish}
       initialValues={{ active: true }}
     >
+      <div className="flex gap-8">
+        <Form.Item
+          name="userImg"
+          label="Ảnh người dùng"
+          valuePropName="fileList"
+          getValueFromEvent={(e) => (Array.isArray(e) ? e : e && e.fileList)}
+        >
+          <Upload
+            maxCount={1}
+            disabled={viewOnly}
+            listType="picture-card"
+            fileList={fileList}
+            beforeUpload={() => false}
+            onPreview={handlePreview}
+            onChange={handleUploadChange}
+            showUploadList={{
+              showRemoveIcon: !viewOnly,
+            }}
+          >
+            {fileList.length < 1 && (
+              <button style={{ border: 0, background: "none" }} type="button">
+                <PlusOutlined />
+                <div style={{ marginTop: 8 }}>Tải ảnh lên</div>
+              </button>
+            )}
+          </Upload>
+          {previewImage && (
+            <Image
+              wrapperStyle={{ display: "none" }}
+              preview={{
+                visible: previewOpen,
+                onVisibleChange: (visible) => setPreviewOpen(visible),
+                afterOpenChange: (visible) => !visible && setPreviewImage(""),
+              }}
+              src={previewImage}
+            />
+          )}
+        </Form.Item>
+      </div>
       <div className="flex gap-8">
         <Form.Item
           className="flex-1"

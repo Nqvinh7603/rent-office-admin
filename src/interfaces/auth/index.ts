@@ -18,9 +18,10 @@ export interface IUser {
     gender: "MALE" | "FEMALE" | "OTHER";
     password?: string;
     phoneNumber: string;
-    avatar?: string;
+    avatarUrl?: string;
     active: boolean;
     role: IRole;
+    dateOfBirth?: string;
     createdAt: string;
     updatedAt?: string;
 }
