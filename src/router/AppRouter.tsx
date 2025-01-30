@@ -2,6 +2,7 @@ import { createBrowserRouter, RouterProvider } from "react-router";
 import ProtectedRoute from "../features/auth/ProtectedRoute";
 import AdminLayout from "../layout/AdminLayout";
 import ErrorPage from "../pages/ErrorPage";
+import ForgotPassword from "../pages/ForgotPassword";
 import Home from "../pages/Home";
 import Login from "../pages/Login";
 import Permissions from "../pages/Permissions";
@@ -13,6 +14,10 @@ const router = createBrowserRouter([
   {
     element: <Login />,
     path: "/login",
+  },
+  {
+    path: "/forgot-password",
+    element: <ForgotPassword />,
   },
   {
     element: (
@@ -41,6 +46,7 @@ const router = createBrowserRouter([
           },
         ],
       },
+
       {
         path: "/roles",
         element: <Roles />,

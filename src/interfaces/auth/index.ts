@@ -1,12 +1,23 @@
 
 export interface IAuthRequest {
     email?: string;
-    username?: string;
     password: string;
+    rememberMe?: boolean;
 }
 
 export interface IAuthResponse {
     access_token: string;
+}
+
+export interface IForgotPasswordRequest {
+    email: string;
+    siteUrl: string;
+}
+
+export interface IChangePasswordRequest {
+    currentPassword: string;
+    newPassword: string;
+    confirmPassword: string;
 }
 
 

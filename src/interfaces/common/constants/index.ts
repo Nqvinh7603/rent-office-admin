@@ -11,10 +11,10 @@ export const PERMISSIONS = {
         CREATE: { method: "POST", apiPath: "/api/v1/users" },
         UPDATE: { method: "PUT", apiPath: "/api/v1/users/{id}" },
         DELETE: { method: "DELETE", apiPath: "/api/v1/users/{id}" },
-        //   CHANGE_PASSWORD: {
-        //     method: "PUT",
-        //     apiPath: "/api/v1/users/{id}/change-password",
-        //   },
+        CHANGE_PASSWORD: {
+            method: "PUT",
+            apiPath: "/api/v1/users/change-password",
+        },
     },
     [Module.ROLES]: {
         GET_PAGINATION: { method: "GET", apiPath: "/api/v1/roles" },

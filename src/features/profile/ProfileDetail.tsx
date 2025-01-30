@@ -1,4 +1,4 @@
-import { PlusOutlined } from "@ant-design/icons";
+import { PlusOutlined, SaveOutlined } from "@ant-design/icons";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Button,
@@ -106,6 +106,8 @@ const ProfileDetail: React.FC = () => {
 
       if (fileList.length > 0) {
         formData.append("userImg", fileList[0].originFileObj as FileType);
+      } else {
+        formData.append("userImg", "");
       }
       updateUser(
         { userId: currentUser.userId, updatedUser: formData },
@@ -138,7 +140,6 @@ const ProfileDetail: React.FC = () => {
       >
         <Upload
           maxCount={1}
-          //disabled={viewOnly}
           listType="picture-card"
           fileList={fileList}
           beforeUpload={() => false}
@@ -175,7 +176,7 @@ const ProfileDetail: React.FC = () => {
           name="lastName"
           rules={[
             {
-              required: true,
+              required: false,
               message: "Vui lòng nhập họ",
             },
             {
@@ -195,7 +196,7 @@ const ProfileDetail: React.FC = () => {
           name="firstName"
           rules={[
             {
-              required: true,
+              required: false,
               message: "Vui lòng nhập tên đệm & tên",
             },
             {
@@ -239,7 +240,7 @@ const ProfileDetail: React.FC = () => {
           name="gender"
           rules={[
             {
-              required: true,
+              required: false,
               message: "Vui lòng chọn giới tính",
             },
           ]}
@@ -271,16 +272,16 @@ const ProfileDetail: React.FC = () => {
           className="flex-1"
           label="Email"
           name="email"
-          // rules={[
-          //   {
-          //     required: true,
-          //     message: "Vui lòng nhập email",
-          //   },
-          //   {
-          //     pattern: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
-          //     message: "Email không hợp lệ",
-          //   },
-          // ]}
+          rules={[
+            {
+              required: false,
+              message: "Vui lòng nhập email",
+            },
+            {
+              pattern: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
+              message: "Email không hợp lệ",
+            },
+          ]}
         >
           <Input placeholder="Email" disabled={true} />
         </Form.Item>
@@ -313,7 +314,12 @@ const ProfileDetail: React.FC = () => {
             >
               Huỷ
             </Button>
-            <Button type="primary" htmlType="submit" loading={isUpdating}>
+            <Button
+              type="primary"
+              htmlType="submit"
+              loading={isUpdating}
+              icon={<SaveOutlined />}
+            >
               Lưu lại
             </Button>
           </Space>

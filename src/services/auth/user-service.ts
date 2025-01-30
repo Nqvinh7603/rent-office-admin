@@ -1,5 +1,5 @@
 import { AxiosInstance } from "axios";
-import { IUser, UserFilterCriteria } from "../../interfaces/auth";
+import { IChangePasswordRequest, IUser, UserFilterCriteria } from "../../interfaces/auth";
 import { ApiResponse, Page, PaginationParams, SortParams } from "../../interfaces/common";
 import { createApiClient } from "../api-client";
 
@@ -9,6 +9,7 @@ interface IUserService {
     create(newUser: FormData): Promise<ApiResponse<IUser>>;
     update(userId: string, updatedUser: FormData): Promise<ApiResponse<IUser>>;
     delete(userId: string): Promise<ApiResponse<void>>;
+    changePassword(changePasswordRequest: IChangePasswordRequest): Promise<ApiResponse<void>>;
 }
 
 const apiClient: AxiosInstance = createApiClient("users");
@@ -45,6 +46,10 @@ class UserService implements IUserService {
 
     async delete(userId: string): Promise<ApiResponse<void>> {
         return (await apiClient.delete(`/${userId}`)).data;
+    }
+
+    async changePassword(changePasswordRequest: IChangePasswordRequest): Promise<ApiResponse<void>> {
+        return (await apiClient.put("/change-password", changePasswordRequest)).data;
     }
 }
 

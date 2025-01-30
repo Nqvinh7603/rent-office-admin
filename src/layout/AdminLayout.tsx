@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Avatar, Button, Dropdown, Layout, Menu, MenuProps, theme } from "antd";
 import { AiOutlineMenuFold, AiOutlineMenuUnfold } from "react-icons/ai";
-import { FaKey, FaUserCircle, FaUserCog, FaUsers } from "react-icons/fa";
+import { FaKey, FaUser, FaUserCog, FaUsers } from "react-icons/fa";
 import { IoShieldCheckmark } from "react-icons/io5";
 import { MdDashboard } from "react-icons/md";
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router";
@@ -45,7 +45,7 @@ const AdminLayout: React.FC = () => {
       key: "profile",
       label: (
         <NavLink to={`/users/${user?.userId}`} className="px-1">
-          Chỉnh sửa hồ sơ
+          Thông tin tài khoản
         </NavLink>
       ),
     },
@@ -254,9 +254,14 @@ const AdminLayout: React.FC = () => {
                   type="text"
                   icon={
                     avatarUrl ? (
-                      <Avatar src={avatarUrl} className="m-2" size={"large"} />
+                      <Avatar
+                        src={avatarUrl}
+                        // className="m-2"
+                        size={"large"}
+                        shape="square"
+                      />
                     ) : (
-                      <FaUserCircle />
+                      <FaUser size={18} className="mb-2" />
                     )
                   }
                   style={{

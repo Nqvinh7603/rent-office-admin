@@ -1,9 +1,9 @@
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { useMutation } from "@tanstack/react-query";
-import { Button, Form, Input } from "antd";
+import { Button, Checkbox, Form, Input } from "antd";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { IAuthRequest, IAuthResponse } from "../../interfaces/auth";
 import { ApiResponse } from "../../interfaces/common";
 import { authService } from "../../services";
@@ -80,6 +80,10 @@ const LoginForm: React.FC = () => {
           <Input.Password prefix={<LockOutlined />} placeholder="Mật khẩu" />
         </Form.Item>
 
+        <Form.Item name="rememberMe" valuePropName="checked">
+          <Checkbox>Ghi nhớ đăng nhập</Checkbox>
+        </Form.Item>
+
         <Form.Item>
           <Button
             type="primary"
@@ -90,10 +94,18 @@ const LoginForm: React.FC = () => {
           </Button>
           <input type="submit" style={{ display: "none" }} />
         </Form.Item>
-        <div className="flex flex-col gap-5 text-center text-xs">
+        {/* <div className="flex flex-col gap-5 text-center text-xs">
           <a href="#" className="text-sm font-semibold hover:text-[#3162ad]">
             Quên mật khẩu?
           </a>
+        </div> */}
+        <div className="flex flex-col gap-5 text-center text-xs">
+          <Link
+            to="/forgot-password"
+            className="text-sm font-semibold hover:text-[#3162ad]"
+          >
+            Quên mật khẩu?
+          </Link>
         </div>
       </Form>
     </>
