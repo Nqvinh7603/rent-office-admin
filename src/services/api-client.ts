@@ -20,7 +20,7 @@ export function createApiClient(
 
     if (options.auth) {
         axiosInstance.interceptors.request.use((config) => {
-            const accessToken = localStorage.getItem("access_token");
+            const accessToken = localStorage.getItem("access_token") || sessionStorage.getItem("access_token");
             if (accessToken) {
                 config.headers.Authorization = `Bearer ${accessToken}`;
             }
@@ -44,10 +44,15 @@ export function createApiClient(
                             },
                         );
                         const newAccessToken = response.data.payload.access_token;
-                        localStorage.setItem("access_token", newAccessToken);
+                        if (localStorage.getItem("access_token")) {
+                            localStorage.setItem("access_token", newAccessToken);
+                        } else {
+                            sessionStorage.setItem("access_token", newAccessToken);
+                        }
                         return axiosInstance(originalRequest);
                     } catch (error) {
                         localStorage.removeItem("access_token");
+                        sessionStorage.removeItem("access_token");
                         window.location.href = "/login";
                         return Promise.reject(error);
                     }

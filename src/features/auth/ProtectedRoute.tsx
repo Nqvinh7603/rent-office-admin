@@ -4,7 +4,9 @@ import RoleBasedRoute from "./RoleBasedRoute";
 
 const ProtectedRoute: React.FC<PropsWithChildren> = ({ children }) => {
   const navigate = useNavigate();
-  const accessToken = window.localStorage.getItem("access_token");
+  const accessToken =
+    window.localStorage.getItem("access_token") ||
+    window.sessionStorage.getItem("access_token");
 
   useEffect(() => {
     if (!accessToken) {

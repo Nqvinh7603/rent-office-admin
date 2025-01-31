@@ -11,7 +11,9 @@ import { authService } from "../../services";
 const LoginForm: React.FC = () => {
   const [loginForm] = Form.useForm<IAuthRequest>();
   const navigate = useNavigate();
-  const accessToken = window.localStorage.getItem("access_token");
+  const accessToken =
+    window.localStorage.getItem("access_token") ||
+    window.sessionStorage.getItem("access_token");
 
   useEffect(() => {
     if (accessToken) {
@@ -24,7 +26,11 @@ const LoginForm: React.FC = () => {
     onSuccess: (data: ApiResponse<IAuthResponse>) => {
       if (data.payload) {
         const { access_token } = data.payload;
-        window.localStorage.setItem("access_token", access_token);
+        if (loginForm.getFieldValue("rememberMe")) {
+          window.localStorage.setItem("access_token", access_token);
+        } else {
+          window.sessionStorage.setItem("access_token", access_token);
+        }
         navigate("/");
       }
     },
@@ -32,8 +38,17 @@ const LoginForm: React.FC = () => {
 
   function onFinish(data: IAuthRequest): void {
     login(data, {
-      onSuccess: () => {
-        toast.success("Đăng nhập thành công");
+      onSuccess: (data) => {
+        if (data.payload) {
+          const { access_token } = data.payload;
+          if (loginForm.getFieldValue("rememberMe")) {
+            window.localStorage.setItem("access_token", access_token);
+          } else {
+            window.sessionStorage.setItem("access_token", access_token);
+          }
+          toast.success("Đăng nhập thành công");
+          navigate("/");
+        }
       },
       onError: () => {
         toast.error("Đăng nhập thất bại");
@@ -94,11 +109,6 @@ const LoginForm: React.FC = () => {
           </Button>
           <input type="submit" style={{ display: "none" }} />
         </Form.Item>
-        {/* <div className="flex flex-col gap-5 text-center text-xs">
-          <a href="#" className="text-sm font-semibold hover:text-[#3162ad]">
-            Quên mật khẩu?
-          </a>
-        </div> */}
         <div className="flex flex-col gap-5 text-center text-xs">
           <Link
             to="/forgot-password"
