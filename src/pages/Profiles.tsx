@@ -1,8 +1,8 @@
 import { DownOutlined, RightOutlined } from "@ant-design/icons";
 import { useState } from "react";
 import Access from "../features/auth/Access";
-import ChangePassword from "../features/profile/ChangePassword";
-import ProfileDetail from "../features/profile/ProfileDetail";
+import ChangePassword from "../features/auth/profile/ChangePassword";
+import ProfileDetail from "../features/auth/profile/ProfileDetail";
 import { PERMISSIONS } from "../interfaces/common/constants";
 import { Module } from "../interfaces/common/enums";
 import { useDynamicTitle } from "../utils";

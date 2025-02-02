@@ -3,9 +3,9 @@ import { Button, Form, Input, Space } from "antd";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
 import { FaRegSave } from "react-icons/fa";
-import { IChangePasswordRequest } from "../../interfaces";
-import { userService } from "../../services";
-import { useLoggedInUser } from "../auth/hooks/useLoggedInUser";
+import { useLoggedInUser } from "../hooks/useLoggedInUser";
+import { IChangePasswordRequest } from "../../../interfaces";
+import { userService } from "../../../services";
 
 const ChangePassword: React.FC = () => {
   const { user: currentUser } = useLoggedInUser();

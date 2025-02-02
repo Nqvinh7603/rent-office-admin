@@ -24,36 +24,23 @@ const LoginForm: React.FC = () => {
   const { mutate: login } = useMutation({
     mutationFn: authService.login,
     onSuccess: (data: ApiResponse<IAuthResponse>) => {
-      if (data.payload) {
-        const { access_token } = data.payload;
-        if (loginForm.getFieldValue("rememberMe")) {
-          window.localStorage.setItem("access_token", access_token);
-        } else {
-          window.sessionStorage.setItem("access_token", access_token);
-        }
+      const { accessToken } = data.payload || {};
+      if (accessToken) {
+        const storage = loginForm.getFieldValue("rememberMe")
+          ? window.localStorage
+          : window.sessionStorage;
+        storage.setItem("access_token", accessToken);
+        toast.success("Đăng nhập thành công");
         navigate("/");
       }
+    },
+    onError: () => {
+      toast.error("Đăng nhập thất bại");
     },
   });
 
   function onFinish(data: IAuthRequest): void {
-    login(data, {
-      onSuccess: (data) => {
-        if (data.payload) {
-          const { access_token } = data.payload;
-          if (loginForm.getFieldValue("rememberMe")) {
-            window.localStorage.setItem("access_token", access_token);
-          } else {
-            window.sessionStorage.setItem("access_token", access_token);
-          }
-          toast.success("Đăng nhập thành công");
-          navigate("/");
-        }
-      },
-      onError: () => {
-        toast.error("Đăng nhập thất bại");
-      },
-    });
+    login(data);
   }
 
   return (

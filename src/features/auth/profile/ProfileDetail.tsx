@@ -16,10 +16,10 @@ import { UploadFile } from "antd/lib";
 import dayjs, { Dayjs } from "dayjs";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { FileType, IUser } from "../../interfaces";
-import { userService } from "../../services";
-import { getBase64, toSnakeCase } from "../../utils";
-import { useLoggedInUser } from "../auth/hooks/useLoggedInUser";
+import { FileType, IUser } from "../../../interfaces";
+import { useLoggedInUser } from "../hooks/useLoggedInUser";
+import { userService } from "../../../services";
+import { getBase64, toSnakeCase } from "../../../utils";
 const genderOptions = [
   { value: "MALE", label: "Nam" },
   { value: "FEMALE", label: "Nữ" },

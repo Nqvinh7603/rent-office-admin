@@ -7,6 +7,7 @@ import Home from "../pages/Home";
 import Login from "../pages/Login";
 import Permissions from "../pages/Permissions";
 import Profiles from "../pages/Profiles";
+import ResetPassword from "../pages/ResetPassword";
 import Roles from "../pages/Roles";
 import Users from "../pages/Users";
 
@@ -18,6 +19,10 @@ const router = createBrowserRouter([
   {
     path: "/forgot-password",
     element: <ForgotPassword />,
+  },
+  {
+    path: "/reset-password",
+    element: <ResetPassword />,
   },
   {
     element: (

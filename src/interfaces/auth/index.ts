@@ -6,12 +6,18 @@ export interface IAuthRequest {
 }
 
 export interface IAuthResponse {
-    access_token: string;
+    accessToken: string;
 }
 
 export interface IForgotPasswordRequest {
     email: string;
     siteUrl: string;
+}
+
+export interface IResetPasswordRequest {
+    token: string;
+    password: string;
+    confirmPassword: string;
 }
 
 export interface IChangePasswordRequest {
