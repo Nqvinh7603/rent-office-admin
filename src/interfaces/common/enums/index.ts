@@ -10,4 +10,8 @@ export enum Module {
     USERS = "USERS",
     ROLES = "ROLES",
     PERMISSIONS = "PERMISSIONS",
+    BUILDINGS = "BUILDINGS",
 }
+
+
+

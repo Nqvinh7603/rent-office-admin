@@ -33,8 +33,8 @@ const ResetPasswordForm: React.FC = () => {
   const { mutate: resetPassword, status: isResettingPassword } = useMutation({
     mutationFn: authService.resetPassword,
     onSuccess: () => {
-      toast.success("Đặt lại mật khẩu thành công");
-      navigate("/");
+      toast.success("Đặt lại mật khẩu thành công. Vui lòng đăng nhập");
+      navigate("/login");
     },
     onError: (error: any) => {
       if (error.response?.data?.message) {

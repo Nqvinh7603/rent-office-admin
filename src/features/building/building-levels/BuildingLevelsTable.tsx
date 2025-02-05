@@ -1,60 +1,44 @@
-import {
-  CaretDownFilled,
-  CaretUpFilled,
-  FilterFilled,
-} from "@ant-design/icons";
+import { CaretDownFilled, CaretUpFilled } from "@ant-design/icons";
 import { useQuery } from "@tanstack/react-query";
-import { GetProp, Space, Table, TablePaginationConfig, TableProps } from "antd";
+import { Space, Table, TablePaginationConfig, TableProps, Tag } from "antd";
 import { SorterResult } from "antd/es/table/interface";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import {
-  IPermission,
-  PaginationParams,
-  PermissionFilterCriteria,
-  SortParams,
-} from "../../../interfaces";
+import { IBuildingLevel, SortParams } from "../../../interfaces";
 import { PERMISSIONS } from "../../../interfaces/common/constants";
-import { Method, Module } from "../../../interfaces/common/enums";
-import { permissionService } from "../../../services";
+import { Module } from "../../../interfaces/common/enums";
+import { buildingLevelService } from "../../../services";
 import {
-  colorFilterIcon,
-  colorMethod,
   colorSortDownIcon,
   colorSortUpIcon,
   formatTimestamp,
-  getDefaultFilterValue,
   getDefaultSortOrder,
   getSortDirection,
 } from "../../../utils";
-import Access from "../Access";
-import UpdatePermission from "./UpdatePermission";
+import Access from "../../auth/Access";
+import DeleteBuildingLevel from "./DeleteBuildingLevel";
+import UpdateBuildingLevel from "./UpdateBuildingLevel";
+import ViewBuildingLevel from "./ViewBuildingLevel";
 
 interface TableParams {
   pagination: TablePaginationConfig;
-  sorter?: SorterResult<IPermission> | SorterResult<IPermission>[];
-  filters?: Parameters<GetProp<TableProps, "onChange">>[1];
+  sorter?: SorterResult<IBuildingLevel> | SorterResult<IBuildingLevel>[];
 }
 
-const PermissionTable: React.FC = () => {
+const BuildingLevelsTable: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-
   const [tableParams, setTableParams] = useState<TableParams>(() => ({
     pagination: {
       current: Number(searchParams.get("page")) || 1,
       pageSize: Number(searchParams.get("pageSize")) || 10,
       showSizeChanger: true,
-      showTotal: (total) => `Tổng ${total} quyền hạn`,
+      showTotal: (total) => `Tổng ${total} hạng toà nhà`,
     },
   }));
 
-  const pagination: PaginationParams = {
+  const pagination = {
     page: Number(searchParams.get("page")) || 1,
     pageSize: Number(searchParams.get("pageSize")) || 10,
-  };
-  const filter: PermissionFilterCriteria = {
-    method: searchParams.get("method") || undefined,
-    module: searchParams.get("module") || undefined,
   };
   const sort: SortParams = {
     sortBy: searchParams.get("sortBy") || "",
@@ -62,7 +46,7 @@ const PermissionTable: React.FC = () => {
   };
 
   const { data, isLoading } = useQuery({
-    queryKey: ["permissions", pagination, filter, sort].filter((key) => {
+    queryKey: ["building-levels", pagination, sort].filter((key) => {
       if (typeof key === "string") {
         return key !== "";
       } else if (key instanceof Object) {
@@ -71,7 +55,7 @@ const PermissionTable: React.FC = () => {
         );
       }
     }),
-    queryFn: () => permissionService.getPermissions(pagination, filter, sort),
+    queryFn: () => buildingLevelService.getBuildingLevels(pagination, sort),
   });
 
   useEffect(() => {
@@ -80,14 +64,14 @@ const PermissionTable: React.FC = () => {
         ...prev,
         pagination: {
           ...prev.pagination,
-          total: data?.payload?.meta?.total || 0,
-          showTotal: (total) => `Tổng ${total} quyền hạn`,
+          total: data.payload?.meta.total,
+          showTotal: (total) => `Tổng ${total} hạng toà nhà`,
         },
       }));
     }
   }, [data]);
 
-  const handleTableChange: TableProps<IPermission>["onChange"] = (
+  const handleTableChange: TableProps<IBuildingLevel>["onChange"] = (
     pagination,
     filters,
     sorter,
@@ -96,25 +80,10 @@ const PermissionTable: React.FC = () => {
       ...prev,
       pagination,
       sorter,
-      filters,
     }));
 
     searchParams.set("page", String(pagination.current));
     searchParams.set("pageSize", String(pagination.pageSize));
-
-    if (filters) {
-      Object.entries(filters).forEach(([key, value]) => {
-        if (Array.isArray(value)) {
-          searchParams.set(key, value.join(","));
-        } else {
-          if (value) {
-            searchParams.set(key, `${value}`);
-          } else {
-            searchParams.delete(key);
-          }
-        }
-      });
-    }
 
     let sortBy;
     let direction;
@@ -140,65 +109,30 @@ const PermissionTable: React.FC = () => {
     setSearchParams(searchParams);
   };
 
-  const columns: TableProps<IPermission>["columns"] = [
+  const columns: TableProps<IBuildingLevel>["columns"] = [
     {
       title: "ID",
-      dataIndex: "permissionId",
-      key: "permissionId",
+      dataIndex: "buildingLevelId",
+      key: "buildingLevelId",
       width: "5%",
     },
     {
-      title: "Tên quyền hạn",
-      dataIndex: "name",
-      key: "name",
-      width: "15%",
-    },
-    {
-      title: "API",
-      dataIndex: "apiPath",
-      key: "apiPath",
-    },
-    {
-      title: "Phương thức",
-      dataIndex: "method",
-      key: "method",
-      width: "12%",
-      render(method: IPermission["method"]) {
-        return (
-          <p
-            style={{
-              fontWeight: "bold",
-              color: colorMethod(method),
-            }}
-          >
-            {method}
-          </p>
-        );
-      },
-      filters: Object.values(Method).map((method: string) => ({
-        text: method,
-        value: method,
-      })),
-      defaultFilteredValue: getDefaultFilterValue(searchParams, "method"),
-      filterIcon: (filtered) => (
-        <FilterFilled style={{ color: colorFilterIcon(filtered) }} />
+      title: "Mã hạng toà nhà",
+      dataIndex: "buildingLevelCode",
+      key: "buildingLevelCode",
+      width: "30%",
+      render: (buildingLevelCode: string) => (
+        <Tag color="green">{buildingLevelCode}</Tag>
       ),
     },
     {
-      title: "Module",
-      dataIndex: "module",
-      key: "module",
-      filters: Object.values(Module).map((module: string) => ({
-        text: module,
-        value: module,
-      })),
-      defaultFilteredValue: getDefaultFilterValue(searchParams, "module"),
-      filterIcon: (filtered) => (
-        <FilterFilled style={{ color: colorFilterIcon(filtered) }} />
-      ),
+      title: "Tên hạng toà nhà",
+      dataIndex: "buildingLevelName",
+      key: "buildingLevelName",
+      width: "30%",
     },
     {
-      title: "Thời gian tạo",
+      title: "Ngày tạo",
       dataIndex: "createdAt",
       key: "createdAt",
       width: "15%",
@@ -214,7 +148,7 @@ const PermissionTable: React.FC = () => {
       ),
     },
     {
-      title: "Thời gian cập nhật",
+      title: "Ngày cập nhật",
       dataIndex: "updatedAt",
       key: "updatedAt",
       width: "15%",
@@ -232,27 +166,34 @@ const PermissionTable: React.FC = () => {
     {
       title: "Hành động",
       key: "action",
-      width: "10%",
-      align: "center",
-      render: (record: IPermission) => (
-        <Space size="middle">
+      width: "15%",
+      render: (record: IBuildingLevel) => (
+        <Space>
+          <ViewBuildingLevel buildingLevel={record} />
           <Access
-            permission={PERMISSIONS[Module.PERMISSIONS].UPDATE}
+            permission={PERMISSIONS[Module.BUILDINGS].UPDATE_BUILDING_LEVEL}
             hideChildren
           >
-            <UpdatePermission permission={record} />
+            <UpdateBuildingLevel buildingLevel={record} />
+          </Access>
+          <Access
+            permission={PERMISSIONS[Module.BUILDINGS].DELETE_BUILDING_LEVEL}
+            hideChildren
+          >
+            <DeleteBuildingLevel buildingLevelId={record.buildingLevelId} />
           </Access>
         </Space>
       ),
     },
   ];
+
   return (
     <Table
-      bordered={false}
-      rowKey={(record: IPermission) => record.permissionId}
+      rowKey={(record: IBuildingLevel) => record.buildingLevelId}
       dataSource={data?.payload?.content || []}
       columns={columns}
       pagination={tableParams.pagination}
+      bordered={false}
       size="middle"
       rowClassName={(_, index) =>
         index % 2 === 0 ? "table-row-light" : "table-row-gray"
@@ -267,4 +208,4 @@ const PermissionTable: React.FC = () => {
   );
 };
 
-export default PermissionTable;
+export default BuildingLevelsTable;

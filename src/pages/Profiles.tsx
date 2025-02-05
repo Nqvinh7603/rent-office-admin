@@ -14,7 +14,7 @@ const Profiles: React.FC = () => {
 
   return (
     <div className="space-y-2">
-      <div className="card">
+      <div className="card pb-1">
         <div
           className="mb-5 flex cursor-pointer items-center justify-between"
           onClick={() => setProfileOpen(!isProfileOpen)}
@@ -29,7 +29,7 @@ const Profiles: React.FC = () => {
         )}
       </div>
 
-      <div className="card">
+      <div className="card pb-1">
         <div
           className="mb-5 flex cursor-pointer items-center justify-between"
           onClick={() => setPasswordOpen(!isPasswordOpen)}

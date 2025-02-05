@@ -1,9 +1,9 @@
 import { blue, green, grey, orange, red } from "@ant-design/colors";
 import { SortOrder } from "antd/es/table/interface";
+import { snakeCase } from "change-case";
 import dayjs from "dayjs";
 import { useEffect } from "react";
 import { FileType } from "../interfaces";
-import { snakeCase } from "change-case";
 export function useDynamicTitle(title: string) {
     useEffect(() => {
         document.title = title;

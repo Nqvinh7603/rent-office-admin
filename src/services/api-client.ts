@@ -15,7 +15,10 @@ export function createApiClient(
         axios.create({
             baseURL: `${API_URL}/${resourceUrl}`,
             withCredentials: true,
-        })
+        }),
+        {
+            ignoreParams: true,
+        }
     );
 
     if (options.auth) {

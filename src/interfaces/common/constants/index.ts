@@ -29,5 +29,21 @@ export const PERMISSIONS = {
         CREATE: { method: "POST", apiPath: "/api/v1/permissions" },
         UPDATE: { method: "PUT", apiPath: "/api/v1/permissions/{id}" },
         DELETE: { method: "DELETE", apiPath: "/api/v1/permissions/{id}" },
-    }
+    },
+    [Module.BUILDINGS]: {
+
+        // Building-type
+        GET_BUILDING_TYPE_PAGINATION: { method: "GET", apiPath: "/api/v1/building-types" },
+        GET_ALL_BUILDING_TYPE: { method: "GET", apiPath: "/api/v1/building-types/all" },
+        CREATE_BUILDING_TYPE: { method: "POST", apiPath: "/api/v1/building-types" },
+        UPDATE_BUILDING_TYPE: { method: "PUT", apiPath: "/api/v1/building-types/{id}" },
+        DELETE_BUILDING_TYPE: { method: "DELETE", apiPath: "/api/v1/building-types/{id}" },
+
+        // Building-level
+        GET_BUILDING_LEVEL_PAGINATION: { method: "GET", apiPath: "/api/v1/building-levels" },
+        GET_ALL_BUILDING_LEVEL: { method: "GET", apiPath: "/api/v1/building-levels/all" },
+        CREATE_BUILDING_LEVEL: { method: "POST", apiPath: "/api/v1/building-levels" },
+        UPDATE_BUILDING_LEVEL: { method: "PUT", apiPath: "/api/v1/building-levels/{id}" },
+        DELETE_BUILDING_LEVEL: { method: "DELETE", apiPath: "/api/v1/building-levels/{id}" },
+    },
 };

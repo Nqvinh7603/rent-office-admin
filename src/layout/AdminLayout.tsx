@@ -3,9 +3,11 @@ import React, { useEffect, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Avatar, Button, Dropdown, Layout, Menu, MenuProps, theme } from "antd";
 import { AiOutlineMenuFold, AiOutlineMenuUnfold } from "react-icons/ai";
+import { BsBuildingsFill } from "react-icons/bs";
 import { FaKey, FaUser, FaUserCog, FaUsers } from "react-icons/fa";
+import { FaRankingStar } from "react-icons/fa6";
 import { IoShieldCheckmark } from "react-icons/io5";
-import { MdDashboard } from "react-icons/md";
+import { MdDashboard, MdOutlineAddHomeWork } from "react-icons/md";
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router";
 import Loading from "../common/components/Loading";
 import { useAvatarUrl } from "../features/auth/hooks/useAvatarUrl";
@@ -89,6 +91,28 @@ const AdminLayout: React.FC = () => {
         viewUsers || viewRoles || viewPermissions,
       );
 
+      const viewBuildingTypes = permissions.find(
+        (item) =>
+          item.apiPath ===
+            PERMISSIONS[Module.BUILDINGS].GET_BUILDING_TYPE_PAGINATION
+              .apiPath &&
+          item.method ===
+            PERMISSIONS[Module.BUILDINGS].GET_BUILDING_TYPE_PAGINATION.method,
+      );
+
+      const viewBuildingLevels = permissions.find(
+        (item) =>
+          item.apiPath ===
+            PERMISSIONS[Module.BUILDINGS].GET_BUILDING_LEVEL_PAGINATION
+              .apiPath &&
+          item.method ===
+            PERMISSIONS[Module.BUILDINGS].GET_BUILDING_LEVEL_PAGINATION.method,
+      );
+
+      const hasBuildingChildren: boolean = Boolean(
+        viewBuildingTypes || viewBuildingLevels,
+      );
+
       const menuItems = [
         {
           label: (
@@ -130,6 +154,42 @@ const AdminLayout: React.FC = () => {
                           label: <NavLink to="/permissions">Quyền hạn</NavLink>,
                           key: "permissions",
                           icon: <FaKey />,
+                        },
+                      ]
+                    : []),
+                ],
+              },
+            ]
+          : []),
+
+        ...(hasBuildingChildren
+          ? [
+              {
+                label: "Quản lý tòa nhà",
+                key: "buildings",
+                icon: <BsBuildingsFill />,
+                children: [
+                  ...(viewBuildingTypes
+                    ? [
+                        {
+                          label: (
+                            <NavLink to="/building-types">Loại tòa nhà</NavLink>
+                          ),
+                          key: "building-types",
+                          icon: <MdOutlineAddHomeWork size={16} />,
+                        },
+                      ]
+                    : []),
+                  ...(viewBuildingLevels
+                    ? [
+                        {
+                          label: (
+                            <NavLink to="/building-levels">
+                              Hạng tòa nhà
+                            </NavLink>
+                          ),
+                          key: "building-levels",
+                          icon: <FaRankingStar size={17} />,
                         },
                       ]
                     : []),

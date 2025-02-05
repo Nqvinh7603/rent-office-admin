@@ -1,6 +1,8 @@
 import { createBrowserRouter, RouterProvider } from "react-router";
 import ProtectedRoute from "../features/auth/ProtectedRoute";
 import AdminLayout from "../layout/AdminLayout";
+import BuildingLevels from "../pages/BuildingLevels";
+import BuildingTypes from "../pages/BuildingTypes";
 import ErrorPage from "../pages/ErrorPage";
 import ForgotPassword from "../pages/ForgotPassword";
 import Home from "../pages/Home";
@@ -59,6 +61,16 @@ const router = createBrowserRouter([
       {
         path: "/permissions",
         element: <Permissions />,
+      },
+
+      {
+        path: "/building-types",
+        element: <BuildingTypes />,
+      },
+
+      {
+        path: "/building-levels",
+        element: <BuildingLevels />,
       },
       {
         path: "*",
