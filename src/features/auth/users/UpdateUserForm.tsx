@@ -162,7 +162,7 @@ const UpdateUserForm: React.FC<UpdateUserFormProps> = ({
           role_id: values.role.roleId,
         },
       };
-      formData.append("user", JSON.stringify(newUser));
+      formData.append("user", JSON.stringify(toSnakeCase(newUser)));
       if (fileList.length > 0) {
         formData.append("userImg", fileList[0].originFileObj as File);
       }

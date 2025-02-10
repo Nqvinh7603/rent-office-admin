@@ -8,13 +8,6 @@ export interface ApiResponse<T> {
     status: number;
 }
 
-export interface ApiResponse<T> {
-    payload?: T;
-    error?: string;
-    message?: string;
-    status: number;
-}
-
 export interface PaginationParams {
     page: number;
     pageSize: number;
