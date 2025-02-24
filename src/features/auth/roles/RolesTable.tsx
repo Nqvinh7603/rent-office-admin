@@ -10,11 +10,15 @@ import { GetProp } from "antd/lib";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { IRole, RoleFilterCriteria, SortParams } from "../../../interfaces";
-import { PERMISSIONS } from "../../../interfaces/common/constants";
+import {
+  PERMISSIONS,
+  ROLE_STATUS_TRANSLATION,
+} from "../../../interfaces/common/constants";
 import { Module } from "../../../interfaces/common/enums";
 import { roleService } from "../../../services/auth/role-service";
 import {
   colorFilterIcon,
+  colorRoleStatus,
   colorSortDownIcon,
   colorSortUpIcon,
   formatTimestamp,
@@ -166,13 +170,13 @@ const RolesTable: React.FC = () => {
       key: "active",
       width: "15%",
       render: (active: boolean) => (
-        <Tag color={active ? "green" : "red"}>
-          {active ? "ACTIVE" : "INACTIVE"}
+        <Tag color={colorRoleStatus(active)}>
+          {ROLE_STATUS_TRANSLATION[String(active)]}
         </Tag>
       ),
       filters: [
-        { text: "ACTIVE", value: true },
-        { text: "INACTIVE", value: false },
+        { text: "Đang hoạt động", value: true },
+        { text: "Ngừng hoạt động", value: false },
       ],
       defaultFilteredValue: getDefaultFilterValue(searchParams, "active"),
       filterIcon: (filtered) => (

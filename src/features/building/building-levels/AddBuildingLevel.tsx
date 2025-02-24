@@ -21,7 +21,7 @@ const AddBuildingLevel: React.FC = () => {
       <Modal
         open={isOpenModal}
         width="50%"
-        title={<span className="text-lg">Thêm loại toà nhà</span>}
+        title={<span className="text-lg">Thêm hạng toà nhà</span>}
         destroyOnClose
         onCancel={handleCloseModal}
         footer={null}

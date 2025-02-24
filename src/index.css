@@ -1,3 +1,59 @@
+/* @tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  :root {
+    --color-primary: #3162ad;
+  }
+  html {
+    height: 100%;
+    line-height: 1.2;
+  }
+
+  body {
+    min-width: 440px;
+  }
+  .table-icon {
+    @apply h-6 w-6 cursor-pointer;
+  }
+
+  .ant-timeline-item.timeline-item-content {
+    @apply pb-[4rem];
+  }
+
+
+  .card {
+    @apply rounded-lg bg-white px-6 py-4;
+  }
+
+  .table-row-light,
+  .table-row-light .ant-table-cell.ant-table-column-sort {
+    @apply bg-white;
+  }
+
+  .table-row-gray,
+  .table-row-gray .ant-table-cell.ant-table-column-sort {
+    @apply bg-gray-100;
+  }
+
+
+
+  .dark .card {
+    @apply rounded-lg bg-[#1E1E1E] px-6 py-4;
+  }
+
+  .dark .table-row-light,
+  .dark .table-row-light .ant-table-cell.ant-table-column-sort {
+    @apply bg-[#1E1E1E];
+  }
+
+  .dark .table-row-gray,
+  .dark.table-row-gray .ant-table-cell.ant-table-column-sort {
+    @apply bg-[#2c2b2b];
+  }
+} */
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -14,13 +70,17 @@
   body {
     min-width: 440px;
   }
-
-  .card {
-    @apply rounded-lg bg-white px-6 py-4;
-  }
-
   .table-icon {
     @apply h-6 w-6 cursor-pointer;
+  }
+
+  .ant-timeline-item.timeline-item-content {
+    @apply pb-[4rem];
+  }
+
+  /* ========== Light Mode ========== */
+  .card {
+    @apply rounded-lg bg-white px-6 py-4 text-black shadow-md;
   }
 
   .table-row-light,
@@ -33,7 +93,122 @@
     @apply bg-gray-100;
   }
 
-  .ant-timeline-item.timeline-item-content {
-    @apply pb-[4rem];
+  /* Add these styles to handle dark mode and light mode for notifications */
+
+  /* ========== Dark Mode ========== */
+  .dark body {
+    @apply bg-[#232323] text-gray-300;
   }
+
+  .dark .card {
+    @apply rounded-lg bg-[#2C2C2C] px-6 py-4 text-gray-300 shadow-lg;
+  }
+
+  .dark .table-row-light,
+  .dark .table-row-light .ant-table-cell.ant-table-column-sort {
+    @apply bg-[#2C2C2C] text-gray-300;
+  }
+
+  .dark .table-row-gray,
+  .dark .table-row-gray .ant-table-cell.ant-table-column-sort {
+    @apply bg-[#363535] text-gray-300;
+  }
+
+  /* ========== Sidebar & Menu ========== */
+  .dark .ant-menu {
+    @apply bg-[#1E1E1E] text-gray-300;
+  }
+
+  .dark .ant-menu-item {
+    @apply text-gray-400 hover:bg-[#3162ad] hover:text-white;
+  }
+
+  .dark .ant-menu-item-selected {
+    @apply bg-[#3162ad] font-semibold text-white;
+  }
+
+  .dark .ant-menu-submenu-title {
+    @apply text-gray-300 hover:text-white;
+  }
+
+  .dark .ant-menu-submenu-arrow {
+    @apply text-gray-300;
+  }
+
+  /* ========== Button, Input, Dropdown ========== */
+  .dark .ant-btn {
+    @apply border-none text-white hover:bg-[#274a8b];
+  }
+
+  .dark .ant-input {
+    @apply border border-gray-600 bg-[#2C2C2C] text-gray-300;
+  }
+
+  .dark .ant-dropdown-menu {
+    @apply bg-[#2C2C2C] text-gray-300;
+  }
+
+  /* Default toast (Light Mode) */
+  .dark-toast .react-hot-toast {
+    background-color: #333 !important;
+    color: white !important;
+  }
+
+  /* Success Toast */
+  .dark-toast .react-hot-toast--success {
+    background-color: #28a745 !important;
+    color: white !important;
+  }
+
+  /* Error Toast */
+  .dark-toast .react-hot-toast--error {
+    background-color: #dc3545 !important;
+    color: white !important;
+  }
+
+  /* General toast styling */
+  .react-hot-toast {
+    border-radius: 8px !important;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1) !important;
+  }
+  /* Light Mode */
+  .toastify {
+    background-color: #fff !important;
+    color: #000 !important;
+  }
+
+  /* Dark Mode */
+  .dark .toastify {
+    background-color: #333 !important;
+    color: #fff !important;
+  }
+  @keyframes bell-shake {
+    0% {
+      transform: rotate(0);
+    }
+    15% {
+      transform: rotate(-10deg);
+    }
+    30% {
+      transform: rotate(10deg);
+    }
+    45% {
+      transform: rotate(-10deg);
+    }
+    60% {
+      transform: rotate(10deg);
+    }
+    75% {
+      transform: rotate(-5deg);
+    }
+    100% {
+      transform: rotate(0);
+    }
+  }
+
+  .animate-bell-shake {
+    animation: bell-shake 0.8s ease-in-out infinite;
+  }
+
+  /* Add these styles to handle dark mode and light mode for notifications */
 }

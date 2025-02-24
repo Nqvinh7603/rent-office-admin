@@ -31,3 +31,4 @@ export interface SortParams {
 }
 
 export type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
+

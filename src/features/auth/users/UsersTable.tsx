@@ -9,13 +9,17 @@ import React, { useEffect, useState } from "react";
 import { FcCancel } from "react-icons/fc";
 import { useSearchParams } from "react-router-dom";
 import { IUser, Page } from "../../../interfaces";
-import { PERMISSIONS } from "../../../interfaces/common/constants";
+import {
+  PERMISSIONS,
+  USER_STATUS_TRANSLATION,
+} from "../../../interfaces/common/constants";
 import { Module } from "../../../interfaces/common/enums";
 import { roleService } from "../../../services";
 import {
   colorFilterIcon,
   colorSortDownIcon,
   colorSortUpIcon,
+  colorUserStatus,
   formatTimestamp,
   getDefaultFilterValue,
   getDefaultSortOrder,
@@ -153,13 +157,13 @@ const UsersTable: React.FC<UserTableProps> = ({ userPage, isLoading }) => {
       dataIndex: "active",
       width: "10%",
       render: (active: boolean) => (
-        <Tag color={active ? "green" : "red"}>
-          {active ? "ACTIVE" : "INACTIVE"}
+        <Tag color={colorUserStatus(active)}>
+          {USER_STATUS_TRANSLATION[String(active)]}
         </Tag>
       ),
       filters: [
-        { text: "ACTIVE", value: true },
-        { text: "INACTIVE", value: false },
+        { text: "Đang hoạt động", value: true },
+        { text: "Ngừng hoạt động", value: false },
       ],
       defaultFilteredValue: getDefaultFilterValue(searchParams, "active"),
       filterIcon: (filtered) => (

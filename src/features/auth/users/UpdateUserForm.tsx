@@ -131,13 +131,16 @@ const UpdateUserForm: React.FC<UpdateUserFormProps> = ({
         ...values,
         firstName: values.firstName.toUpperCase(),
         lastName: values.lastName.toUpperCase(),
+        avatarUrl: fileList.length === 0 ? null : userToUpdate.avatarUrl,
       };
+
       const formData = new FormData();
       formData.append("user", JSON.stringify(toSnakeCase(updatedUser)));
 
       if (fileList.length > 0) {
         formData.append("userImg", fileList[0].originFileObj as FileType);
       }
+
       updateUser(
         { userId: userToUpdate.userId, updatedUser: formData },
         {
@@ -362,8 +365,8 @@ const UpdateUserForm: React.FC<UpdateUserFormProps> = ({
         >
           <Switch
             disabled={viewOnly}
-            checkedChildren="ACTIVE"
-            unCheckedChildren="INACTIVE"
+            checkedChildren="Hoạt động"
+            unCheckedChildren="Không hoạt động"
           />
         </Form.Item>
       </div>

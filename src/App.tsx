@@ -1,6 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { ConfigProvider } from "antd";
+import { ConfigProvider, theme } from "antd";
 import viVN from "antd/locale/vi_VN";
 import dayjs from "dayjs";
 import "dayjs/locale/vi";
@@ -10,9 +10,11 @@ import quarterOfYear from "dayjs/plugin/quarterOfYear";
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
 import { Toaster } from "react-hot-toast";
-import AppRouter from "./router/AppRouter";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { ThemeProvider, useTheme } from "./context/ThemeContext";
 import { PRIMARY_COLOR, VIETNAM_TIMEZONE } from "./interfaces/common/constants";
-
+import AppRouter from "./router/AppRouter";
 dayjs.locale("vi");
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -31,9 +33,20 @@ const queryClient = new QueryClient({
 
 function App() {
   return (
+    <ThemeProvider>
+      <ThemedApp />
+    </ThemeProvider>
+  );
+}
+
+function ThemedApp() {
+  const { isDarkMode } = useTheme();
+
+  return (
     <ConfigProvider
       locale={viVN}
       theme={{
+        algorithm: isDarkMode ? theme.darkAlgorithm : theme.defaultAlgorithm,
         token: {
           colorPrimary: PRIMARY_COLOR,
         },
@@ -51,11 +64,10 @@ function App() {
         <ReactQueryDevtools initialIsOpen={false} />
         <AppRouter />
       </QueryClientProvider>
+
       <Toaster
         position="top-center"
-        containerStyle={{
-          marginTop: "0.25rem",
-        }}
+        containerClassName={isDarkMode ? "dark-toast" : ""}
         toastOptions={{
           success: {
             duration: 3000,
@@ -66,10 +78,29 @@ function App() {
           style: {
             fontSize: "1rem",
             padding: "0.75rem 1rem",
+            backgroundColor: isDarkMode ? "#333" : "#fff",
+            color: isDarkMode ? "#fff" : "#000",
           },
+        }}
+      />
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={true}
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme={isDarkMode ? "dark" : "light"}
+        style={{
+          fontSize: "0.85 rem",
+          padding: "8px 12px",
         }}
       />
     </ConfigProvider>
   );
 }
+
 export default App;

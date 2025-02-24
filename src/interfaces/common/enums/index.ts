@@ -11,7 +11,22 @@ export enum Module {
     ROLES = "ROLES",
     PERMISSIONS = "PERMISSIONS",
     BUILDINGS = "BUILDINGS",
+    CUSTOMERS = "CUSTOMERS",
+    CONSIGNMENTS = "CONSIGNMENTS",
+    NOTIFICATIONS = "NOTIFICATIONS",
 }
 
+
+export enum RequireType {
+    RENT = "RENT",
+    CONSIGNMENT = "CONSIGNMENT",
+}
+
+export enum ConsignmentStatus {
+    PENDING = "PENDING",
+    CONFIRMED = "CONFIRMED",
+    CANCELLED = "CANCELLED",
+    INCOMPLETE = "INCOMPLETE",
+}
 
 

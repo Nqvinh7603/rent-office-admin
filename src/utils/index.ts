@@ -4,6 +4,7 @@ import { snakeCase } from "change-case";
 import dayjs from "dayjs";
 import { useEffect } from "react";
 import { FileType } from "../interfaces";
+import { ConsignmentStatus } from "../interfaces/common/enums";
 export function useDynamicTitle(title: string) {
     useEffect(() => {
         document.title = title;
@@ -103,13 +104,13 @@ export async function getBase64(file: FileType): Promise<string> {
 }
 
 
-// export function formatCurrency(value: number | undefined): string {
-//     return `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-// }
+export function formatCurrency(value: number | undefined): string {
+    return `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
 
-// export function parseCurrency(value: string | undefined): number {
-//     return (value?.replace(/\$\s?|(,*)/g, "") as unknown as number) || 0;
-// }
+export function parseCurrency(value: string | undefined): number {
+    return (value?.replace(/\$\s?|(,*)/g, "") as unknown as number) || 0;
+}
 
 export function isInDateRange(
     date: string,
@@ -118,8 +119,6 @@ export function isInDateRange(
 ): boolean {
     return dayjs(date).tz().isBetween(startDate, endDate, null, "[]");
 }
-
-
 
 export function toSnakeCase(obj: any): any {
     if (Array.isArray(obj)) {
@@ -131,4 +130,42 @@ export function toSnakeCase(obj: any): any {
         }, {} as Record<string, any>);
     }
     return obj;
+}
+
+
+export const colorConsignmentStatus = (status: string) => {
+    switch (status) {
+        case ConsignmentStatus.PENDING:
+            return orange[5];
+        case ConsignmentStatus.CONFIRMED:
+            return green[5];
+        case ConsignmentStatus.CANCELLED:
+            return red[5];
+        case ConsignmentStatus.INCOMPLETE:
+            return grey[5];
+        default:
+            return grey[10];
+    }
+}
+
+export const colorUserStatus = (status: boolean) => {
+    switch (status) {
+        case true:
+            return green[7];
+        case false:
+            return red[7];
+        default:
+            return grey[10];
+    }
+}
+
+export const colorRoleStatus = (status: boolean) => {
+    switch (status) {
+        case true:
+            return green[7];
+        case false:
+            return red[7];
+        default:
+            return grey[10];
+    }
 }

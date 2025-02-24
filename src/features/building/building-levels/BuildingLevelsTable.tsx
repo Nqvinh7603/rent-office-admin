@@ -111,16 +111,10 @@ const BuildingLevelsTable: React.FC = () => {
 
   const columns: TableProps<IBuildingLevel>["columns"] = [
     {
-      title: "ID",
-      dataIndex: "buildingLevelId",
-      key: "buildingLevelId",
-      width: "5%",
-    },
-    {
       title: "Mã hạng toà nhà",
       dataIndex: "buildingLevelCode",
       key: "buildingLevelCode",
-      width: "30%",
+      width: "15%",
       render: (buildingLevelCode: string) => (
         <Tag color="green">{buildingLevelCode}</Tag>
       ),
@@ -130,6 +124,12 @@ const BuildingLevelsTable: React.FC = () => {
       dataIndex: "buildingLevelName",
       key: "buildingLevelName",
       width: "30%",
+    },
+    {
+      title: "Mô tả",
+      dataIndex: "description",
+      key: "description",
+      width: "25%",
     },
     {
       title: "Ngày tạo",

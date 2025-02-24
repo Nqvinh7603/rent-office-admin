@@ -10,10 +10,16 @@ interface IUserService {
     update(userId: string, updatedUser: FormData): Promise<ApiResponse<IUser>>;
     delete(userId: string): Promise<ApiResponse<void>>;
     changePassword(changePasswordRequest: IChangePasswordRequest): Promise<ApiResponse<void>>;
+    loadStaffs(): Promise<ApiResponse<IUser[]>>;
 }
 
 const apiClient: AxiosInstance = createApiClient("users");
 class UserService implements IUserService {
+
+    async loadStaffs(): Promise<ApiResponse<IUser[]>> {
+        return (await apiClient.get("/staffs")).data;
+    }
+
     async getLoggedInUser(): Promise<ApiResponse<IUser>> {
         return (await apiClient.get("/logged-in")).data;
     }

@@ -1,3 +1,4 @@
+import { INotification } from "../notification";
 
 export interface IAuthRequest {
     email?: string;
@@ -38,9 +39,11 @@ export interface IUser {
     avatarUrl?: string;
     active: boolean;
     role: IRole;
+    notifications: INotification[];
     dateOfBirth?: string;
     createdAt: string;
     updatedAt?: string;
+    checked?: string;
 }
 
 export interface UserFilterCriteria {

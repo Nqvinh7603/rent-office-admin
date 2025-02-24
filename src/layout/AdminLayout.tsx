@@ -1,23 +1,47 @@
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  Avatar,
+  Badge,
+  Button,
+  Checkbox,
+  Dropdown,
+  Layout,
+  Menu,
+  MenuProps,
+  Switch,
+  theme,
+} from "antd";
+import dayjs from "dayjs";
 import React, { useEffect, useState } from "react";
-
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Avatar, Button, Dropdown, Layout, Menu, MenuProps, theme } from "antd";
-import { AiOutlineMenuFold, AiOutlineMenuUnfold } from "react-icons/ai";
+import {
+  AiOutlineBell,
+  AiOutlineMenuFold,
+  AiOutlineMenuUnfold,
+} from "react-icons/ai";
 import { BsBuildingsFill } from "react-icons/bs";
 import { FaKey, FaUser, FaUserCog, FaUsers } from "react-icons/fa";
 import { FaRankingStar } from "react-icons/fa6";
 import { IoShieldCheckmark } from "react-icons/io5";
 import { MdDashboard, MdOutlineAddHomeWork } from "react-icons/md";
+import { RiLuggageDepositFill } from "react-icons/ri";
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router";
 import Loading from "../common/components/Loading";
+import { useTheme } from "../context/ThemeContext";
 import { useAvatarUrl } from "../features/auth/hooks/useAvatarUrl";
 import { useLoggedInUser } from "../features/auth/hooks/useLoggedInUser";
+import {
+  useMarkAllRead,
+  useMarkNotificationRead,
+} from "../features/notification/hooks/useNotification";
+import useWebSocket from "../features/notification/hooks/useWebSocket";
 import { PERMISSIONS } from "../interfaces/common/constants";
 import { Module } from "../interfaces/common/enums";
-import { authService } from "../services";
+import { authService, notificationService } from "../services";
+
 const { Header, Sider } = Layout;
 
 const AdminLayout: React.FC = () => {
+  useWebSocket("ws://localhost:8081/ws/notifications");
   const location = useLocation();
   const [selectedKeys, setSelectedKeys] = useState<string[]>(
     location.pathname === "/"
@@ -28,11 +52,16 @@ const AdminLayout: React.FC = () => {
   const [menuItems, setMenuItems] = useState<MenuProps["items"]>([]);
   const { user, isLoading } = useLoggedInUser();
 
+  const { mutate: markNotificationRead } = useMarkNotificationRead(
+    user?.userId ?? "",
+  );
+  const { mutate: markAllRead } = useMarkAllRead(user?.userId ?? "");
+
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
   const avatarUrl = useAvatarUrl(user ?? null);
-
+  const { isDarkMode, toggleDarkMode } = useTheme();
   const { mutate: logout } = useMutation({
     mutationFn: () => authService.logout(),
     onSuccess: () => {
@@ -109,8 +138,30 @@ const AdminLayout: React.FC = () => {
             PERMISSIONS[Module.BUILDINGS].GET_BUILDING_LEVEL_PAGINATION.method,
       );
 
+      const viewConsignments: boolean = Boolean(
+        permissions.find(
+          (item) =>
+            item.apiPath ===
+              PERMISSIONS[Module.CONSIGNMENTS].GET_CONSIGNMENT_PAGINATION
+                .apiPath &&
+            item.method ===
+              PERMISSIONS[Module.CONSIGNMENTS].GET_CONSIGNMENT_PAGINATION
+                .method,
+        ),
+      );
+
       const hasBuildingChildren: boolean = Boolean(
         viewBuildingTypes || viewBuildingLevels,
+      );
+
+      const viewNotification = permissions.find(
+        (item) =>
+          item.apiPath ===
+            PERMISSIONS[Module.NOTIFICATIONS].GET_NOTIFICATIONS_BY_USER_ID
+              .apiPath &&
+          item.method ===
+            PERMISSIONS[Module.NOTIFICATIONS].GET_NOTIFICATIONS_BY_USER_ID
+              .method,
       );
 
       const menuItems = [
@@ -197,8 +248,25 @@ const AdminLayout: React.FC = () => {
               },
             ]
           : []),
+        ...(viewConsignments
+          ? [
+              {
+                label: <NavLink to="/consignments">Yêu cầu ký gửi</NavLink>,
+                key: "consignments",
+                icon: <RiLuggageDepositFill size={17} />,
+              },
+            ]
+          : []),
+        ...(viewNotification
+          ? [
+              {
+                label: <NavLink to="/notifications">Quản lý thông báo</NavLink>,
+                key: "notifications",
+                icon: <AiOutlineBell size={18} />,
+              },
+            ]
+          : []),
       ];
-
       setMenuItems(menuItems);
     }
   }, [user]);
@@ -235,6 +303,14 @@ const AdminLayout: React.FC = () => {
       );
     }
   }, [location, user]);
+
+  const { data: notificationDatas } = useQuery({
+    queryKey: ["notifications", user?.userId],
+    queryFn: () => notificationService.getNotifications(user?.userId ?? ""),
+    staleTime: 0,
+    refetchOnWindowFocus: true,
+  });
+  const notifications = notificationDatas?.payload || [];
 
   if (isLoading) {
     return <Loading />;
@@ -276,7 +352,13 @@ const AdminLayout: React.FC = () => {
       >
         <div className="demo-logo-vertical flex flex-col items-center pb-6">
           <img src="/logo.png" alt="Logo" className="w-48 p-2" />
-          {!collapsed && <h1 className="font-semibold">Admin</h1>}
+          {!collapsed && (
+            <h1
+              className={`font-semibold ${isDarkMode ? "text-white" : "text-black"}`}
+            >
+              Admin
+            </h1>
+          )}
         </div>
         <Menu
           theme="light"
@@ -306,6 +388,143 @@ const AdminLayout: React.FC = () => {
               }}
             />
             <div className="relative mr-5 flex items-center gap-2">
+              <Switch
+                className="mr-1 items-center"
+                checked={isDarkMode}
+                onChange={() => {
+                  toggleDarkMode();
+                }}
+                checkedChildren="🌙"
+                unCheckedChildren="☀️"
+              />
+
+              <Badge
+                count={notifications.filter((n) => !n.status).length}
+                className={`mr-4 ${
+                  notifications.some((n) => !n.status)
+                    ? "animate-bell-shake"
+                    : ""
+                }`}
+                size="small"
+              >
+                <Dropdown
+                  menu={{
+                    items:
+                      notifications.length > 0
+                        ? [
+                            {
+                              key: "mark-all-read",
+                              label: (
+                                <Checkbox
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    markAllRead();
+                                  }}
+                                  disabled={notifications.every(
+                                    (n) => n.status,
+                                  )}
+                                >
+                                  Đánh dấu đọc tất cả
+                                </Checkbox>
+                              ),
+                            },
+                            { type: "divider" },
+                            ...notifications
+                              .slice(0, 5)
+                              .map((notification, index) => ({
+                                key: notification.notificationId,
+                                label: (
+                                  <div className="flex cursor-pointer items-start py-2">
+                                    <div className="flex-grow">
+                                      <span
+                                        className={
+                                          notification.status === false
+                                            ? "font-bold"
+                                            : ""
+                                        }
+                                      >
+                                        {notification.message.length > 100
+                                          ? `${notification.message.slice(0, 100)}...`
+                                          : notification.message}
+                                      </span>
+                                      {notification.status === false && (
+                                        <span className="float-right ml-2 inline-block h-2 w-2 rounded-full bg-green-500"></span>
+                                      )}
+                                      <br />
+                                      <small className="text-xs text-gray-500">
+                                        {dayjs(notification.createdAt).format(
+                                          "DD/MM/YYYY hh:mm A",
+                                        )}
+                                      </small>
+                                    </div>
+                                  </div>
+                                ),
+                                className:
+                                  index % 2 === 0
+                                    ? "table-row-light"
+                                    : "table-row-gray",
+                                onClick: () => {
+                                  navigate(
+                                    `/consignments/${notification.consignmentId}`,
+                                  );
+                                  markNotificationRead(
+                                    notification.notificationId,
+                                    {
+                                      onSuccess: () => {
+                                        queryClient.invalidateQueries({
+                                          queryKey: ["notifications"],
+                                        });
+                                      },
+                                    },
+                                  );
+                                },
+                              })),
+                            { type: "divider" },
+                            {
+                              key: "view-all",
+                              label: (
+                                <div
+                                  className="cursor-pointer text-center font-semibold text-[#3162ad]"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    navigate("/notifications");
+                                  }}
+                                >
+                                  Xem tất cả thông báo
+                                </div>
+                              ),
+                            },
+                          ]
+                        : [
+                            {
+                              key: "no-notifications",
+                              label: (
+                                <div className="text-center text-gray-500">
+                                  Không có thông báo
+                                </div>
+                              ),
+                            },
+                          ],
+                  }}
+                  trigger={["click"]}
+                  placement="bottomRight"
+                  arrow
+                  overlayStyle={{ width: 300 }}
+                >
+                  <div
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      queryClient.invalidateQueries({
+                        queryKey: ["notifications"],
+                      });
+                    }}
+                    className="cursor-pointer"
+                  >
+                    <AiOutlineBell size={24} />
+                  </div>
+                </Dropdown>
+              </Badge>
+
               <Dropdown
                 menu={{ items }}
                 placement="bottom"
@@ -318,18 +537,13 @@ const AdminLayout: React.FC = () => {
                   type="text"
                   icon={
                     avatarUrl ? (
-                      <Avatar
-                        src={avatarUrl}
-                        // className="m-2"
-                        size={"large"}
-                        shape="square"
-                      />
+                      <Avatar src={avatarUrl} size={"large"} shape="square" />
                     ) : (
-                      <FaUser size={18} className="mb-2" />
+                      <FaUser size={18} className="" />
                     )
                   }
                   style={{
-                    fontSize: "30px",
+                    fontSize: "15px",
                   }}
                 />
               </Dropdown>

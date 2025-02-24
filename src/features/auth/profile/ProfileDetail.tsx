@@ -311,6 +311,7 @@ const ProfileDetail: React.FC = () => {
                   );
                 }
               }}
+              disabled={isUpdating}
             >
               Huỷ
             </Button>

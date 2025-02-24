@@ -99,7 +99,7 @@ const UpdateBuildingLevelForm: React.FC<UpdateBuildingLevelFormProps> = ({
       <Row gutter={16}>
         <Col span={18}>
           <Form.Item
-            label="Tên loại toà nhà"
+            label="Tên hạng"
             name="buildingLevelName"
             rules={[
               { required: true, message: "Vui lòng nhập tên hạng toà nhà" },
@@ -110,7 +110,7 @@ const UpdateBuildingLevelForm: React.FC<UpdateBuildingLevelFormProps> = ({
         </Col>
         <Col span={6}>
           <Form.Item
-            label="Mã loại"
+            label="Mã hạng"
             name="buildingLevelCode"
             rules={[
               { required: true, message: "Vui lòng nhập mã hạng toà nhà" },
