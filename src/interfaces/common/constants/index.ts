@@ -69,9 +69,10 @@ export const PERMISSIONS = {
 
 export const CONSIGNMENT_STATUS_TRANSLATION: Record<ConsignmentStatus, string> = {
     [ConsignmentStatus.PENDING]: "Chờ xác nhận",
-    [ConsignmentStatus.INCOMPLETE]: "Thiếu thông tin",
+    [ConsignmentStatus.INCOMPLETE]: "Yêu cầu bổ sung thông tin",
+    [ConsignmentStatus.ADDITIONAL_INFO]: "Đã thêm thông tin",
     [ConsignmentStatus.CANCELLED]: "Từ chối",
-    [ConsignmentStatus.CONFIRMED]: "Tiếp nhận",
+    [ConsignmentStatus.CONFIRMED]: "Chấp nhận",
 };
 
 

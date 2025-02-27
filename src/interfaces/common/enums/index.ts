@@ -27,6 +27,7 @@ export enum ConsignmentStatus {
     CONFIRMED = "CONFIRMED",
     CANCELLED = "CANCELLED",
     INCOMPLETE = "INCOMPLETE",
+    ADDITIONAL_INFO = "ADDITIONAL_INFO",
 }
 
 

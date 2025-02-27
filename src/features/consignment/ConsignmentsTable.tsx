@@ -32,6 +32,7 @@ import {
 } from "../../utils";
 import Access from "../auth/Access";
 import AssignCustomer from "./AssignCustomer";
+import DeleteConsignment from "./DeleteConsignment";
 
 interface TableParams {
   pagination: TablePaginationConfig;
@@ -127,7 +128,7 @@ const ConsignmentsTable: React.FC<ConsignmentTableProps> = ({
       key: "email",
       title: "Email",
       dataIndex: ["customer", "email"],
-      width: "10%",
+      width: "5%",
     },
     {
       key: "phoneNumber",
@@ -145,7 +146,7 @@ const ConsignmentsTable: React.FC<ConsignmentTableProps> = ({
       key: "price",
       title: "Giá (VND/m²)",
       dataIndex: "price",
-      width: "8%",
+      width: "9%",
       render: (price: number) => <span>{formatCurrency(price)}</span>,
       sorter: true,
       defaultSortOrder: getDefaultSortOrder(searchParams, "price"),
@@ -219,6 +220,12 @@ const ConsignmentsTable: React.FC<ConsignmentTableProps> = ({
                 size={19}
               />
             </Tooltip>
+          </Access>
+          <Access
+            permission={PERMISSIONS[Module.CONSIGNMENTS].DELETE_CONSIGNMENT}
+            hideChildren={false}
+          >
+            <DeleteConsignment consignmentId={record.consignmentId} />
           </Access>
         </Space>
       ),

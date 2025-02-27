@@ -30,6 +30,7 @@ export interface IConsignment {
     additionalInfoAt?: string;
     rejectedReasonAt?: string;
     confirmedAt?: string;
+    additionalInfoAfterAt?: string;
 }
 
 export interface IConsignmentImage {
@@ -50,7 +51,6 @@ export interface ConsignmentFilterCriteria {
     minPrice?: number;
     staffName?: string;
     status?: ConsignmentStatus;
-
 }
 
 

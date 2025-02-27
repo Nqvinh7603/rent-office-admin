@@ -27,7 +27,7 @@ const ForgotPasswordForm: React.FC = () => {
 
   return (
     <div className="flex min-h-screen items-center justify-center">
-      <div className="w-full max-w-md bg-white p-8">
+      <div className="w-full max-w-md bg-white p-8 dark:bg-gray-800">
         <div className="mb-6 text-center">
           <h1 className="text-2xl font-bold">Đặt lại mật khẩu của bạn</h1>
         </div>

@@ -4,6 +4,7 @@ import {
   Button,
   Descriptions,
   Divider,
+  Flex,
   Form,
   Image,
   InputNumber,
@@ -191,7 +192,7 @@ const ConsignmentDetail: React.FC = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({
         predicate: (query) => {
-          return query.queryKey.includes("users");
+          return query.queryKey.includes("consignments");
         },
       });
     },
@@ -453,18 +454,18 @@ const ConsignmentDetail: React.FC = () => {
             <h2 className="mb-8 text-xl font-semibold">Trạng thái xét duyệt</h2>
             <div className="flex gap-8">
               <div className="flex-1/2">
-                <Timeline mode="left" style={{ paddingLeft: "20px" }}>
+                {/* <Timeline mode="left" style={{ paddingLeft: "20px" }}>
                   {Object.entries(CONSIGNMENT_STATUS_TRANSLATION).map(
                     ([value, label]) => {
                       const date =
                         value === ConsignmentStatus.PENDING
-                          ? consignment?.createdAt
+                          ? form.getFieldValue("createdAt")
                           : value === ConsignmentStatus.INCOMPLETE
-                            ? consignment?.additionalInfoAt
+                            ? form.getFieldValue("additionalInfoAt")
                             : value === ConsignmentStatus.CANCELLED
-                              ? consignment?.rejectedReasonAt
+                              ? form.getFieldValue("rejectedReasonAt")
                               : value === ConsignmentStatus.CONFIRMED
-                                ? consignment?.confirmedAt
+                                ? form.getFieldValue("confirmedAt")
                                 : null;
                       const color = date
                         ? value === ConsignmentStatus.CANCELLED
@@ -491,6 +492,68 @@ const ConsignmentDetail: React.FC = () => {
                       );
                     },
                   )}
+                </Timeline> */}
+                <Timeline mode="left" style={{ paddingLeft: "20px" }}>
+                  {Object.entries(CONSIGNMENT_STATUS_TRANSLATION)
+                    .map(([value, label]) => {
+                      const date =
+                        value === ConsignmentStatus.PENDING
+                          ? consignment?.createdAt
+                          : value === ConsignmentStatus.INCOMPLETE
+                            ? consignment?.additionalInfoAt
+                            : value === ConsignmentStatus.CANCELLED
+                              ? consignment?.rejectedReasonAt
+                              : value === ConsignmentStatus.CONFIRMED
+                                ? consignment?.confirmedAt
+                                : value === ConsignmentStatus.ADDITIONAL_INFO
+                                  ? consignment?.additionalInfoAfterAt
+                                  : null;
+
+                      if (!date) return null;
+
+                      const color =
+                        value === ConsignmentStatus.CANCELLED
+                          ? "red"
+                          : value === ConsignmentStatus.INCOMPLETE
+                            ? "orange"
+                            : value === ConsignmentStatus.CONFIRMED
+                              ? "green"
+                              : value === ConsignmentStatus.ADDITIONAL_INFO
+                                ? "purple"
+                                : "blue";
+
+                      return {
+                        value,
+                        label,
+                        date,
+                        color,
+                      };
+                    })
+                    .filter(Boolean)
+                    .filter(
+                      (
+                        item,
+                      ): item is {
+                        value: string;
+                        label: string;
+                        date: string;
+                        color: string;
+                      } => item !== null,
+                    )
+                    .sort((a, b) => dayjs(a.date).unix() - dayjs(b.date).unix())
+                    .map(({ value, label, date, color }) => (
+                      <Timeline.Item key={value} color={color}>
+                        <div>
+                          <span>
+                            <strong>
+                              <em>{label}</em>
+                            </strong>
+                          </span>
+                          <br />
+                          <span>{dayjs(date).format("DD/MM/YYYY HH:mm")}</span>
+                        </div>
+                      </Timeline.Item>
+                    ))}
                 </Timeline>
               </div>
               <Divider type="vertical" style={{ height: "auto" }} />
@@ -507,35 +570,36 @@ const ConsignmentDetail: React.FC = () => {
                       { required: true, message: "Vui lòng chọn trạng thái" },
                     ]}
                   >
-                    <Radio.Group
-                      onChange={(e) => {
-                        const status = e.target.value;
-                        setStatus(status);
-                        form.setFieldsValue({
-                          status: status as ConsignmentStatus,
-                        });
-                      }}
-                      value={form.getFieldValue("status")}
-                    >
-                      {Object.entries(CONSIGNMENT_STATUS_TRANSLATION)
-                        .filter(
-                          ([value]) => value !== ConsignmentStatus.PENDING,
-                        )
-                        .map(([value, label]) => (
-                          <Radio
-                            key={value}
-                            value={value}
-                            disabled={
+                    <Flex vertical gap="middle">
+                      <Radio.Group
+                        buttonStyle="solid"
+                        block
+                        options={Object.entries(CONSIGNMENT_STATUS_TRANSLATION)
+                          .filter(
+                            ([value]) =>
+                              value !== ConsignmentStatus.PENDING &&
+                              value !== ConsignmentStatus.ADDITIONAL_INFO,
+                          )
+                          .map(([value, label]) => ({
+                            label,
+                            value,
+                            disabled:
                               form.getFieldValue("status") ===
                                 ConsignmentStatus.CONFIRMED &&
                               (value === ConsignmentStatus.CANCELLED ||
-                                value === ConsignmentStatus.INCOMPLETE)
-                            }
-                          >
-                            {label}
-                          </Radio>
-                        ))}
-                    </Radio.Group>
+                                value === ConsignmentStatus.INCOMPLETE),
+                          }))}
+                        defaultValue={form.getFieldValue("status")}
+                        optionType="button"
+                        onChange={(e) => {
+                          const status = e.target.value;
+                          setStatus(status);
+                          form.setFieldsValue({
+                            status: status as ConsignmentStatus,
+                          });
+                        }}
+                      />
+                    </Flex>
                   </Form.Item>
 
                   {form.getFieldValue("status") ===
@@ -616,9 +680,11 @@ const ConsignmentDetail: React.FC = () => {
                 </Button>
                 <Button
                   type="primary"
-                  htmlType="submit"
                   loading={isUpdating}
                   icon={<SaveOutlined />}
+                  onClick={() => {
+                    form.submit();
+                  }}
                 >
                   Lưu lại
                 </Button>

@@ -143,6 +143,8 @@ export const colorConsignmentStatus = (status: string) => {
             return red[5];
         case ConsignmentStatus.INCOMPLETE:
             return grey[5];
+        case ConsignmentStatus.ADDITIONAL_INFO:
+            return blue[5];
         default:
             return grey[10];
     }
