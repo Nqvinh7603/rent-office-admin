@@ -210,13 +210,13 @@ const ConsignmentDetail: React.FC = () => {
         JSON.stringify(toSnakeCase(updatedConsignment)),
       );
 
-      // if (fileList.length > 0) {
-      //   fileList.forEach((file) => {
-      //     formData.append("consignmentImg", file.originFileObj as FileType);
-      //   });
-      // } else {
-      //   formData.append("consignmentImg", "");
-      // }
+      if (fileList.length > 0) {
+        fileList.forEach((file) => {
+          formData.append("consignmentImg", file.originFileObj as FileType);
+        });
+      } else {
+        formData.append("consignmentImg", "");
+      }
       updateConsignment(
         {
           consignmentId: consignment.consignmentId.toString(),
@@ -428,11 +428,12 @@ const ConsignmentDetail: React.FC = () => {
                   multiple
                   listType="picture-card"
                   fileList={fileList}
-                  beforeUpload={() => false}
+                  beforeUpload={() => true}
                   onPreview={handlePreview}
                   onChange={handleUploadChange}
                   showUploadList={{ showRemoveIcon: false }}
                 />
+
                 {previewImage && (
                   <Image
                     wrapperStyle={{ display: "none" }}
@@ -454,45 +455,6 @@ const ConsignmentDetail: React.FC = () => {
             <h2 className="mb-8 text-xl font-semibold">Trạng thái xét duyệt</h2>
             <div className="flex gap-8">
               <div className="flex-1/2">
-                {/* <Timeline mode="left" style={{ paddingLeft: "20px" }}>
-                  {Object.entries(CONSIGNMENT_STATUS_TRANSLATION).map(
-                    ([value, label]) => {
-                      const date =
-                        value === ConsignmentStatus.PENDING
-                          ? form.getFieldValue("createdAt")
-                          : value === ConsignmentStatus.INCOMPLETE
-                            ? form.getFieldValue("additionalInfoAt")
-                            : value === ConsignmentStatus.CANCELLED
-                              ? form.getFieldValue("rejectedReasonAt")
-                              : value === ConsignmentStatus.CONFIRMED
-                                ? form.getFieldValue("confirmedAt")
-                                : null;
-                      const color = date
-                        ? value === ConsignmentStatus.CANCELLED
-                          ? "red"
-                          : value === ConsignmentStatus.INCOMPLETE
-                            ? "orange"
-                            : value === ConsignmentStatus.CONFIRMED
-                              ? "green"
-                              : "blue"
-                        : "gray";
-
-                      return (
-                        <Timeline.Item key={value} color={color}>
-                          <div>
-                            <span>{label}</span>
-                            <br />
-                            <span>
-                              {date
-                                ? dayjs(date).format("DD/MM/YYYY HH:mm")
-                                : ""}
-                            </span>
-                          </div>
-                        </Timeline.Item>
-                      );
-                    },
-                  )}
-                </Timeline> */}
                 <Timeline mode="left" style={{ paddingLeft: "20px" }}>
                   {Object.entries(CONSIGNMENT_STATUS_TRANSLATION)
                     .map(([value, label]) => {
