@@ -24,10 +24,10 @@ const DeleteConsignment: React.FC<DeleteConsignmentProps> = ({
   function handleConfirmDelete(): void {
     deleteConsignment(consignmentId.toString(), {
       onSuccess: () => {
-        toast.success("Xóa hạng tài sản ký gửi thành công");
+        toast.success("Xóa tài sản ký gửi thành công");
       },
       onError: () => {
-        toast.error("Xóa hạng tài sản ký gửi thất bại");
+        toast.error("Xóa tài sản ký gửi thất bại");
       },
     });
   }

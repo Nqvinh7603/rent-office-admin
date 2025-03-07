@@ -1,5 +1,5 @@
 import { IUser } from "../auth";
-import { ConsignmentStatus, RequireType } from "../common/enums";
+import { ConsignmentStatus, PotentialCustomerStatus, RequireType } from "../common/enums";
 
 export interface ICustomer {
     customerId: number;
@@ -8,8 +8,18 @@ export interface ICustomer {
     email: string;
     address: string;
     requireType: RequireType;
+    note?: string;
+    status?: PotentialCustomerStatus;
     createdAt: string;
     updatedAt?: string;
+}
+
+export interface PotentialCustomerFilterCriteria {
+    customerName?: string;
+    phoneNumber?: string;
+    email?: string;
+    status?: PotentialCustomerStatus;
+    staffName?: string;
 }
 
 export interface IConsignment {
@@ -19,23 +29,27 @@ export interface IConsignment {
     city: string;
     description: string;
     buildingType: string;
-    rejectionReason?: string;
-    additionalInfo?: string;
     price: number;
-    status: ConsignmentStatus;
     consignmentImages: IConsignmentImage[];
     customer: ICustomer;
     createdAt: string;
     updatedAt?: string;
-    additionalInfoAt?: string;
-    rejectedReasonAt?: string;
-    confirmedAt?: string;
-    additionalInfoAfterAt?: string;
+    consignmentStatusHistories: IConsignmentStatusHistory[];
 }
 
 export interface IConsignmentImage {
     consignmentImageId: number;
     imgUrl?: string;
+}
+
+export interface IConsignmentStatusHistory {
+    consignmentStatusHistoryId: number;
+    status: ConsignmentStatus;
+    note: string;
+    createdAt: string;
+    createdBy: string;
+    updatedAt?: string;
+    updatedBy?: string;
 }
 
 export interface ConsignmentFilterCriteria {

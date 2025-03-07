@@ -4,7 +4,7 @@ import { snakeCase } from "change-case";
 import dayjs from "dayjs";
 import { useEffect } from "react";
 import { FileType } from "../interfaces";
-import { ConsignmentStatus } from "../interfaces/common/enums";
+import { ConsignmentStatus, PotentialCustomerStatus } from "../interfaces/common/enums";
 export function useDynamicTitle(title: string) {
     useEffect(() => {
         document.title = title;
@@ -145,6 +145,26 @@ export const colorConsignmentStatus = (status: string) => {
             return grey[5];
         case ConsignmentStatus.ADDITIONAL_INFO:
             return blue[5];
+        default:
+            return grey[10];
+    }
+}
+
+
+export const colorPotentialCustomerStatus = (status: string) => {
+    switch (status) {
+        case PotentialCustomerStatus.CONTACTED_NO_RESPONSE:
+            return orange[5];
+        case PotentialCustomerStatus.CONTACTED_SCHEDULED:
+            return green[5];
+        case PotentialCustomerStatus.NOT_CONTACTED:
+            return grey[5];
+        case PotentialCustomerStatus.DEAL_DONE:
+            return blue[5];
+        case PotentialCustomerStatus.IN_PROGRESS:
+            return green[5];
+        case PotentialCustomerStatus.CANCELED:
+            return red[5];
         default:
             return grey[10];
     }

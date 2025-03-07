@@ -1,5 +1,5 @@
 // import { useQueryClient } from "@tanstack/react-query";
-// import { useEffect } from "react";
+// import { useEffect, useRef } from "react";
 // import { useNavigate } from "react-router";
 // import { toast } from "react-toastify";
 // import { INotificationEvent } from "../../../interfaces";
@@ -7,24 +7,34 @@
 // const useWebSocket = (url: string) => {
 //     const navigate = useNavigate();
 //     const queryClient = useQueryClient();
-//     const audio = new Audio("/sound/noti.wav");
+//     const socketRef = useRef<WebSocket | null>(null);
+//     const audioRef = useRef(new Audio("/sound/noti.wav"));
+
 //     useEffect(() => {
+//         if (!url) return;
+
 //         const socket = new WebSocket(url);
+//         socketRef.current = socket;
 
 //         socket.onopen = () => {
 //             console.log("✅ WebSocket connection established");
 //         };
 
-//         socket.onmessage = (event) => {
-
+//         socket.onmessage = async (event) => {
 //             const isDarkMode = document.documentElement.classList.contains("dark");
+
 //             try {
 //                 const data: INotificationEvent = JSON.parse(event.data);
-//                 audio.play();
+
+
+//                 try {
+//                     await audioRef.current.play();
+//                 } catch (audioError) {
+//                     console.warn("🔇 Không thể phát âm thanh thông báo:", audioError);
+//                 }
+
 //                 toast(`🔔 ${data.message}`, {
-//                     onClick: () => {
-//                         navigate(`/consignments/${data.consignmentId}`);
-//                     },
+//                     onClick: () => navigate(`/consignments/${data.consignmentId}`),
 //                     autoClose: 10000,
 //                     pauseOnHover: true,
 //                     closeOnClick: true,
@@ -32,12 +42,9 @@
 //                     theme: isDarkMode ? "dark" : "light",
 //                 });
 
-//                 queryClient.invalidateQueries({
-//                     queryKey: ["notifications"],
-//                 });
-
-
+//                 queryClient.invalidateQueries({ queryKey: ["notifications"] });
 //             } catch (error) {
+//                 console.error("❌ Lỗi khi xử lý thông báo WebSocket:", error);
 //                 toast.error("❌ Không thể xử lý thông báo mới!", {
 //                     autoClose: 10000,
 //                     theme: isDarkMode ? "dark" : "light",
@@ -49,8 +56,14 @@
 //             console.warn("⚠️ WebSocket connection closed");
 //         };
 
+//         socket.onerror = (error) => {
+//             console.error("🚨 WebSocket error:", error);
+//         };
+
 //         return () => {
-//             socket.close();
+//             if (socketRef.current) {
+//                 socketRef.current.close();
+//             }
 //         };
 //     }, [url, navigate, queryClient]);
 
@@ -79,36 +92,52 @@ const useWebSocket = (url: string) => {
 
         socket.onopen = () => {
             console.log("✅ WebSocket connection established");
+            if (Notification.permission !== "granted") {
+                Notification.requestPermission();
+            }
         };
 
         socket.onmessage = async (event) => {
             const isDarkMode = document.documentElement.classList.contains("dark");
-
             try {
                 const data: INotificationEvent = JSON.parse(event.data);
 
-                // Phát âm thanh nếu có thể
-                try {
-                    await audioRef.current.play();
-                } catch (audioError) {
-                    console.warn("🔇 Không thể phát âm thanh thông báo:", audioError);
-                }
+                // Trường hợp người dùng đang xem tab
+                if (!document.hidden) {
+                    try {
+                        audioRef.current.play();
+                    } catch (error) {
+                        console.warn("Không phát được âm thanh:", error);
+                    }
 
-                toast(`🔔 ${data.message}`, {
-                    onClick: () => navigate(`/consignments/${data.consignmentId}`),
-                    autoClose: 10000,
-                    pauseOnHover: true,
-                    closeOnClick: true,
-                    position: "top-right",
-                    theme: isDarkMode ? "dark" : "light",
-                });
+                    toast(`🔔 ${data.message}`, {
+                        onClick: () => navigate(`/consignments/${data.consignmentId}`),
+                        autoClose: 10000,
+                        pauseOnHover: true,
+                        closeOnClick: true,
+                        position: "top-right",
+                        theme: isDarkMode ? "dark" : "light",
+                    });
+                } else if (Notification.permission === "granted") {
+                    // Trường hợp tab đang ẩn, hiển thị thông báo native
+                    const notification = new Notification("🔔 Thông báo mới", {
+                        body: data.message,
+                        icon: "/favicon.ico", // tùy chọn icon
+                    });
+
+                    notification.onclick = () => {
+                        window.focus();
+                        navigate(`/consignments/${data.consignmentId}`);
+                        notification.close();
+                    };
+                }
 
                 queryClient.invalidateQueries({ queryKey: ["notifications"] });
             } catch (error) {
-                console.error("❌ Lỗi khi xử lý thông báo WebSocket:", error);
+                console.error("❌ Lỗi khi xử lý thông báo:", error);
                 toast.error("❌ Không thể xử lý thông báo mới!", {
                     autoClose: 10000,
-                    theme: isDarkMode ? "dark" : "light",
+                    theme: document.documentElement.classList.contains("dark") ? "dark" : "light",
                 });
             }
         };
@@ -122,11 +151,16 @@ const useWebSocket = (url: string) => {
         };
 
         return () => {
-            if (socketRef.current) {
-                socketRef.current.close();
-            }
+            socket.close();
         };
     }, [url, navigate, queryClient]);
+
+    // Request permission on first load
+    useEffect(() => {
+        if ("Notification" in window && Notification.permission !== "granted") {
+            Notification.requestPermission();
+        }
+    }, []);
 
     return null;
 };

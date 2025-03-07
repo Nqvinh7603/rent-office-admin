@@ -11,6 +11,7 @@ import Home from "../pages/Home";
 import Login from "../pages/Login";
 import Notifications from "../pages/Notifcations";
 import Permissions from "../pages/Permissions";
+import PotentialCustomers from "../pages/PotentialCustomers";
 import Profiles from "../pages/Profiles";
 import ResetPassword from "../pages/ResetPassword";
 import Roles from "../pages/Roles";
@@ -85,6 +86,10 @@ const router = createBrowserRouter([
           },
           { path: ":id", element: <ConsignmentDetail /> },
         ],
+      },
+      {
+        path: "/potential-customers",
+        element: <PotentialCustomers />,
       },
       {
         path: "/notifications",

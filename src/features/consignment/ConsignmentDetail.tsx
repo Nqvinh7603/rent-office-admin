@@ -78,7 +78,7 @@ const ConsignmentDetail: React.FC = () => {
   }, []);
 
   const [status, setStatus] = useState<string | undefined>(
-    form.getFieldValue("status"),
+    form.getFieldValue(["consignmentStatusHistories", 0, "status"]),
   );
 
   const { data, isLoading } = useQuery({
@@ -271,9 +271,15 @@ const ConsignmentDetail: React.FC = () => {
             </div>
             <Descriptions column={3}>
               <Descriptions.Item label="Email">
-                <a href={`mailto:${form.getFieldValue(["customer", "email"])}`}>
-                  {form.getFieldValue(["customer", "email"])}
-                </a>
+                <Tooltip title="Gửi email">
+                  <a
+                    href={`https://mail.google.com/mail/?view=cm&fs=1&to=${form.getFieldValue(["customer", "email"])}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {form.getFieldValue(["customer", "email"])}
+                  </a>
+                </Tooltip>
               </Descriptions.Item>
               <Descriptions.Item label="Tên khách hàng">
                 {form.getFieldValue(["customer", "customerName"])}
@@ -281,10 +287,12 @@ const ConsignmentDetail: React.FC = () => {
               <Descriptions.Item label="Số điện thoại">
                 <Tooltip title="Liên hệ qua Zalo hoặc gọi điện">
                   <a
-                    href={`tel:${form.getFieldValue([
+                    href={`https://zalo.me/${form.getFieldValue([
                       "customer",
                       "phoneNumber",
                     ])}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
                   >
                     {form.getFieldValue(["customer", "phoneNumber"])}
                   </a>
@@ -456,66 +464,51 @@ const ConsignmentDetail: React.FC = () => {
             <div className="flex gap-8">
               <div className="flex-1/2">
                 <Timeline mode="left" style={{ paddingLeft: "20px" }}>
-                  {Object.entries(CONSIGNMENT_STATUS_TRANSLATION)
-                    .map(([value, label]) => {
-                      const date =
-                        value === ConsignmentStatus.PENDING
-                          ? consignment?.createdAt
-                          : value === ConsignmentStatus.INCOMPLETE
-                            ? consignment?.additionalInfoAt
-                            : value === ConsignmentStatus.CANCELLED
-                              ? consignment?.rejectedReasonAt
-                              : value === ConsignmentStatus.CONFIRMED
-                                ? consignment?.confirmedAt
-                                : value === ConsignmentStatus.ADDITIONAL_INFO
-                                  ? consignment?.additionalInfoAfterAt
-                                  : null;
-
-                      if (!date) return null;
-
+                  {consignment?.consignmentStatusHistories.map(
+                    (history, index) => {
+                      const label =
+                        CONSIGNMENT_STATUS_TRANSLATION[history.status];
                       const color =
-                        value === ConsignmentStatus.CANCELLED
+                        history.status === ConsignmentStatus.CANCELLED
                           ? "red"
-                          : value === ConsignmentStatus.INCOMPLETE
+                          : history.status === ConsignmentStatus.INCOMPLETE
                             ? "orange"
-                            : value === ConsignmentStatus.CONFIRMED
+                            : history.status === ConsignmentStatus.CONFIRMED
                               ? "green"
-                              : value === ConsignmentStatus.ADDITIONAL_INFO
+                              : history.status ===
+                                  ConsignmentStatus.ADDITIONAL_INFO
                                 ? "purple"
                                 : "blue";
 
-                      return {
-                        value,
-                        label,
-                        date,
-                        color,
-                      };
-                    })
-                    .filter(Boolean)
-                    .filter(
-                      (
-                        item,
-                      ): item is {
-                        value: string;
-                        label: string;
-                        date: string;
-                        color: string;
-                      } => item !== null,
-                    )
-                    .sort((a, b) => dayjs(a.date).unix() - dayjs(b.date).unix())
-                    .map(({ value, label, date, color }) => (
-                      <Timeline.Item key={value} color={color}>
-                        <div>
-                          <span>
-                            <strong>
-                              <em>{label}</em>
-                            </strong>
-                          </span>
-                          <br />
-                          <span>{dayjs(date).format("DD/MM/YYYY HH:mm")}</span>
-                        </div>
-                      </Timeline.Item>
-                    ))}
+                      return (
+                        <Timeline.Item key={index} color={color}>
+                          <div>
+                            <span>
+                              <strong>
+                                <Tooltip
+                                  title={
+                                    <div
+                                      dangerouslySetInnerHTML={{
+                                        __html: history.note,
+                                      }}
+                                    />
+                                  }
+                                >
+                                  <em>{label}</em>
+                                </Tooltip>
+                              </strong>
+                            </span>
+                            <br />
+                            <span>
+                              {dayjs(history.createdAt).format(
+                                "DD/MM/YYYY HH:mm",
+                              )}
+                            </span>
+                          </div>
+                        </Timeline.Item>
+                      );
+                    },
+                  )}
                 </Timeline>
               </div>
               <Divider type="vertical" style={{ height: "auto" }} />
@@ -527,7 +520,7 @@ const ConsignmentDetail: React.FC = () => {
                   onFinish={handleFinish}
                 >
                   <Form.Item
-                    name="status"
+                    name={["consignmentStatusHistories", 0, "status"]}
                     rules={[
                       { required: true, message: "Vui lòng chọn trạng thái" },
                     ]}
@@ -546,29 +539,41 @@ const ConsignmentDetail: React.FC = () => {
                             label,
                             value,
                             disabled:
-                              form.getFieldValue("status") ===
-                                ConsignmentStatus.CONFIRMED &&
+                              form.getFieldValue([
+                                "consignmentStatusHistories",
+                                0,
+                                "status",
+                              ]) === ConsignmentStatus.CONFIRMED &&
                               (value === ConsignmentStatus.CANCELLED ||
                                 value === ConsignmentStatus.INCOMPLETE),
                           }))}
-                        defaultValue={form.getFieldValue("status")}
+                        defaultValue={form.getFieldValue([
+                          "consignmentStatusHistories",
+                          0,
+                          "status",
+                        ])}
                         optionType="button"
                         onChange={(e) => {
                           const status = e.target.value;
                           setStatus(status);
                           form.setFieldsValue({
-                            status: status as ConsignmentStatus,
+                            consignmentStatusHistories: [
+                              { status: status as ConsignmentStatus },
+                            ],
                           });
                         }}
                       />
                     </Flex>
                   </Form.Item>
 
-                  {form.getFieldValue("status") ===
-                    ConsignmentStatus.INCOMPLETE && (
+                  {form.getFieldValue([
+                    "consignmentStatusHistories",
+                    0,
+                    "status",
+                  ]) === ConsignmentStatus.INCOMPLETE && (
                     <Form.Item
                       label="Bổ sung thông tin ký gửi"
-                      name="additionalInfo"
+                      name={["consignmentStatusHistories", 0, "note"]}
                       rules={[
                         {
                           required: true,
@@ -578,7 +583,11 @@ const ConsignmentDetail: React.FC = () => {
                     >
                       <JoditEditor
                         key={theme}
-                        value={form.getFieldValue("additionalInfo")}
+                        value={form.getFieldValue([
+                          "consignmentStatusHistories",
+                          0,
+                          "note",
+                        ])}
                         config={{
                           readonly: false,
                           toolbar: true,
@@ -588,11 +597,14 @@ const ConsignmentDetail: React.FC = () => {
                     </Form.Item>
                   )}
 
-                  {form.getFieldValue("status") ===
-                    ConsignmentStatus.CANCELLED && (
+                  {form.getFieldValue([
+                    "consignmentStatusHistories",
+                    0,
+                    "status",
+                  ]) === ConsignmentStatus.CANCELLED && (
                     <Form.Item
                       label="Lý do từ chối"
-                      name="rejectedReason"
+                      name={["consignmentStatusHistories", 0, "rejectedReason"]}
                       rules={[
                         {
                           required: true,
@@ -602,7 +614,11 @@ const ConsignmentDetail: React.FC = () => {
                     >
                       <JoditEditor
                         key={theme}
-                        value={form.getFieldValue("rejectionReason")}
+                        value={form.getFieldValue([
+                          "consignmentStatusHistories",
+                          0,
+                          "note",
+                        ])}
                         config={{
                           readonly: false,
                           toolbar: true,

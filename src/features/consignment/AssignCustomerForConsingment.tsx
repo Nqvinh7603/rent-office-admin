@@ -8,7 +8,9 @@ interface AssignCustomerProps {
   consignment: IConsignment;
 }
 
-const AssignCustomer: React.FC<AssignCustomerProps> = ({ consignment }) => {
+const AssignCustomerForConsignment: React.FC<AssignCustomerProps> = ({
+  consignment,
+}) => {
   const [isOpenModal, setIsOpenModal] = useState<boolean>(false);
   const [staffList, setStaffList] = useState<IUser[]>([]);
   const [selectedStaffIds, setSelectedStaffIds] = useState<string[]>([]);
@@ -144,4 +146,4 @@ const AssignCustomer: React.FC<AssignCustomerProps> = ({ consignment }) => {
   );
 };
 
-export default AssignCustomer;
+export default AssignCustomerForConsignment;

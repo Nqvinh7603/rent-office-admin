@@ -1,4 +1,4 @@
-import { ConsignmentStatus, Module } from "../enums";
+import { ConsignmentStatus, Module, PotentialCustomerStatus } from "../enums";
 
 export const VIETNAM_TIMEZONE = "Asia/Ho_Chi_Minh";
 export const PRIMARY_COLOR = "#3162ad";
@@ -57,6 +57,11 @@ export const PERMISSIONS = {
         GET_CUSTOMER_BY_REQUIRE_TYPE: { method: "GET", apiPath: "/api/v1/customers/require-type" },
         GET_STAFFS_BY_CUSTOMER_ID: { method: "GET", apiPath: "/api/v1/customers/{id}/staffs" },
         ASSIGN_CUSTOMER_TO_STAFFS: { method: "POST", apiPath: "/api/v1/customers/assign-customer" },
+        CREATE_CUSTOMER_POTENTIAL: { method: "POST", apiPath: "/api/v1/customers/potentials" },
+        GET_CUSTOMER_POTENTIAL_PAGINATION: { method: "GET", apiPath: "/api/v1/customers/potentials" },
+        UPDATE_CUSTOMER_POTENTIAL: { method: "PUT", apiPath: "/api/v1/customers/potentials/{id}" },
+        DELETE_CUSTOMER_POTENTIAL: { method: "DELETE", apiPath: "/api/v1/customers/potentials/{id}" },
+        GET_ALL_CUSTOMER_POTENTIAL: { method: "GET", apiPath: "/api/v1/customers/potentials/all" },
     },
     [Module.NOTIFICATIONS]: {
         MARK_ALL_AS_READ: { method: "PUT", apiPath: "/api/v1/notifications/mark-all-read" },
@@ -86,3 +91,12 @@ export const ROLE_STATUS_TRANSLATION: Record<string, string> = {
     true: "Đang hoạt động",
     false: "Ngừng hoạt động",
 };
+
+export const POTENTIAL_CUSTOMER_STATUS_TRANSLATION: Record<PotentialCustomerStatus, string> = {
+    [PotentialCustomerStatus.CONTACTED_NO_RESPONSE]: "Đã liên hệ - Không phản hồi",
+    [PotentialCustomerStatus.CONTACTED_SCHEDULED]: "Đã liên hệ - Hẹn gọi lại",
+    [PotentialCustomerStatus.NOT_CONTACTED]: "Chưa liên hệ",
+    [PotentialCustomerStatus.DEAL_DONE]: "Tư vấn thành công",
+    [PotentialCustomerStatus.IN_PROGRESS]: "Đang trong quá trình làm việc",
+    [PotentialCustomerStatus.CANCELED]: "Đã hủy",
+}

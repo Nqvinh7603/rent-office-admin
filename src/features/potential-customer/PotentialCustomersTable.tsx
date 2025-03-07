@@ -12,70 +12,64 @@ import {
   Tooltip,
 } from "antd";
 import React, { useEffect, useState } from "react";
-import { FaArrowRightToBracket } from "react-icons/fa6";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
+import { ICustomer, Page } from "../../interfaces";
 import {
-  IConsignment,
-  IConsignmentStatusHistory,
-  Page,
-} from "../../interfaces";
-import {
-  CONSIGNMENT_STATUS_TRANSLATION,
   PERMISSIONS,
+  POTENTIAL_CUSTOMER_STATUS_TRANSLATION,
 } from "../../interfaces/common/constants";
-import { ConsignmentStatus, Module } from "../../interfaces/common/enums";
+import { Module, PotentialCustomerStatus } from "../../interfaces/common/enums";
 import {
-  colorConsignmentStatus,
   colorFilterIcon,
+  colorPotentialCustomerStatus,
   colorSortDownIcon,
   colorSortUpIcon,
-  formatCurrency,
   formatTimestamp,
   getDefaultSortOrder,
   getSortDirection,
 } from "../../utils";
 import Access from "../auth/Access";
-import AssignCustomerForConsignment from "./AssignCustomerForConsingment";
-import DeleteConsignment from "./DeleteConsignment";
+import AssignPotentialCustomer from "./AssignPotentialCustomer";
+import DeletePotentialCustomer from "./DeletePotentailCustomer";
+import UpdatePotentialCustomer from "./UpdatePotentialCustomer";
 
 interface TableParams {
   pagination: TablePaginationConfig;
 }
 
-interface ConsignmentTableProps {
-  consignmentPage?: Page<IConsignment>;
+interface PotentailCustomerTableProps {
+  potentialCustomerPage?: Page<ICustomer>;
   isLoading: boolean;
 }
 
-const ConsignmentsTable: React.FC<ConsignmentTableProps> = ({
-  consignmentPage,
+const PotentailCustomersTable: React.FC<PotentailCustomerTableProps> = ({
+  potentialCustomerPage,
   isLoading,
 }) => {
-  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const [tableParams, setTableParams] = useState<TableParams>(() => ({
     pagination: {
       current: Number(searchParams.get("page")) || 1,
       pageSize: Number(searchParams.get("pageSize")) || 10,
       showSizeChanger: true,
-      showTotal: (total) => `Tổng ${total} yêu cầu ký gửi`,
+      showTotal: (total) => `Tổng ${total} yêu cầu thuê`,
     },
   }));
 
   useEffect(() => {
-    if (consignmentPage) {
+    if (potentialCustomerPage) {
       setTableParams((prev) => ({
         ...prev,
         pagination: {
           ...prev.pagination,
-          total: consignmentPage.meta?.total || 0,
-          showTotal: (total) => `Tổng ${total} yêu cầu ký gửi`,
+          total: potentialCustomerPage.meta?.total || 0,
+          showTotal: (total) => `Tổng ${total} yêu cầu thuê`,
         },
       }));
     }
-  }, [consignmentPage]);
+  }, [potentialCustomerPage]);
 
-  const handleTableChange: TableProps<IConsignment>["onChange"] = (
+  const handleTableChange: TableProps<ICustomer>["onChange"] = (
     pagination,
     filters,
     sorter,
@@ -127,11 +121,11 @@ const ConsignmentsTable: React.FC<ConsignmentTableProps> = ({
     setSearchParams(searchParams);
   };
 
-  const columns: TableProps<IConsignment>["columns"] = [
+  const columns: TableProps<ICustomer>["columns"] = [
     {
       key: "email",
       title: "Email",
-      dataIndex: ["customer", "email"],
+      dataIndex: "email",
       width: "5%",
       render: (email: string) => (
         <Tooltip title="Click chuyển sang gmail">
@@ -148,7 +142,7 @@ const ConsignmentsTable: React.FC<ConsignmentTableProps> = ({
     {
       key: "phoneNumber",
       title: "Số điện thoại",
-      dataIndex: ["customer", "phoneNumber"],
+      dataIndex: "phoneNumber",
       width: "8%",
       render: (phoneNumber: string) => (
         <Tooltip title="Click chuyển sang zalo">
@@ -163,49 +157,25 @@ const ConsignmentsTable: React.FC<ConsignmentTableProps> = ({
       ),
     },
     {
-      key: "buildingType",
-      title: "Loại toà nhà",
-      dataIndex: "buildingType",
-      width: "15%",
-    },
-    {
-      key: "price",
-      title: "Giá (VND/m²)",
-      dataIndex: "price",
-      width: "9%",
-      render: (price: number) => <span>{formatCurrency(price)}</span>,
-      sorter: true,
-      defaultSortOrder: getDefaultSortOrder(searchParams, "price"),
-      sortIcon: ({ sortOrder }) => (
-        <div className="flex flex-col text-[10px]">
-          <CaretUpFilled style={{ color: colorSortUpIcon(sortOrder) }} />
-          <CaretDownFilled style={{ color: colorSortDownIcon(sortOrder) }} />
-        </div>
-      ),
-    },
-    {
       key: "status",
       title: "Trạng thái",
-      dataIndex: "consignmentStatusHistories",
-      width: "5%",
-      render: (histories: IConsignmentStatusHistory[]) => {
-        const latestStatus = histories?.[histories.length - 1];
-        return latestStatus ? (
-          <Tag color={colorConsignmentStatus(latestStatus.status)}>
-            {
-              CONSIGNMENT_STATUS_TRANSLATION[
-                latestStatus.status as ConsignmentStatus
-              ]
-            }
-          </Tag>
-        ) : null;
-      },
-      filters: Object.keys(CONSIGNMENT_STATUS_TRANSLATION).map((key) => ({
-        text: CONSIGNMENT_STATUS_TRANSLATION[key as ConsignmentStatus],
-        value: key,
-      })),
+      dataIndex: "status",
+      width: "15%",
+      render: (status: PotentialCustomerStatus) => (
+        <Tag color={colorPotentialCustomerStatus(status)}>
+          {POTENTIAL_CUSTOMER_STATUS_TRANSLATION[status]}
+        </Tag>
+      ),
+      filters: Object.keys(POTENTIAL_CUSTOMER_STATUS_TRANSLATION).map(
+        (key) => ({
+          text: POTENTIAL_CUSTOMER_STATUS_TRANSLATION[
+            key as PotentialCustomerStatus
+          ],
+          value: key,
+        }),
+      ),
       defaultFilteredValue: searchParams.get("status")?.split(",") || null,
-      filterIcon: (filtered) => (
+      filterIcon: (filtered: boolean) => (
         <FilterFilled style={{ color: colorFilterIcon(filtered) }} />
       ),
     },
@@ -225,15 +195,29 @@ const ConsignmentsTable: React.FC<ConsignmentTableProps> = ({
         </div>
       ),
     },
-
     {
+      key: "updatedAt",
+      title: "Ngày cập nhật",
+      dataIndex: "updatedAt",
+      width: "10%",
+      render: (createdAt: string) =>
+        createdAt ? formatTimestamp(createdAt) : "",
+      sorter: true,
+      defaultSortOrder: getDefaultSortOrder(searchParams, "updatedAt"),
+      sortIcon: ({ sortOrder }) => (
+        <div className="flex flex-col text-[10px]">
+          <CaretUpFilled style={{ color: colorSortUpIcon(sortOrder) }} />
+          <CaretDownFilled style={{ color: colorSortDownIcon(sortOrder) }} />
+        </div>
+      ),
+    },
+    {
+      key: "actions",
       title: "Hành động",
-      key: "action",
-      width: "7%",
-      render: (record: IConsignment) => (
-        <Space
-          style={{ display: "flex", justifyContent: "center", gap: "10px" }}
-        >
+      dataIndex: "actions",
+      width: "8%",
+      render: (_, record) => (
+        <Space size="middle">
           <Access
             permission={
               PERMISSIONS[Module.CUSTOMERS].GET_STAFFS_BY_CUSTOMER_ID &&
@@ -241,24 +225,19 @@ const ConsignmentsTable: React.FC<ConsignmentTableProps> = ({
             }
             hideChildren={true}
           >
-            <AssignCustomerForConsignment consignment={record} />
+            <AssignPotentialCustomer customer={record} />
           </Access>
           <Access
-            permission={PERMISSIONS[Module.CONSIGNMENTS].GET_CONSIGNMENT_BY_ID}
+            permission={PERMISSIONS[Module.CUSTOMERS].UPDATE_CUSTOMER_POTENTIAL}
             hideChildren={false}
           >
-            <Tooltip title="Xem chi tiết">
-              <FaArrowRightToBracket
-                onClick={() => navigate(`${record.consignmentId}`)}
-                size={19}
-              />
-            </Tooltip>
+            <UpdatePotentialCustomer potentialCustomer={record} />
           </Access>
           <Access
             permission={PERMISSIONS[Module.CONSIGNMENTS].DELETE_CONSIGNMENT}
             hideChildren={false}
           >
-            <DeleteConsignment consignmentId={record.consignmentId} />
+            <DeletePotentialCustomer potentialCustomerId={record.customerId} />
           </Access>
         </Space>
       ),
@@ -269,9 +248,9 @@ const ConsignmentsTable: React.FC<ConsignmentTableProps> = ({
     <Table
       bordered={false}
       columns={columns}
-      rowKey={(record: IConsignment) => record.consignmentId}
+      rowKey={(record: ICustomer) => record.customerId}
       pagination={tableParams.pagination}
-      dataSource={consignmentPage?.content || []}
+      dataSource={potentialCustomerPage?.content || []}
       rowClassName={(_, index) =>
         index % 2 === 0 ? "table-row-light" : "table-row-gray"
       }
@@ -286,4 +265,4 @@ const ConsignmentsTable: React.FC<ConsignmentTableProps> = ({
   );
 };
 
-export default ConsignmentsTable;
+export default PotentailCustomersTable;

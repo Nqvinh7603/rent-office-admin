@@ -21,6 +21,7 @@ import {
 import { BsBuildingsFill } from "react-icons/bs";
 import { FaKey, FaUser, FaUserCog, FaUsers } from "react-icons/fa";
 import { FaRankingStar } from "react-icons/fa6";
+import { FiPhoneCall } from "react-icons/fi";
 import { IoShieldCheckmark } from "react-icons/io5";
 import { MdDashboard, MdOutlineAddHomeWork } from "react-icons/md";
 import { RiLuggageDepositFill } from "react-icons/ri";
@@ -164,6 +165,16 @@ const AdminLayout: React.FC = () => {
               .method,
       );
 
+      const viewPotentialCustomers = permissions.find(
+        (item) =>
+          item.apiPath ===
+            PERMISSIONS[Module.CUSTOMERS].GET_CUSTOMER_POTENTIAL_PAGINATION
+              .apiPath &&
+          item.method ===
+            PERMISSIONS[Module.CUSTOMERS].GET_CUSTOMER_POTENTIAL_PAGINATION
+              .method,
+      );
+
       const menuItems = [
         {
           label: (
@@ -254,6 +265,17 @@ const AdminLayout: React.FC = () => {
                 label: <NavLink to="/consignments">Yêu cầu ký gửi</NavLink>,
                 key: "consignments",
                 icon: <RiLuggageDepositFill size={17} />,
+              },
+            ]
+          : []),
+        ...(viewPotentialCustomers
+          ? [
+              {
+                label: (
+                  <NavLink to="/potential-customers">Yêu cầu thuê</NavLink>
+                ),
+                key: "customers",
+                icon: <FiPhoneCall size={16} />,
               },
             ]
           : []),
