@@ -12,8 +12,8 @@ export enum Module {
     PERMISSIONS = "PERMISSIONS",
     BUILDINGS = "BUILDINGS",
     CUSTOMERS = "CUSTOMERS",
-    CONSIGNMENTS = "CONSIGNMENTS",
     NOTIFICATIONS = "NOTIFICATIONS",
+    FEES = "FEES",
 }
 
 
@@ -40,3 +40,29 @@ export enum PotentialCustomerStatus {
 }
 
 
+export enum Orientation {
+    EAST = "EAST", // Đông
+    WEST = "WEST", // Tây
+    SOUTH = "SOUTH", // Nam
+    NORTH = "NORTH", // Bắc
+    SOUTHEAST = "SOUTHEAST", // Đông Nam
+    NORTHEAST = "NORTHEAST", // Đông Bắc
+    SOUTHWEST = "SOUTHWEST", // Tây Nam
+    NORTHWEST = "NORTHWEST", // Tây Bắc
+    UNDETERMINED = "UNDETERMINED", // Chưa xác định
+}
+
+
+export enum BuildingStatus {
+    REVIEWING = "REVIEWING", // kiểm duyệt trước khi đăng tin
+    AVAILABLE = "AVAILABLE", // có thể cho thuê
+
+}
+
+export enum BuildingUnitStatus {
+    AVAILABLE = "AVAILABLE",           // Đang có sẵn để thuê
+    RENTED = "RENTED",             // Đã được thuê
+    UNDER_MAINTENANCE = "UNDER_MAINTENANCE",  // Đang bảo trì
+    RESERVED = "RESERVED",           // Đã có người đặt trước
+    UNAVAILABLE = "UNAVAILABLE"         // Không thể cho thuê (chủ tòa nhà không muốn cho thuê)
+}

@@ -4,7 +4,7 @@ import { snakeCase } from "change-case";
 import dayjs from "dayjs";
 import { useEffect } from "react";
 import { FileType } from "../interfaces";
-import { ConsignmentStatus, PotentialCustomerStatus } from "../interfaces/common/enums";
+import { BuildingStatus, BuildingUnitStatus, ConsignmentStatus, PotentialCustomerStatus } from "../interfaces/common/enums";
 export function useDynamicTitle(title: string) {
     useEffect(() => {
         document.title = title;
@@ -108,9 +108,11 @@ export function formatCurrency(value: number | undefined): string {
     return `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
-export function parseCurrency(value: string | undefined): number {
-    return (value?.replace(/\$\s?|(,*)/g, "") as unknown as number) || 0;
+export function parseCurrency(value: string | undefined): number | undefined {
+    const parsedValue = value?.replace(/\$\s?|(,*)/g, "");
+    return parsedValue ? parseFloat(parsedValue) : undefined;
 }
+
 
 export function isInDateRange(
     date: string,
@@ -150,6 +152,15 @@ export const colorConsignmentStatus = (status: string) => {
     }
 }
 
+export const colorBuildingStatus = (status: string) => {
+    switch (status) {
+        case BuildingStatus.REVIEWING:
+            return orange[5];
+        case BuildingStatus.AVAILABLE:
+            return green[5];
+    }
+}
+
 
 export const colorPotentialCustomerStatus = (status: string) => {
     switch (status) {
@@ -165,6 +176,24 @@ export const colorPotentialCustomerStatus = (status: string) => {
             return green[5];
         case PotentialCustomerStatus.CANCELED:
             return red[5];
+        default:
+            return grey[10];
+    }
+}
+
+
+export const colorBuildingUnitStatus = (status: string) => {
+    switch (status) {
+        case BuildingUnitStatus.AVAILABLE:
+            return green[5];
+        case BuildingUnitStatus.UNAVAILABLE:
+            return red[5];
+        case BuildingUnitStatus.RENTED:
+            return grey[5];
+        case BuildingUnitStatus.RESERVED:
+            return orange[5];
+        case BuildingUnitStatus.UNDER_MAINTENANCE:
+            return blue[5];
         default:
             return grey[10];
     }

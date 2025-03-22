@@ -3,10 +3,10 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { useSearchParams } from "react-router";
 import Access from "../features/auth/Access";
-import ConsignmentsTable from "../features/consignment/ConsignmentsTable";
-import SearchConsignment from "../features/consignment/SearchConsignment";
+import BuildingCompanyTable from "../features/building/building-company/BuildingCompanyTable";
+import SearchBuildingCompany from "../features/building/building-company/SearchBuildingCompany";
 import {
-  BuildingFilterCriteria,
+  BuildingCompanyFilterCriteria,
   PaginationParams,
   SortParams,
 } from "../interfaces";
@@ -15,8 +15,8 @@ import { Module, Orientation } from "../interfaces/common/enums";
 import { buildingService } from "../services/building/building-service";
 import { useDynamicTitle } from "../utils";
 
-const Consignments: React.FC = () => {
-  useDynamicTitle("Yêu cầu ký gửi - Cyber Real");
+const BuildingCompany: React.FC = () => {
+  useDynamicTitle("Danh sách tài sản - Cyber Real");
   const [isSearchOpen, setSearchOpen] = useState(false);
   const [isListOpen, setListOpen] = useState(false);
   const [searchParams] = useSearchParams();
@@ -29,11 +29,12 @@ const Consignments: React.FC = () => {
     direction: searchParams.get("direction") || "",
   };
 
-  const filter: BuildingFilterCriteria = {
+  const filter: BuildingCompanyFilterCriteria = {
     email: searchParams.get("email") || undefined,
     customerName: searchParams.get("customerName") || undefined,
     phoneNumber: searchParams.get("phoneNumber") || undefined,
     buildingType: searchParams.get("buildingType") || undefined,
+    buildingLevel: searchParams.get("buildingLevel") || undefined,
     district: searchParams.get("district") || undefined,
     city: searchParams.get("city") || undefined,
     ward: searchParams.get("ward") || undefined,
@@ -41,8 +42,9 @@ const Consignments: React.FC = () => {
     maxPrice: Number(searchParams.get("maxPrice")) || undefined,
     minPrice: Number(searchParams.get("minPrice")) || undefined,
     staffName: searchParams.get("staffName") || undefined,
-    status: (searchParams.get("status") as any) || undefined,
+    buildingStatus: (searchParams.get("buildingStatus") as any) || undefined,
     orientation: searchParams.get("orientation") as Orientation | undefined,
+    buildingName: searchParams.get("buildingName") || undefined,
   };
 
   const { data, isLoading } = useQuery({
@@ -55,7 +57,8 @@ const Consignments: React.FC = () => {
         );
       }
     }),
-    queryFn: () => buildingService.getBuildings(pagination, filter, sort),
+    queryFn: () =>
+      buildingService.getBuildingCompanys(pagination, filter, sort),
   });
 
   return (
@@ -70,10 +73,12 @@ const Consignments: React.FC = () => {
         </div>
         {isSearchOpen && (
           <Access
-            permission={PERMISSIONS[Module.BUILDINGS].GET_BUILDING_PAGINATION}
+            permission={
+              PERMISSIONS[Module.BUILDINGS].GET_BUILDING_OF_COMPANY_PAGINATION
+            }
             hideChildren
           >
-            <SearchConsignment />
+            <SearchBuildingCompany />
           </Access>
         )}
       </div>
@@ -83,14 +88,16 @@ const Consignments: React.FC = () => {
           className="mb-5 flex cursor-pointer items-center justify-between"
           onClick={() => setListOpen(!isListOpen)}
         >
-          <h2 className="text-xl font-semibold">Danh sách ký gửi</h2>
+          <h2 className="text-xl font-semibold">Danh sách tài sản</h2>
         </div>
 
         <Access
-          permission={PERMISSIONS[Module.BUILDINGS].GET_BUILDING_PAGINATION}
+          permission={
+            PERMISSIONS[Module.BUILDINGS].GET_BUILDING_OF_COMPANY_PAGINATION
+          }
           hideChildren
         >
-          <ConsignmentsTable
+          <BuildingCompanyTable
             buildingPage={data?.payload}
             isLoading={isLoading}
           />
@@ -100,4 +107,4 @@ const Consignments: React.FC = () => {
   );
 };
 
-export default Consignments;
+export default BuildingCompany;

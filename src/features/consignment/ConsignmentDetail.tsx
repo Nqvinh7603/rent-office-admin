@@ -7,10 +7,8 @@ import {
   Flex,
   Form,
   Image,
-  InputNumber,
   Menu,
   Radio,
-  Select,
   Space,
   Timeline,
   Tooltip,
@@ -25,33 +23,32 @@ import toast from "react-hot-toast";
 import { GoArrowLeft } from "react-icons/go";
 import { useNavigate, useParams } from "react-router";
 import Loading from "../../common/components/Loading";
-import { FileType, IConsignment } from "../../interfaces";
-import { CONSIGNMENT_STATUS_TRANSLATION } from "../../interfaces/common/constants";
+import { FileType, IBuilding } from "../../interfaces";
+import {
+  CONSIGNMENT_STATUS_TRANSLATION,
+  ORENTATION_TRANSLATIONS,
+} from "../../interfaces/common/constants";
 import { ConsignmentStatus } from "../../interfaces/common/enums";
 import { buildingTypeService } from "../../services";
-import { consignmentService } from "../../services/consignment/consignment-service";
-import {
-  formatCurrency,
-  getBase64,
-  parseCurrency,
-  toSnakeCase,
-} from "../../utils";
+import { buildingService } from "../../services/building/building-service";
+import { feeTypeService } from "../../services/building/fee-type-service";
+import { formatCurrency, getBase64, toSnakeCase } from "../../utils";
 import ConsignmentBreadcrumb from "./Breadcrumb/ConsignmentBreadcrumb";
 import { useGetCitys } from "./hooks";
 
-interface UpdateConsignmentArgs {
-  consignmentId: string;
-  updatedConsignment: FormData;
+interface UpdateBuildingArgs {
+  buildingId: string;
+  updatedBuilding: FormData;
 }
-export interface ConsignmentFormValues extends IConsignment {
-  consignmentImg: UploadFile[];
+export interface BuildingFormValues extends IBuilding {
+  buildingImg: UploadFile[];
 }
 
 const ConsignmentDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
-  const [form] = Form.useForm<ConsignmentFormValues>();
+  const [form] = Form.useForm<BuildingFormValues>();
 
   const [previewOpen, setPreviewOpen] = useState<boolean>(false);
   const [previewImage, setPreviewImage] = useState<string | undefined>(
@@ -82,20 +79,20 @@ const ConsignmentDetail: React.FC = () => {
   );
 
   const { data, isLoading } = useQuery({
-    queryFn: () => consignmentService.getConsignmentById(id!),
-    queryKey: ["consignments", id],
+    queryFn: () => buildingService.getBuildingById(id!),
+    queryKey: ["buildings", id],
   });
 
-  const consignment = data?.payload;
+  const building = data?.payload;
 
   useEffect(() => {
-    if (consignment) {
+    if (building) {
       form.setFieldsValue({
-        ...consignment,
+        ...building,
       });
-      setPreviewImage(consignment.consignmentImages?.[0]?.imgUrl ?? undefined);
+      setPreviewImage(building.buildingImages?.[0]?.imgUrl ?? undefined);
       setFileList(
-        consignment.consignmentImages?.map((image, index) => ({
+        building.buildingImages?.map((image, index) => ({
           uid: `${index}`,
           name: image.imgUrl || `image-${index}`,
           status: "done",
@@ -103,7 +100,7 @@ const ConsignmentDetail: React.FC = () => {
         })) || [],
       );
     }
-  }, [consignment, form]);
+  }, [building, form]);
 
   const addressOptions = Array.isArray(city)
     ? city.map((item) => ({
@@ -133,21 +130,21 @@ const ConsignmentDetail: React.FC = () => {
     }
   };
 
-  const handleDistrictChange = (value: string) => {
-    const selectedDistrict = districts.find(
-      (district) => district.value === value,
-    );
-    if (selectedDistrict && selectedDistrict.wards) {
-      setWards(
-        selectedDistrict.wards.map((ward) => ({
-          label: ward.name,
-          value: ward.name,
-        })),
-      );
-    } else {
-      setWards([]);
-    }
-  };
+  // const handleDistrictChange = (value: string) => {
+  //   const selectedDistrict = districts.find(
+  //     (district) => district.value === value,
+  //   );
+  //   if (selectedDistrict && selectedDistrict.wards) {
+  //     setWards(
+  //       selectedDistrict.wards.map((ward) => ({
+  //         label: ward.name,
+  //         value: ward.name,
+  //       })),
+  //     );
+  //   } else {
+  //     setWards([]);
+  //   }
+  // };
 
   useEffect(() => {
     const cityValue = form.getFieldValue("city");
@@ -166,7 +163,7 @@ const ConsignmentDetail: React.FC = () => {
 
   const handleUploadChange: UploadProps["onChange"] = ({ fileList }) => {
     setFileList(fileList);
-    form.setFieldsValue({ consignmentImg: fileList });
+    form.setFieldsValue({ buildingImg: fileList });
   };
 
   const { data: buildingTypesData, isLoading: isBuildingTypesLoading } =
@@ -175,52 +172,57 @@ const ConsignmentDetail: React.FC = () => {
       queryFn: buildingTypeService.getAllBuildingTypes,
     });
 
-  const buildingTypeOption = buildingTypesData?.payload?.map(
-    (buildingType) => ({
-      label: buildingType.buildingTypeName,
-      value: buildingType.buildingTypeName,
-    }),
-  );
+  // const buildingTypeOption = buildingTypesData?.payload?.map(
+  //   (buildingType) => ({
+  //     label: buildingType.buildingTypeName,
+  //     value: buildingType.buildingTypeName,
+  //   }),
+  // );
 
-  const { mutate: updateConsignment, isPending: isUpdating } = useMutation({
-    mutationFn: ({
-      consignmentId,
-      updatedConsignment,
-    }: UpdateConsignmentArgs) => {
-      return consignmentService.update(consignmentId, updatedConsignment);
+  const { data: feeTypesData, isLoading: isFeeTypesLoading } = useQuery({
+    queryKey: ["fee-types"],
+    queryFn: feeTypeService.getAllFeeTypes,
+  });
+
+  const feeTypeOptions =
+    feeTypesData?.payload?.map((type) => ({
+      label: type.feeTypeName,
+      value: type.feeTypeId,
+    })) || [];
+
+  const { mutate: updateBuilding, isPending: isUpdating } = useMutation({
+    mutationFn: ({ buildingId, updatedBuilding }: UpdateBuildingArgs) => {
+      return buildingService.update(buildingId, updatedBuilding);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
         predicate: (query) => {
-          return query.queryKey.includes("consignments");
+          return query.queryKey.includes("buildings");
         },
       });
     },
   });
 
-  function handleFinish(values: IConsignment) {
-    if (consignment) {
-      const updatedConsignment = {
-        ...consignment,
+  function handleFinish(values: IBuilding) {
+    if (building) {
+      const updatedBuilding = {
+        ...building,
         ...values,
       };
       const formData = new FormData();
-      formData.append(
-        "customer",
-        JSON.stringify(toSnakeCase(updatedConsignment)),
-      );
+      formData.append("customer", JSON.stringify(toSnakeCase(updatedBuilding)));
 
       if (fileList.length > 0) {
         fileList.forEach((file) => {
-          formData.append("consignmentImg", file.originFileObj as FileType);
+          formData.append("buildingImg", file.originFileObj as FileType);
         });
       } else {
-        formData.append("consignmentImg", "");
+        formData.append("buildingImg", "");
       }
-      updateConsignment(
+      updateBuilding(
         {
-          consignmentId: consignment.consignmentId.toString(),
-          updatedConsignment: formData,
+          buildingId: building.buildingId.toString(),
+          updatedBuilding: formData,
         },
         {
           onSuccess: () => {
@@ -237,7 +239,7 @@ const ConsignmentDetail: React.FC = () => {
   }
   const [currentTab, setCurrentTab] = useState<string>("detail");
 
-  if (isLoading || isBuildingTypesLoading || !consignment) {
+  if (isLoading || isBuildingTypesLoading || !building) {
     return <Loading />;
   }
 
@@ -306,123 +308,143 @@ const ConsignmentDetail: React.FC = () => {
             <div className="mb-5 flex items-center justify-between">
               <h2 className="text-xl font-semibold">Sản phẩm ký gửi</h2>
             </div>
-            <div className="flex gap-8">
-              <Form.Item
-                label="Loại tòa nhà"
-                name="buildingType"
-                className="flex-1"
-              >
-                <Select
-                  allowClear
-                  showSearch
-                  disabled
-                  placeholder="Chọn loại toà nhà"
-                  options={buildingTypeOption}
-                  optionFilterProp="label"
-                  filterOption={(input, option) =>
-                    option?.label.toLowerCase().includes(input.toLowerCase()) ??
-                    false
-                  }
-                  filterSort={(optionA, optionB) =>
-                    (optionA?.label ?? "")
-                      .toLowerCase()
-                      .localeCompare((optionB?.label ?? "").toLowerCase())
-                  }
-                />
-              </Form.Item>
-              <Form.Item
-                label="Giá sản phẩm ký gửi"
-                name="price"
-                className="flex-1"
-              >
-                <InputNumber
-                  min={0}
-                  disabled
-                  addonAfter="VND/m²"
-                  style={{ width: "100%" }}
-                  formatter={(value) => formatCurrency(value)}
-                  parser={(value) => parseCurrency(value) as unknown as 0}
-                />
-              </Form.Item>
-            </div>
-            <div className="flex gap-8">
-              <Form.Item name="city" label="Khu vực" className="flex-1">
-                <Select
-                  disabled
-                  placeholder="Chọn khu vực"
-                  options={addressOptions}
-                  allowClear
-                  showSearch
-                  optionFilterProp="label"
-                  filterOption={(input, option) =>
-                    option?.label.toLowerCase().includes(input.toLowerCase()) ??
-                    false
-                  }
-                  filterSort={(optionA, optionB) =>
-                    (optionA?.label ?? "")
-                      .toLowerCase()
-                      .localeCompare((optionB?.label ?? "").toLowerCase())
-                  }
-                  onChange={handleCityChange}
-                />
-              </Form.Item>
 
-              <Form.Item name="district" label="Quận/Huyện" className="flex-1">
-                <Select
-                  disabled
-                  placeholder="Chọn quận/huyện"
-                  options={districts}
-                  allowClear
-                  showSearch
-                  optionFilterProp="label"
-                  filterOption={(input, option) =>
-                    option?.label.toLowerCase().includes(input.toLowerCase()) ??
-                    false
-                  }
-                  filterSort={(optionA, optionB) =>
-                    (optionA?.label ?? "")
-                      .toLowerCase()
-                      .localeCompare((optionB?.label ?? "").toLowerCase())
-                  }
-                  onChange={handleDistrictChange}
-                />
-              </Form.Item>
+            <Descriptions layout="horizontal" className="mb-4">
+              <Descriptions.Item label="Tên tòa nhà">
+                {form.getFieldValue("buildingName")}
+              </Descriptions.Item>
+              <Descriptions.Item label="Loại tòa nhà">
+                {form.getFieldValue(["buildingType", "buildingTypeName"])}
+              </Descriptions.Item>
+              <Descriptions.Item label="Giá sản phẩm ký gửi">
+                {formatCurrency(
+                  form.getFieldValue([
+                    "rentalPricing",
+                    building?.rentalPricing?.length - 1 || 0,
+                    "price",
+                  ]),
+                )}{" "}
+                VND/m²
+              </Descriptions.Item>
+              <Descriptions.Item label="Tổng số tầng">
+                {form.getFieldValue("numberOfFloors")} tầng
+              </Descriptions.Item>
+              <Descriptions.Item label="Tổng số diện tích sàn">
+                {form.getFieldValue("totalArea")} m²
+              </Descriptions.Item>
+              <Descriptions.Item label="Hướng toà nhà">
+                {
+                  ORENTATION_TRANSLATIONS[
+                    form.getFieldValue(
+                      "orientation",
+                    ) as keyof typeof ORENTATION_TRANSLATIONS
+                  ]
+                }
+              </Descriptions.Item>
+              <Descriptions.Item label="Khu vực">
+                {form.getFieldValue("city")}
+              </Descriptions.Item>
+              <Descriptions.Item label="Quận/Huyện">
+                {form.getFieldValue("district")}
+              </Descriptions.Item>
+              <Descriptions.Item label="Phường/Xã">
+                {form.getFieldValue("ward")}
+              </Descriptions.Item>
+              <Descriptions.Item label="Số nhà">
+                {form.getFieldValue("buildingNumber")}
+              </Descriptions.Item>
+              <Descriptions.Item label="Địa chỉ đường">
+                {form.getFieldValue("street")}
+              </Descriptions.Item>
+            </Descriptions>
 
-              <Form.Item name="ward" label="Phường/Xã" className="flex-1">
-                <Select
-                  disabled
-                  placeholder="Chọn phường/xã"
-                  options={wards}
-                  allowClear
-                  showSearch
-                  optionFilterProp="label"
-                  filterOption={(input, option) =>
-                    option?.label.toLowerCase().includes(input.toLowerCase()) ??
-                    false
-                  }
-                  filterSort={(optionA, optionB) =>
-                    (optionA?.label ?? "")
-                      .toLowerCase()
-                      .localeCompare((optionB?.label ?? "").toLowerCase())
-                  }
+            <Descriptions
+              title="Các loại phí"
+              layout="horizontal"
+              bordered
+              className="mb-4"
+              column={1}
+            >
+              <Descriptions.Item label="Chu kỳ thanh toán">
+                {form.getFieldValue([
+                  "paymentPolicies",
+                  form.getFieldValue("paymentPolicies")?.length - 1 || 0,
+                  "paymentCycle",
+                ])}
+              </Descriptions.Item>
+              <Descriptions.Item label="Thời gian đặt cọc">
+                {form.getFieldValue([
+                  "paymentPolicies",
+                  form.getFieldValue("paymentPolicies")?.length - 1 || 0,
+                  "depositTerm",
+                ])}{" "}
+                tháng
+              </Descriptions.Item>
+              {form.getFieldValue("fees")?.map(
+                (
+                  fee: {
+                    feeType?: { feeTypeId: string };
+                    feePricing?: {
+                      priceValue: number;
+                      priceUnit: string;
+                      description?: string;
+                    }[];
+                  },
+                  index: number,
+                ) => (
+                  <Descriptions.Item
+                    key={index}
+                    label={
+                      feeTypeOptions.find(
+                        (option) =>
+                          option.value ===
+                          Number(fee.feeType?.feeTypeId?.toString()),
+                      )?.label || "Loại phí"
+                    }
+                  >
+                    {fee.feePricing?.[fee.feePricing.length - 1]?.priceValue &&
+                    fee.feePricing?.[fee.feePricing.length - 1]?.priceUnit ? (
+                      <>
+                        {formatCurrency(
+                          fee.feePricing?.[fee.feePricing.length - 1]
+                            ?.priceValue,
+                        )}{" "}
+                        {fee.feePricing?.[fee.feePricing.length - 1]?.priceUnit}
+                      </>
+                    ) : fee.feePricing?.[fee.feePricing.length - 1]
+                        ?.description ? (
+                      <div>
+                        {
+                          fee.feePricing?.[fee.feePricing.length - 1]
+                            ?.description
+                        }
+                      </div>
+                    ) : null}
+                  </Descriptions.Item>
+                ),
+              )}
+            </Descriptions>
+
+            {form.getFieldValue("description") && (
+              <Form.Item
+                label={<span style={{ opacity: 0.6 }}>Mô tả</span>}
+                name="description"
+              >
+                <JoditEditor
+                  key={theme}
+                  value={form.getFieldValue("description")}
+                  config={{
+                    readonly: true,
+                    toolbar: false,
+                    theme: theme,
+                  }}
                 />
               </Form.Item>
-            </div>
-            <Form.Item label="Mô tả" name="description">
-              <JoditEditor
-                key={theme}
-                value={form.getFieldValue("description")}
-                config={{
-                  readonly: true,
-                  toolbar: false,
-                  theme: theme, // Sử dụng state theme từ localStorage
-                }}
-              />
-            </Form.Item>
+            )}
 
             <Form.Item
-              label="Hình ảnh minh chứng"
-              name="consignmentImg"
+              label={<span style={{ opacity: 0.6 }}>Hình ảnh minh chứng</span>}
+              name="buildingImg"
               valuePropName="fileList"
               getValueFromEvent={(e) => {
                 if (Array.isArray(e)) {
@@ -464,10 +486,12 @@ const ConsignmentDetail: React.FC = () => {
             <div className="flex gap-8">
               <div className="flex-1/2">
                 <Timeline mode="left" style={{ paddingLeft: "20px" }}>
-                  {consignment?.consignmentStatusHistories.map(
+                  {building?.consignmentStatusHistories.map(
                     (history, index) => {
                       const label =
-                        CONSIGNMENT_STATUS_TRANSLATION[history.status];
+                        CONSIGNMENT_STATUS_TRANSLATION[
+                          history.status as ConsignmentStatus
+                        ];
                       const color =
                         history.status === ConsignmentStatus.CANCELLED
                           ? "red"
@@ -503,6 +527,13 @@ const ConsignmentDetail: React.FC = () => {
                               {dayjs(history.createdAt).format(
                                 "DD/MM/YYYY HH:mm",
                               )}
+                            </span>
+                            <br />
+                            <span>
+                              Người thực hiện:{" "}
+                              {history.createdBy === "anonymousUser"
+                                ? "Khách hàng"
+                                : history.createdBy || "Khách hàng"}
                             </span>
                           </div>
                         </Timeline.Item>
@@ -604,7 +635,7 @@ const ConsignmentDetail: React.FC = () => {
                   ]) === ConsignmentStatus.CANCELLED && (
                     <Form.Item
                       label="Lý do từ chối"
-                      name={["consignmentStatusHistories", 0, "rejectedReason"]}
+                      name={["consignmentStatusHistories", 0, "note"]}
                       rules={[
                         {
                           required: true,
@@ -636,15 +667,15 @@ const ConsignmentDetail: React.FC = () => {
                   type="default"
                   disabled={isUpdating}
                   onClick={() => {
-                    if (consignment) {
+                    if (building) {
                       form.setFieldsValue({
-                        ...consignment,
+                        ...building,
                       });
                       setPreviewImage(
-                        consignment.consignmentImages?.[0]?.imgUrl ?? "",
+                        building.buildingImages?.[0]?.imgUrl ?? "",
                       );
                       setFileList(
-                        consignment.consignmentImages?.map((image, index) => ({
+                        building.buildingImages?.map((image, index) => ({
                           uid: `${index}`,
                           name: image.imgUrl || `image-${index}`,
                           status: "done",

@@ -2,10 +2,12 @@ import { createBrowserRouter, RouterProvider } from "react-router";
 import ProtectedRoute from "../features/auth/ProtectedRoute";
 import ConsignmentDetail from "../features/consignment/ConsignmentDetail";
 import AdminLayout from "../layout/AdminLayout";
+import BuildingCompany from "../pages/BuildingCompany";
 import BuildingLevels from "../pages/BuildingLevels";
 import BuildingTypes from "../pages/BuildingTypes";
 import Consignments from "../pages/Consignments";
 import ErrorPage from "../pages/ErrorPage";
+import FeeTypes from "../pages/FeeTypes";
 import ForgotPassword from "../pages/ForgotPassword";
 import Home from "../pages/Home";
 import Login from "../pages/Login";
@@ -16,6 +18,7 @@ import Profiles from "../pages/Profiles";
 import ResetPassword from "../pages/ResetPassword";
 import Roles from "../pages/Roles";
 import Users from "../pages/Users";
+import BuildingDetail from "../features/building/building-company/BuildingDetail";
 
 const router = createBrowserRouter([
   {
@@ -70,6 +73,24 @@ const router = createBrowserRouter([
       {
         path: "/building-types",
         element: <BuildingTypes />,
+      },
+      {
+        path: "/buildings",
+        children: [
+          {
+            path: "",
+            index: true,
+            element: <BuildingCompany />,
+          },
+          {
+            path: ":id",
+            element: <BuildingDetail />,
+          },
+        ],
+      },
+      {
+        path: "/fee-types",
+        element: <FeeTypes />,
       },
 
       {

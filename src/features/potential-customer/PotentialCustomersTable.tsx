@@ -234,7 +234,7 @@ const PotentailCustomersTable: React.FC<PotentailCustomerTableProps> = ({
             <UpdatePotentialCustomer potentialCustomer={record} />
           </Access>
           <Access
-            permission={PERMISSIONS[Module.CONSIGNMENTS].DELETE_CONSIGNMENT}
+            permission={PERMISSIONS[Module.BUILDINGS].DELETE_BUILDING}
             hideChildren={false}
           >
             <DeletePotentialCustomer potentialCustomerId={record.customerId} />

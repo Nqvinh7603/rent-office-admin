@@ -2,40 +2,38 @@ import { DeleteOutlined } from "@ant-design/icons";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Popconfirm, Tooltip } from "antd";
 import toast from "react-hot-toast";
-import { buildingService } from "../../services/building/building-service";
+import { feeTypeService } from "../../../services/building/fee-type-service";
 
-interface DeleteConsignmentProps {
-  buildingId: number;
+interface DeleteFeeTypeProps {
+  feeTypeId: number;
 }
 
-const DeleteConsignment: React.FC<DeleteConsignmentProps> = ({
-  buildingId,
-}) => {
+const DeleteFeeType: React.FC<DeleteFeeTypeProps> = ({ feeTypeId }) => {
   const queryClient = useQueryClient();
-  const { mutate: deleteConsignment, isPending: isDeleting } = useMutation({
-    mutationFn: buildingService.delete,
+  const { mutate: deleteFeeType, isPending: isDeleting } = useMutation({
+    mutationFn: feeTypeService.delete,
     onSuccess: () => {
       queryClient.invalidateQueries({
-        predicate: (query) => query.queryKey.includes("buildings"),
+        predicate: (query) => query.queryKey.includes("fee-types"),
       });
     },
   });
 
   function handleConfirmDelete(): void {
-    deleteConsignment(buildingId.toString(), {
+    deleteFeeType(feeTypeId, {
       onSuccess: () => {
-        toast.success("Xóa tài sản ký gửi thành công");
+        toast.success("Xóa loại phí thành công");
       },
       onError: () => {
-        toast.error("Xóa tài sản ký gửi thất bại");
+        toast.error("Xóa loại phí thất bại");
       },
     });
   }
 
   return (
     <Popconfirm
-      title="Xóa hạng tài sản ký gửi này?"
-      description="Bạn có chắc muốn xóa tài sản ký gửi này không?"
+      title="Xóa loại phí này?"
+      description="Bạn có chắc muốn xóa loại phí này không?"
       okText="Xóa"
       cancelText="Hủy"
       okButtonProps={{ danger: true, loading: isDeleting }}
@@ -48,4 +46,4 @@ const DeleteConsignment: React.FC<DeleteConsignmentProps> = ({
   );
 };
 
-export default DeleteConsignment;
+export default DeleteFeeType;

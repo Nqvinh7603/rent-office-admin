@@ -3,25 +3,19 @@ import {
   CaretUpFilled,
   FilterFilled,
 } from "@ant-design/icons";
-import {
-  Space,
-  Table,
-  TablePaginationConfig,
-  TableProps,
-  Tag,
-  Tooltip,
-} from "antd";
-import React, { useEffect, useState } from "react";
+import { Space, Table, TablePaginationConfig, Tag, Tooltip } from "antd";
+import { TableProps } from "antd/lib";
+import { useEffect, useState } from "react";
 import { FaArrowRightToBracket } from "react-icons/fa6";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { IBuilding, IBuildingStatusHistory, Page } from "../../interfaces";
+import { useNavigate, useSearchParams } from "react-router";
+import { IBuilding, Page } from "../../../interfaces";
 import {
-  CONSIGNMENT_STATUS_TRANSLATION,
+  BUILDING_STATUS_TRANSLATION,
   PERMISSIONS,
-} from "../../interfaces/common/constants";
-import { ConsignmentStatus, Module } from "../../interfaces/common/enums";
+} from "../../../interfaces/common/constants";
+import { BuildingStatus, Module } from "../../../interfaces/common/enums";
 import {
-  colorConsignmentStatus,
+  colorBuildingStatus,
   colorFilterIcon,
   colorSortDownIcon,
   colorSortUpIcon,
@@ -29,10 +23,10 @@ import {
   formatTimestamp,
   getDefaultSortOrder,
   getSortDirection,
-} from "../../utils";
-import Access from "../auth/Access";
-import AssignCustomerForConsignment from "./AssignCustomerForConsingment";
-import DeleteConsignment from "./DeleteConsignment";
+} from "../../../utils";
+import Access from "../../auth/Access";
+import AssignBuildingForStaff from "./AssignBuildingForStaff";
+import DeleteBuildings from "./DeleteBuildings";
 
 interface TableParams {
   pagination: TablePaginationConfig;
@@ -43,7 +37,7 @@ interface BuildingTableProps {
   isLoading: boolean;
 }
 
-const ConsignmentsTable: React.FC<BuildingTableProps> = ({
+const BuildingCompanyTable: React.FC<BuildingTableProps> = ({
   buildingPage,
   isLoading,
 }) => {
@@ -54,7 +48,7 @@ const ConsignmentsTable: React.FC<BuildingTableProps> = ({
       current: Number(searchParams.get("page")) || 1,
       pageSize: Number(searchParams.get("pageSize")) || 10,
       showSizeChanger: true,
-      showTotal: (total) => `Tổng ${total} yêu cầu ký gửi`,
+      showTotal: (total) => `Tổng ${total} tài sản`,
     },
   }));
 
@@ -65,7 +59,7 @@ const ConsignmentsTable: React.FC<BuildingTableProps> = ({
         pagination: {
           ...prev.pagination,
           total: buildingPage.meta?.total || 0,
-          showTotal: (total) => `Tổng ${total} yêu cầu ký gửi`,
+          showTotal: (total) => `Tổng ${total} tài sản`,
         },
       }));
     }
@@ -125,44 +119,24 @@ const ConsignmentsTable: React.FC<BuildingTableProps> = ({
 
   const columns: TableProps<IBuilding>["columns"] = [
     {
-      key: "email",
-      title: "Email",
-      dataIndex: ["customer", "email"],
-      width: "5%",
-      render: (email: string) => (
-        <Tooltip title="Click chuyển sang gmail">
-          <a
-            href={`https://mail.google.com/mail/?view=cm&fs=1&to=${email}`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {email}
-          </a>
-        </Tooltip>
-      ),
-    },
-    {
-      key: "phoneNumber",
-      title: "Số điện thoại",
-      dataIndex: ["customer", "phoneNumber"],
-      width: "8%",
-      render: (phoneNumber: string) => (
-        <Tooltip title="Click chuyển sang zalo">
-          <a
-            href={`https://zalo.me/${phoneNumber}`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {phoneNumber}
-          </a>
-        </Tooltip>
-      ),
+      key: "buildingName",
+      title: "Tên tài sản",
+      dataIndex: ["buildingName"],
+      width: "10%",
     },
     {
       key: "buildingType",
-      title: "Loại toà nhà",
+      title: "Loại tài sản",
       dataIndex: ["buildingType", "buildingTypeName"],
       width: "10%",
+    },
+    {
+      key: "buildingLevel",
+      title: "Xếp hạng",
+      dataIndex: ["buildingLevel", "buildingLevelName"],
+      width: "10%",
+      render: (buildingLevelName: string) =>
+        buildingLevelName ? buildingLevelName : "Chưa xếp hạng",
     },
     {
       key: "price",
@@ -189,27 +163,21 @@ const ConsignmentsTable: React.FC<BuildingTableProps> = ({
       ),
     },
     {
-      key: "status",
+      key: "buildingStatus",
       title: "Trạng thái",
-      dataIndex: "consignmentStatusHistories",
+      dataIndex: "buildingStatus",
       width: "5%",
-      render: (histories: IBuildingStatusHistory[]) => {
-        const latestStatus = histories?.[histories.length - 1];
-        return latestStatus ? (
-          <Tag color={colorConsignmentStatus(latestStatus.status)}>
-            {
-              CONSIGNMENT_STATUS_TRANSLATION[
-                latestStatus.status as ConsignmentStatus
-              ]
-            }
-          </Tag>
-        ) : null;
-      },
-      filters: Object.keys(CONSIGNMENT_STATUS_TRANSLATION).map((key) => ({
-        text: CONSIGNMENT_STATUS_TRANSLATION[key as ConsignmentStatus],
+      render: (status: BuildingStatus) => (
+        <Tag color={colorBuildingStatus(status)}>
+          {BUILDING_STATUS_TRANSLATION[status]}
+        </Tag>
+      ),
+      filters: Object.keys(BUILDING_STATUS_TRANSLATION).map((key) => ({
+        text: BUILDING_STATUS_TRANSLATION[key as BuildingStatus],
         value: key,
       })),
-      defaultFilteredValue: searchParams.get("status")?.split(",") || null,
+      defaultFilteredValue:
+        searchParams.get("buildingStatus")?.split(",") || undefined,
       filterIcon: (filtered) => (
         <FilterFilled style={{ color: colorFilterIcon(filtered) }} />
       ),
@@ -240,12 +208,12 @@ const ConsignmentsTable: React.FC<BuildingTableProps> = ({
         >
           <Access
             permission={
-              PERMISSIONS[Module.CUSTOMERS].GET_STAFFS_BY_CUSTOMER_ID &&
-              PERMISSIONS[Module.CUSTOMERS].ASSIGN_CUSTOMER_TO_STAFFS
+              PERMISSIONS[Module.BUILDINGS].GET_STAFFS_BY_BUILDING_ID &&
+              PERMISSIONS[Module.BUILDINGS].ASSIGN_BUILDING_TO_STAFFS
             }
             hideChildren={true}
           >
-            <AssignCustomerForConsignment building={record} />
+            <AssignBuildingForStaff building={record} />
           </Access>
           <Access
             permission={PERMISSIONS[Module.BUILDINGS].GET_BUILDING_BY_ID}
@@ -262,7 +230,7 @@ const ConsignmentsTable: React.FC<BuildingTableProps> = ({
             permission={PERMISSIONS[Module.BUILDINGS].DELETE_BUILDING}
             hideChildren={true}
           >
-            <DeleteConsignment buildingId={record.buildingId} />
+            <DeleteBuildings buildingId={record.buildingId} />
           </Access>
         </Space>
       ),
@@ -290,4 +258,4 @@ const ConsignmentsTable: React.FC<BuildingTableProps> = ({
   );
 };
 
-export default ConsignmentsTable;
+export default BuildingCompanyTable;

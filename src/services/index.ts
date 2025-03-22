@@ -10,9 +10,5 @@ export * from "./building/building-level-service.ts";
 export * from "./building/building-type-service.ts";
 
 
-//CONSIGNMENT
-export * from "./consignment/consignment-service.ts";
-
-
 //NOTIFICATION
 export * from "./notification/notification-service.ts";

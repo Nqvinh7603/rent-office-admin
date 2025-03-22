@@ -1,4 +1,4 @@
-import { ConsignmentStatus, Module, PotentialCustomerStatus } from "../enums";
+import { BuildingStatus, BuildingUnitStatus, ConsignmentStatus, Module, Orientation, PotentialCustomerStatus } from "../enums";
 
 export const VIETNAM_TIMEZONE = "Asia/Ho_Chi_Minh";
 export const PRIMARY_COLOR = "#3162ad";
@@ -46,12 +46,23 @@ export const PERMISSIONS = {
         CREATE_BUILDING_LEVEL: { method: "POST", apiPath: "/api/v1/building-levels" },
         UPDATE_BUILDING_LEVEL: { method: "PUT", apiPath: "/api/v1/building-levels/{id}" },
         DELETE_BUILDING_LEVEL: { method: "DELETE", apiPath: "/api/v1/building-levels/{id}" },
-    },
-    [Module.CONSIGNMENTS]: {
-        GET_CONSIGNMENT_PAGINATION: { method: "GET", apiPath: "/api/v1/consignments" },
-        UPDATE_CONSIGNMENT: { method: "PUT", apiPath: "/api/v1/consignments/{id}" },
-        DELETE_CONSIGNMENT: { method: "DELETE", apiPath: "/api/v1/consignments/{id}" },
-        GET_CONSIGNMENT_BY_ID: { method: "GET", apiPath: "/api/v1/consignments/{id}" },
+
+        //Building
+        GET_BUILDING_PAGINATION: { method: "GET", apiPath: "/api/v1/buildings" },
+        GET_BUILDING_BY_ID: { method: "GET", apiPath: "/api/v1/buildings/{id}" },
+        CREATE_BUILDING: { method: "POST", apiPath: "/api/v1/buildings" },
+        UPDATE_BUILDING: { method: "PUT", apiPath: "/api/v1/buildings/{id}" },
+        DELETE_BUILDING: { method: "DELETE", apiPath: "/api/v1/buildings/{id}" },
+        GET_BUILDING_OF_COMPANY_PAGINATION: {
+            method: "GET",
+            apiPath: "/api/v1/buildings/company",
+        },
+        GET_ALL_BUILDING_OFF_COMPANY: {
+            method: "GET",
+            apiPath: "/api/v1/buildings/company/all",
+        },
+        GET_STAFFS_BY_BUILDING_ID: { method: "GET", apiPath: "/api/v1/buildings/{id}/staffs" },
+        ASSIGN_BUILDING_TO_STAFFS: { method: "POST", apiPath: "/api/v1/buildings/assign-building" },
     },
     [Module.CUSTOMERS]: {
         GET_CUSTOMER_BY_REQUIRE_TYPE: { method: "GET", apiPath: "/api/v1/customers/require-type" },
@@ -68,7 +79,15 @@ export const PERMISSIONS = {
         MARK_AS_READ: { method: "PUT", apiPath: "/api/v1/notifications/{id}/mark-read" },
         DELETE: { method: "DELETE", apiPath: "/api/v1/notifications" },
         GET_NOTIFICATIONS_BY_USER_ID: { method: "GET", apiPath: "/api/v1/notifications/user/{id}" },
-    }
+    },
+    [Module.FEES]: {
+        //fee-types
+        GET_FEE_TYPES_PAGINATION: { method: "GET", apiPath: "/api/v1/fee-types" },
+        GET_ALL_FEE_TYPES: { method: "GET", apiPath: "/api/v1/fee-types/all" },
+        CREATE_FEE_TYPES: { method: "POST", apiPath: "/api/v1/fee-types" },
+        UPDATE_FEE_TYPES: { method: "PUT", apiPath: "/api/v1/fee-types/{id}" },
+        DELETE_FEE_TYPES: { method: "DELETE", apiPath: "/api/v1/fee-types/{id}" },
+    },
 };
 
 
@@ -79,6 +98,11 @@ export const CONSIGNMENT_STATUS_TRANSLATION: Record<ConsignmentStatus, string> =
     [ConsignmentStatus.CANCELLED]: "Từ chối",
     [ConsignmentStatus.CONFIRMED]: "Chấp nhận",
 };
+
+export const BUILDING_STATUS_TRANSLATION: Record<BuildingStatus, string> = {
+    [BuildingStatus.REVIEWING]: "Đang kiểm duyệt",
+    [BuildingStatus.AVAILABLE]: "Sẵn sàng cho thuê",
+}
 
 
 export const USER_STATUS_TRANSLATION: Record<string, string> = {
@@ -99,4 +123,24 @@ export const POTENTIAL_CUSTOMER_STATUS_TRANSLATION: Record<PotentialCustomerStat
     [PotentialCustomerStatus.DEAL_DONE]: "Tư vấn thành công",
     [PotentialCustomerStatus.IN_PROGRESS]: "Đang trong quá trình làm việc",
     [PotentialCustomerStatus.CANCELED]: "Đã hủy",
+}
+
+export const ORENTATION_TRANSLATIONS: Record<Orientation, string> = {
+    [Orientation.NORTH]: "Hướng Bắc",
+    [Orientation.SOUTH]: "Hướng Nam",
+    [Orientation.EAST]: "Hướng Đông",
+    [Orientation.WEST]: "Hướng Tây",
+    [Orientation.NORTHEAST]: "Hướng Đông Bắc",
+    [Orientation.NORTHWEST]: "Hướng Tây Bắc",
+    [Orientation.SOUTHEAST]: "Hướng Đông Nam",
+    [Orientation.SOUTHWEST]: "Hướng Tây Nam",
+    [Orientation.UNDETERMINED]: "Chưa xác định",
+}
+
+export const BUILDING_UNIT_STATUS_TRANSLATION: Record<BuildingUnitStatus, string> = {
+    [BuildingUnitStatus.AVAILABLE]: "Có thể cho thuê",
+    [BuildingUnitStatus.UNAVAILABLE]: "Không thể cho thuê",
+    [BuildingUnitStatus.RENTED]: "Đã cho thuê",
+    [BuildingUnitStatus.RESERVED]: "Đã đặt cọc",
+    [BuildingUnitStatus.UNDER_MAINTENANCE]: "Đang bảo trì",
 }

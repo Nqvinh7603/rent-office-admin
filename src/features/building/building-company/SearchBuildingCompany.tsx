@@ -2,19 +2,24 @@ import { useQuery } from "@tanstack/react-query";
 import { Button, Form, InputNumber, Select } from "antd";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router";
-import Loading from "../../common/components/Loading";
+import Loading from "../../../common/components/Loading";
 import {
   ORENTATION_TRANSLATIONS,
   PERMISSIONS,
-} from "../../interfaces/common/constants";
-import { Module } from "../../interfaces/common/enums";
-import { buildingTypeService, userService } from "../../services";
-import { customerService } from "../../services/customer/customer-service";
-import { formatCurrency, parseCurrency } from "../../utils";
-import Access from "../auth/Access";
-import { useGetCitys } from "./hooks";
+} from "../../../interfaces/common/constants";
+import { Module } from "../../../interfaces/common/enums";
+import {
+  buildingLevelService,
+  buildingTypeService,
+  userService,
+} from "../../../services";
+import { buildingService } from "../../../services/building/building-service";
+import { customerService } from "../../../services/customer/customer-service";
+import { formatCurrency, parseCurrency } from "../../../utils";
+import Access from "../../auth/Access";
+import { useGetCitys } from "../../consignment/hooks";
 
-const SearchConsignment = () => {
+const SearchBuildingCompany = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [form] = Form.useForm();
   const [loading] = useState(false);
@@ -106,6 +111,30 @@ const SearchConsignment = () => {
     }),
   );
 
+  const { data: buildingLevelsData, isLoading: isBuildingLevelsLoading } =
+    useQuery({
+      queryKey: ["building-levels"],
+      queryFn: buildingLevelService.getAllBuildingLevels,
+    });
+
+  const buildingLevelOption =
+    buildingLevelsData?.payload?.map((buildingLevel) => ({
+      label: buildingLevel.buildingLevelName,
+      value: buildingLevel.buildingLevelName,
+    })) || [];
+
+  const { data: buildingOfCompany, isLoading: isBuildingOfCompanyLoading } =
+    useQuery({
+      queryKey: ["buildings"],
+      queryFn: buildingService.getAllBuildingOfCompany,
+    });
+
+  const buildingNameOption =
+    buildingOfCompany?.payload?.map((building) => ({
+      label: building.buildingName,
+      value: building.buildingName,
+    })) || [];
+
   const { data: staffsData, isLoading: isStaffsLoading } = useQuery({
     queryKey: ["staffs"],
     queryFn: userService.loadStaffs,
@@ -150,6 +179,7 @@ const SearchConsignment = () => {
         customerName: searchParams.get("customerName") || "" || undefined,
         phoneNumber: searchParams.get("phoneNumber") || "" || undefined,
         buildingType: searchParams.get("buildingType") || undefined,
+        buildingLevel: searchParams.get("buildingLevel") || undefined,
         city: searchParams.get("city") || undefined,
         district: searchParams.get("district") || undefined,
         ward: searchParams.get("ward") || undefined,
@@ -157,14 +187,32 @@ const SearchConsignment = () => {
         maxPrice: searchParams.get("maxPrice") || undefined,
         staffName: searchParams.get("staffName") || undefined,
         orientation: searchParams.get("orientation") || undefined,
+        buildingName: searchParams.get("buildingName") || undefined,
       }}
     >
       <div className="grid grid-cols-1 gap-4 gap-y-0 md:grid-cols-2 lg:grid-cols-3">
-        <Form.Item name="email" label="Email khách hàng">
+        <Form.Item name="buildingName" label="Tên tài sản">
           <Select
             allowClear
             showSearch
-            placeholder="Nhập email khách hàng"
+            placeholder="Nhập tên tài sản"
+            options={buildingNameOption}
+            optionFilterProp="label"
+            filterOption={(input, option) =>
+              option?.label.toLowerCase().includes(input.toLowerCase()) ?? false
+            }
+            filterSort={(optionA, optionB) =>
+              (optionA?.label ?? "")
+                .toLowerCase()
+                .localeCompare((optionB?.label ?? "").toLowerCase())
+            }
+          />
+        </Form.Item>
+        <Form.Item name="email" label="Email chủ tài sản">
+          <Select
+            allowClear
+            showSearch
+            placeholder="Nhập email chủ tài sản"
             options={customerEmailOption}
             optionFilterProp="label"
             filterOption={(input, option) =>
@@ -177,9 +225,9 @@ const SearchConsignment = () => {
             }
           />
         </Form.Item>
-        <Form.Item name="customerName" label="Tên khách hàng">
+        <Form.Item name="customerName" label="Tên chủ tài sản">
           <Select
-            placeholder="Nhập tên khách hàng"
+            placeholder="Nhập tên chủ tài sản"
             options={customerNameOption}
             allowClear
             showSearch
@@ -196,7 +244,7 @@ const SearchConsignment = () => {
         </Form.Item>
         <Form.Item name="phoneNumber" label="Số điện thoại">
           <Select
-            placeholder="Nhập số điện thoại khách hàng"
+            placeholder="Nhập số điện thoại "
             options={customerPhoneNumberOption}
             allowClear
             showSearch
@@ -229,7 +277,24 @@ const SearchConsignment = () => {
             }
           />
         </Form.Item>
-        <Form.Item label="Giá sản phẩm ký gửi (tối thiểu)" name="minPrice">
+        <Form.Item label="Hạng tòa nhà" name="buildingLevel">
+          <Select
+            allowClear
+            showSearch
+            placeholder="Chọn hạng toà nhà"
+            options={buildingLevelOption}
+            optionFilterProp="label"
+            filterOption={(input, option) =>
+              option?.label.toLowerCase().includes(input.toLowerCase()) ?? false
+            }
+            filterSort={(optionA, optionB) =>
+              (optionA?.label ?? "")
+                .toLowerCase()
+                .localeCompare((optionB?.label ?? "").toLowerCase())
+            }
+          />
+        </Form.Item>
+        <Form.Item label="Giá thuê (tối thiểu)" name="minPrice">
           <InputNumber
             min={0}
             placeholder="Chọn giá tối thiểu"
@@ -239,7 +304,7 @@ const SearchConsignment = () => {
             parser={(value) => parseCurrency(value) as unknown as 0}
           />
         </Form.Item>
-        <Form.Item label="Giá sản phẩm ký gửi (tối đa)" name="maxPrice">
+        <Form.Item label="Giá thuê (tối đa)" name="maxPrice">
           <InputNumber
             min={0}
             placeholder="Chọn giá tối đa"
@@ -247,6 +312,22 @@ const SearchConsignment = () => {
             style={{ width: "100%" }}
             formatter={(value) => formatCurrency(value)}
             parser={(value) => parseCurrency(value) as unknown as 0}
+          />
+        </Form.Item>
+        <Form.Item label="Hướng" name={"orientation"} className="flex-1">
+          <Select
+            placeholder="Chọn hướng"
+            allowClear
+            showSearch
+            options={Object.entries(ORENTATION_TRANSLATIONS).map(
+              ([value, label]) => ({
+                label,
+                value,
+              }),
+            )}
+            filterOption={(input, option) =>
+              option?.label.toLowerCase().includes(input.toLowerCase()) ?? false
+            }
           />
         </Form.Item>
         <Form.Item name="city" label="Khu vực ">
@@ -305,24 +386,8 @@ const SearchConsignment = () => {
           />
         </Form.Item>
 
-        <Form.Item label="Hướng" name={"orientation"} className="flex-1">
-          <Select
-            placeholder="Chọn hướng"
-            allowClear
-            showSearch
-            options={Object.entries(ORENTATION_TRANSLATIONS).map(
-              ([value, label]) => ({
-                label,
-                value,
-              }),
-            )}
-            filterOption={(input, option) =>
-              option?.label.toLowerCase().includes(input.toLowerCase()) ?? false
-            }
-          />
-        </Form.Item>
         <Access
-          permission={PERMISSIONS[Module.CUSTOMERS].ASSIGN_CUSTOMER_TO_STAFFS}
+          permission={PERMISSIONS[Module.BUILDINGS].ASSIGN_BUILDING_TO_STAFFS}
           hideChildren={true}
         >
           <Form.Item label="Nhân viên quản lý" name="staffName">
@@ -357,4 +422,4 @@ const SearchConsignment = () => {
   );
 };
 
-export default SearchConsignment;
+export default SearchBuildingCompany;

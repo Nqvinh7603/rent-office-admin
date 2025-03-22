@@ -130,22 +130,24 @@ const UsersTable: React.FC<UserTableProps> = ({ userPage, isLoading }) => {
       key: "fullName",
       dataIndex: ["lastName", "firstName"],
       width: "20%",
-      render: (_, record) => `${record.lastName} ${record.firstName}`,
+      render: (_, record) =>
+        `${record.lastName || ""} ${record.firstName || ""}`.trim(),
     },
     {
       key: "email",
       title: "Email",
       dataIndex: "email",
       width: "15%",
+      render: (email) => email || "",
     },
     {
       key: "role",
       title: "Vai trò",
       dataIndex: "role",
       width: "10%",
-      render: (role) => role.roleName,
+      render: (role) => role?.roleName || "",
       filters: roleOptions,
-      onFilter: (value, record) => record.role.roleId === value,
+      onFilter: (value, record) => record.role?.roleId === value,
       defaultFilteredValue: getDefaultFilterValue(searchParams, "role"),
       filterIcon: (filtered) => (
         <FilterFilled style={{ color: colorFilterIcon(filtered) }} />
@@ -158,7 +160,7 @@ const UsersTable: React.FC<UserTableProps> = ({ userPage, isLoading }) => {
       width: "10%",
       render: (active: boolean) => (
         <Tag color={colorUserStatus(active)}>
-          {USER_STATUS_TRANSLATION[String(active)]}
+          {USER_STATUS_TRANSLATION[String(active)] || ""}
         </Tag>
       ),
       filters: [

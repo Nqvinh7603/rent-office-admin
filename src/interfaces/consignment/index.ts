@@ -1,5 +1,6 @@
 import { IUser } from "../auth";
-import { ConsignmentStatus, PotentialCustomerStatus, RequireType } from "../common/enums";
+import { IBuildingLevel, IBuildingType, IBuildingUnit, IFeeType } from "../building";
+import { BuildingStatus, ConsignmentStatus, Orientation, PotentialCustomerStatus, RequireType } from "../common/enums";
 
 export interface ICustomer {
     customerId: number;
@@ -22,27 +23,38 @@ export interface PotentialCustomerFilterCriteria {
     staffName?: string;
 }
 
-export interface IConsignment {
-    consignmentId: number;
+export interface IBuilding {
+    buildingId: number;
+    buildingName: string;
+    numberOfFloors: number;
+    totalArea: number;
     ward: string;
     district: string;
     city: string;
+    street: string;
+    buildingNumber: string;
     description: string;
-    buildingType: string;
-    price: number;
-    consignmentImages: IConsignmentImage[];
-    customer: ICustomer;
+    rentalPricing: IRentalPricing[];
+    orientation: Orientation;
+    buildingImages: IBuildingImage[];
+    consignmentStatusHistories: IBuildingStatusHistory[];
+    buildingUnits: IBuildingUnit[];
+    status: BuildingStatus;
+    buildingType: IBuildingType;
+    buildingLevel: IBuildingLevel;
+    fees: IFee[];
     createdAt: string;
     updatedAt?: string;
-    consignmentStatusHistories: IConsignmentStatusHistory[];
+    paymentPolicies: IPaymentPolicy[];
+    customer: ICustomer;
 }
 
-export interface IConsignmentImage {
-    consignmentImageId: number;
+export interface IBuildingImage {
+    buildingImageId: number;
     imgUrl?: string;
 }
 
-export interface IConsignmentStatusHistory {
+export interface IBuildingStatusHistory {
     consignmentStatusHistoryId: number;
     status: ConsignmentStatus;
     note: string;
@@ -52,7 +64,7 @@ export interface IConsignmentStatusHistory {
     updatedBy?: string;
 }
 
-export interface ConsignmentFilterCriteria {
+export interface BuildingFilterCriteria {
     email?: string;
     customerName?: string;
     phoneNumber?: string;
@@ -65,10 +77,63 @@ export interface ConsignmentFilterCriteria {
     minPrice?: number;
     staffName?: string;
     status?: ConsignmentStatus;
+    orientation?: Orientation;
 }
 
+
+export interface BuildingCompanyFilterCriteria {
+    email?: string;
+    customerName?: string;
+    phoneNumber?: string;
+    buildingType?: string;
+    buildingLevel?: string;
+    district?: string;
+    city?: string;
+    ward?: string;
+    street?: string;
+    maxPrice?: number;
+    minPrice?: number;
+    staffName?: string;
+    buildingStatus?: BuildingStatus;
+    orientation?: Orientation;
+    buildingName?: string;
+}
 
 export interface IAssignCustomer {
     customer: ICustomer;
     users: IUser[];
+}
+
+export interface IRentalPricing {
+    rentalPricingId: number;
+    price: number;
+    createdAt: string;
+    createdBy: string;
+    updatedAt?: string;
+}
+
+export interface IFee {
+    feeId: number;
+    feePricing: IFeePricing[];
+    feeType: IFeeType;
+    createdAt: string;
+    updatedAt?: string;
+}
+
+
+export interface IFeePricing {
+    feePricingId: number;
+    priceUnit?: string;
+    priceValue?: number;
+    description?: string;
+    createdAt: string;
+    updatedAt?: string;
+}
+
+export interface IPaymentPolicy {
+    paymentPolicyId: number;
+    paymentCycle: string;
+    depositTerm: number;
+    createdAt: string;
+    updatedAt?: string;
 }

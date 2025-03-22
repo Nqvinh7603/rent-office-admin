@@ -13,7 +13,7 @@ export interface INotificationEvent {
     message: string;
     status: boolean;
     userId: string;
-    consignmentId: number;
+    buildingId: number;
     createdAt: string;
     type: string;
     code: string;

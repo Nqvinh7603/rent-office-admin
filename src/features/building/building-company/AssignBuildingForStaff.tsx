@@ -2,13 +2,14 @@ import { ProfileOutlined } from "@ant-design/icons";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button, Checkbox, message, Modal, Table, Tooltip } from "antd";
 import React, { useEffect, useState } from "react";
-import { IAssignCustomer, IBuilding, IUser } from "../../interfaces";
-import { customerService } from "../../services/customer/customer-service";
-interface AssignCustomerProps {
+import { IAssignBuilding, IBuilding, IUser } from "../../../interfaces";
+import { buildingService } from "../../../services/building/building-service";
+
+interface AssignBuildingProps {
   building: IBuilding;
 }
 
-const AssignCustomerForConsignment: React.FC<AssignCustomerProps> = ({
+const AssignBuildingForStaff: React.FC<AssignBuildingProps> = ({
   building,
 }) => {
   const [isOpenModal, setIsOpenModal] = useState<boolean>(false);
@@ -30,9 +31,8 @@ const AssignCustomerForConsignment: React.FC<AssignCustomerProps> = ({
   };
 
   const { data: staffData, isLoading } = useQuery({
-    queryKey: ["staffs", building.customer?.customerId],
-    queryFn: () =>
-      customerService.getStaffsByCustomerId(building.customer?.customerId),
+    queryKey: ["staffs", building.buildingId],
+    queryFn: () => buildingService.getStaffsByBuildingId(building.buildingId),
   });
 
   useEffect(() => {
@@ -51,30 +51,30 @@ const AssignCustomerForConsignment: React.FC<AssignCustomerProps> = ({
     );
   };
 
-  const { mutate: assignCustomer, isPending } = useMutation({
-    mutationFn: (assignData: IAssignCustomer) =>
-      customerService.assignmentCustomerToStaffs(assignData),
+  const { mutate: assignBuilding, isPending } = useMutation({
+    mutationFn: (assignData: IAssignBuilding) =>
+      buildingService.assignmentBuildingToStaffs(assignData),
     onSuccess: () => {
-      message.success("Giao khách hàng thành công!");
+      message.success("Giao tài sản thành công!");
       setSelectedStaffIds([...tempSelectedStaffIds]);
       queryClient.invalidateQueries({
-        queryKey: ["staffs", building.customer?.customerId],
+        queryKey: ["staffs", building.buildingId],
       });
       setIsOpenModal(false);
     },
     onError: () => {
-      message.error("Giao khách hàng thất bại!");
+      message.error("Giao tài sản thất bại!");
     },
   });
 
   const handleConfirm = () => {
-    const assignData: IAssignCustomer = {
-      customer: building.customer,
+    const assignData: IAssignBuilding = {
+      building: building,
       users: tempSelectedStaffIds.map(
         (id) => staffList.find((user) => user.userId === id) as IUser,
       ),
     };
-    assignCustomer(assignData);
+    assignBuilding(assignData);
   };
 
   const columns = [
@@ -103,7 +103,7 @@ const AssignCustomerForConsignment: React.FC<AssignCustomerProps> = ({
 
   return (
     <>
-      <Tooltip title="Giao sản phẩm ký gửi cho nhân viên quản lý">
+      <Tooltip title="Giao tài sản cho nhân viên quản lý">
         <ProfileOutlined
           className="table-icon text-2xl"
           onClick={handleOpenModal}
@@ -121,7 +121,7 @@ const AssignCustomerForConsignment: React.FC<AssignCustomerProps> = ({
             onClick={handleConfirm}
             loading={isPending}
           >
-            Giao khách hàng cho nhân viên
+            Giao tài sản cho nhân viên
           </Button>,
         ]}
       >
@@ -146,4 +146,4 @@ const AssignCustomerForConsignment: React.FC<AssignCustomerProps> = ({
   );
 };
 
-export default AssignCustomerForConsignment;
+export default AssignBuildingForStaff;

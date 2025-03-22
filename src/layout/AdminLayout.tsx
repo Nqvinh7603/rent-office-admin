@@ -22,9 +22,11 @@ import { BsBuildingsFill } from "react-icons/bs";
 import { FaKey, FaUser, FaUserCog, FaUsers } from "react-icons/fa";
 import { FaRankingStar } from "react-icons/fa6";
 import { FiPhoneCall } from "react-icons/fi";
+import { HiOutlineHomeModern } from "react-icons/hi2";
 import { IoShieldCheckmark } from "react-icons/io5";
 import { MdDashboard, MdOutlineAddHomeWork } from "react-icons/md";
 import { RiLuggageDepositFill } from "react-icons/ri";
+import { SiFeedly } from "react-icons/si";
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router";
 import Loading from "../common/components/Loading";
 import { useTheme } from "../context/ThemeContext";
@@ -130,6 +132,24 @@ const AdminLayout: React.FC = () => {
             PERMISSIONS[Module.BUILDINGS].GET_BUILDING_TYPE_PAGINATION.method,
       );
 
+      const viewBuildingCompany = permissions.find(
+        (item) =>
+          item.apiPath ===
+            PERMISSIONS[Module.BUILDINGS].GET_BUILDING_OF_COMPANY_PAGINATION
+              .apiPath &&
+          item.method ===
+            PERMISSIONS[Module.BUILDINGS].GET_BUILDING_OF_COMPANY_PAGINATION
+              .method,
+      );
+
+      const viewFeeTypes = permissions.find(
+        (item) =>
+          item.apiPath ===
+            PERMISSIONS[Module.FEES].GET_FEE_TYPES_PAGINATION.apiPath &&
+          item.method ===
+            PERMISSIONS[Module.FEES].GET_FEE_TYPES_PAGINATION.method,
+      );
+
       const viewBuildingLevels = permissions.find(
         (item) =>
           item.apiPath ===
@@ -143,16 +163,14 @@ const AdminLayout: React.FC = () => {
         permissions.find(
           (item) =>
             item.apiPath ===
-              PERMISSIONS[Module.CONSIGNMENTS].GET_CONSIGNMENT_PAGINATION
-                .apiPath &&
+              PERMISSIONS[Module.BUILDINGS].GET_BUILDING_PAGINATION.apiPath &&
             item.method ===
-              PERMISSIONS[Module.CONSIGNMENTS].GET_CONSIGNMENT_PAGINATION
-                .method,
+              PERMISSIONS[Module.BUILDINGS].GET_BUILDING_PAGINATION.method,
         ),
       );
 
       const hasBuildingChildren: boolean = Boolean(
-        viewBuildingTypes || viewBuildingLevels,
+        viewBuildingTypes || viewBuildingLevels || viewFeeTypes,
       );
 
       const viewNotification = permissions.find(
@@ -252,6 +270,26 @@ const AdminLayout: React.FC = () => {
                           ),
                           key: "building-levels",
                           icon: <FaRankingStar size={17} />,
+                        },
+                      ]
+                    : []),
+                  ...(viewFeeTypes
+                    ? [
+                        {
+                          label: <NavLink to="/fee-types">Loại phí</NavLink>,
+                          key: "fee-types",
+                          icon: <SiFeedly size={17} />,
+                        },
+                      ]
+                    : []),
+                  ...(viewBuildingCompany
+                    ? [
+                        {
+                          label: (
+                            <NavLink to="/buildings">Danh sách tài sản</NavLink>
+                          ),
+                          key: "buildings",
+                          icon: <HiOutlineHomeModern />,
                         },
                       ]
                     : []),
