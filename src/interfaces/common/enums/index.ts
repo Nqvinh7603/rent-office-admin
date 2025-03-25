@@ -64,5 +64,5 @@ export enum BuildingUnitStatus {
     RENTED = "RENTED",             // Đã được thuê
     UNDER_MAINTENANCE = "UNDER_MAINTENANCE",  // Đang bảo trì
     RESERVED = "RESERVED",           // Đã có người đặt trước
-    UNAVAILABLE = "UNAVAILABLE"         // Không thể cho thuê (chủ tòa nhà không muốn cho thuê)
+    UNAVAILABLE = "UNAVAILABLE",         // Không thể cho thuê (chủ tòa nhà không muốn cho thuê)
 }

@@ -34,7 +34,6 @@ export interface IBuilding {
     street: string;
     buildingNumber: string;
     description: string;
-    rentalPricing: IRentalPricing[];
     orientation: Orientation;
     buildingImages: IBuildingImage[];
     consignmentStatusHistories: IBuildingStatusHistory[];
@@ -75,6 +74,8 @@ export interface BuildingFilterCriteria {
     street?: string;
     maxPrice?: number;
     minPrice?: number;
+    maxArea?: number;
+    minArea?: number;
     staffName?: string;
     status?: ConsignmentStatus;
     orientation?: Orientation;
@@ -93,6 +94,8 @@ export interface BuildingCompanyFilterCriteria {
     street?: string;
     maxPrice?: number;
     minPrice?: number;
+    maxArea?: number;
+    minArea?: number;
     staffName?: string;
     buildingStatus?: BuildingStatus;
     orientation?: Orientation;

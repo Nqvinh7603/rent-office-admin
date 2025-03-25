@@ -141,18 +141,32 @@ const BuildingCompanyTable: React.FC<BuildingTableProps> = ({
     {
       key: "price",
       title: "Giá (VND/m²)",
-      dataIndex: ["rentalPricing"],
+      dataIndex: ["buildingUnits"],
       width: "10%",
-      render: (rentalPricing: { price: number }[]) => {
-        const lastPrice = rentalPricing?.[rentalPricing.length - 1]?.price;
-        return <span>{lastPrice ? formatCurrency(lastPrice) : "N/A"}</span>;
+      render: (buildingUnits: { rentalPricing: { price: number }[] }[]) => {
+        const minPrice = Math.min(
+          ...buildingUnits.map(
+            (unit) => unit.rentalPricing?.[0]?.price || Infinity,
+          ),
+        );
+        return (
+          <span>
+            {minPrice !== Infinity ? formatCurrency(minPrice) : "N/A"}
+          </span>
+        );
       },
       sorter: (a, b) => {
-        const priceA =
-          a.rentalPricing?.[a.rentalPricing.length - 1]?.price || 0;
-        const priceB =
-          b.rentalPricing?.[b.rentalPricing.length - 1]?.price || 0;
-        return priceA - priceB;
+        const minPriceA = Math.min(
+          ...a.buildingUnits.map(
+            (unit) => unit.rentalPricing[0]?.price || Infinity,
+          ),
+        );
+        const minPriceB = Math.min(
+          ...b.buildingUnits.map(
+            (unit) => unit.rentalPricing[0]?.price || Infinity,
+          ),
+        );
+        return minPriceA - minPriceB;
       },
       defaultSortOrder: getDefaultSortOrder(searchParams, "price"),
       sortIcon: ({ sortOrder }) => (

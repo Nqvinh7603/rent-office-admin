@@ -157,6 +157,8 @@ const SearchConsignment = () => {
         maxPrice: searchParams.get("maxPrice") || undefined,
         staffName: searchParams.get("staffName") || undefined,
         orientation: searchParams.get("orientation") || undefined,
+        maxArea: searchParams.get("maxArea") || undefined,
+        minArea: searchParams.get("minArea") || undefined,
       }}
     >
       <div className="grid grid-cols-1 gap-4 gap-y-0 md:grid-cols-2 lg:grid-cols-3">
@@ -247,6 +249,26 @@ const SearchConsignment = () => {
             style={{ width: "100%" }}
             formatter={(value) => formatCurrency(value)}
             parser={(value) => parseCurrency(value) as unknown as 0}
+          />
+        </Form.Item>
+        <Form.Item label="Giá diện tích thuê (tối thiểu)" name="minArea">
+          <InputNumber
+            min={0}
+            placeholder="Chọn giá tối thiểu"
+            addonAfter="m²"
+            style={{ width: "100%" }}
+            // formatter={(value) => formatCurrency(value)}
+            // parser={(value) => parseCurrency(value) as unknown as 0}
+          />
+        </Form.Item>
+        <Form.Item label="Diện tích thuê (tối đa)" name="maxArea">
+          <InputNumber
+            min={0}
+            placeholder="Chọn diện tích thuê tối đa"
+            addonAfter="m²"
+            style={{ width: "100%" }}
+            // formatter={(value) => formatCurrency(value)}
+            // parser={(value) => parseCurrency(value) as unknown as 0}
           />
         </Form.Item>
         <Form.Item name="city" label="Khu vực ">

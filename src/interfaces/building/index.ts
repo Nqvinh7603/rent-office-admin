@@ -1,6 +1,6 @@
 import { IUser } from "../auth";
 import { BuildingUnitStatus } from "../common/enums";
-import { IBuilding } from "../consignment";
+import { IBuilding, IRentalPricing } from "../consignment";
 
 export interface IBuildingType {
     buildingTypeId: number;
@@ -62,6 +62,7 @@ export interface IAssignBuilding {
 export interface IBuildingUnit {
     buildingUnitId: number;
     unitName?: string;
+    rentalPricing: IRentalPricing[];
     floor: number;
     buildingUnitStatus: BuildingUnitStatus;
     rentAreas: IRentArea[];

@@ -23,7 +23,7 @@ import toast from "react-hot-toast";
 import { GoArrowLeft } from "react-icons/go";
 import { useNavigate, useParams } from "react-router";
 import Loading from "../../common/components/Loading";
-import { FileType, IBuilding } from "../../interfaces";
+import { FileType, IBuilding, IBuildingUnit } from "../../interfaces";
 import {
   CONSIGNMENT_STATUS_TRANSLATION,
   ORENTATION_TRANSLATIONS,
@@ -316,7 +316,7 @@ const ConsignmentDetail: React.FC = () => {
               <Descriptions.Item label="Loại tòa nhà">
                 {form.getFieldValue(["buildingType", "buildingTypeName"])}
               </Descriptions.Item>
-              <Descriptions.Item label="Giá sản phẩm ký gửi">
+              {/* <Descriptions.Item label="Giá sản phẩm ký gửi">
                 {formatCurrency(
                   form.getFieldValue([
                     "rentalPricing",
@@ -325,7 +325,7 @@ const ConsignmentDetail: React.FC = () => {
                   ]),
                 )}{" "}
                 VND/m²
-              </Descriptions.Item>
+              </Descriptions.Item> */}
               <Descriptions.Item label="Tổng số tầng">
                 {form.getFieldValue("numberOfFloors")} tầng
               </Descriptions.Item>
@@ -423,6 +423,57 @@ const ConsignmentDetail: React.FC = () => {
                   </Descriptions.Item>
                 ),
               )}
+            </Descriptions>
+
+            <Descriptions
+              title="Giá thuê và diện tích sản phẩm ký gửi"
+              layout="horizontal"
+              bordered
+              className="mb-4"
+              column={4}
+            >
+              {form
+                .getFieldValue("buildingUnits")
+                ?.map((buildingUnit: IBuildingUnit, index: number) => (
+                  <>
+                    <Descriptions.Item key={`floor-${index}`} label="Tầng">
+                      {buildingUnit.floor || "Không xác định"}
+                    </Descriptions.Item>
+                    <Descriptions.Item key={`unitName-${index}`} label="Đơn vị">
+                      {buildingUnit.unitName || `Đơn vị ${index + 1}`}
+                    </Descriptions.Item>
+                    <Descriptions.Item key={`area-${index}`} label="Diện tích">
+                      {buildingUnit.rentAreas?.length
+                        ? `${buildingUnit.rentAreas.map((area) => area.area || "Không xác định").join(", ")} m²`
+                        : "Không xác định"}
+                    </Descriptions.Item>
+                    <Descriptions.Item
+                      key={`rentalPricing-${index}`}
+                      label="Giá thuê"
+                    >
+                      {buildingUnit.rentalPricing?.length ? (
+                        buildingUnit.rentalPricing.map(
+                          (pricing, pricingIndex) => (
+                            <div
+                              key={pricingIndex}
+                              style={{ marginBottom: "8px" }}
+                            >
+                              {pricing.price ? (
+                                <>
+                                  {formatCurrency(pricing.price)} VND/m²/tháng
+                                </>
+                              ) : (
+                                <div>Không có thông tin giá thuê</div>
+                              )}
+                            </div>
+                          ),
+                        )
+                      ) : (
+                        <div>Không có thông tin giá thuê</div>
+                      )}
+                    </Descriptions.Item>
+                  </>
+                ))}
             </Descriptions>
 
             {form.getFieldValue("description") && (
@@ -569,14 +620,14 @@ const ConsignmentDetail: React.FC = () => {
                           .map(([value, label]) => ({
                             label,
                             value,
-                            disabled:
-                              form.getFieldValue([
-                                "consignmentStatusHistories",
-                                0,
-                                "status",
-                              ]) === ConsignmentStatus.CONFIRMED &&
-                              (value === ConsignmentStatus.CANCELLED ||
-                                value === ConsignmentStatus.INCOMPLETE),
+                            // disabled:
+                            //   form.getFieldValue([
+                            //     "consignmentStatusHistories",
+                            //     0,
+                            //     "status",
+                            //   ]) === ConsignmentStatus.CONFIRMED &&
+                            //   (value === ConsignmentStatus.CANCELLED ||
+                            //     value === ConsignmentStatus.INCOMPLETE),
                           }))}
                         defaultValue={form.getFieldValue([
                           "consignmentStatusHistories",

@@ -314,6 +314,27 @@ const SearchBuildingCompany = () => {
             parser={(value) => parseCurrency(value) as unknown as 0}
           />
         </Form.Item>
+
+        <Form.Item label="Giá diện tích thuê (tối thiểu)" name="minArea">
+          <InputNumber
+            min={0}
+            placeholder="Chọn giá tối thiểu"
+            addonAfter="m²"
+            style={{ width: "100%" }}
+            // formatter={(value) => formatCurrency(value)}
+            // parser={(value) => parseCurrency(value) as unknown as 0}
+          />
+        </Form.Item>
+        <Form.Item label="Diện tích thuê (tối đa)" name="maxArea">
+          <InputNumber
+            min={0}
+            placeholder="Chọn diện tích thuê tối đa"
+            addonAfter="m²"
+            style={{ width: "100%" }}
+            // formatter={(value) => formatCurrency(value)}
+            // parser={(value) => parseCurrency(value) as unknown as 0}
+          />
+        </Form.Item>
         <Form.Item label="Hướng" name={"orientation"} className="flex-1">
           <Select
             placeholder="Chọn hướng"

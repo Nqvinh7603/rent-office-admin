@@ -126,14 +126,14 @@ export const POTENTIAL_CUSTOMER_STATUS_TRANSLATION: Record<PotentialCustomerStat
 }
 
 export const ORENTATION_TRANSLATIONS: Record<Orientation, string> = {
-    [Orientation.NORTH]: "Hướng Bắc",
-    [Orientation.SOUTH]: "Hướng Nam",
-    [Orientation.EAST]: "Hướng Đông",
-    [Orientation.WEST]: "Hướng Tây",
-    [Orientation.NORTHEAST]: "Hướng Đông Bắc",
-    [Orientation.NORTHWEST]: "Hướng Tây Bắc",
-    [Orientation.SOUTHEAST]: "Hướng Đông Nam",
-    [Orientation.SOUTHWEST]: "Hướng Tây Nam",
+    [Orientation.NORTH]: "Bắc",
+    [Orientation.SOUTH]: "Nam",
+    [Orientation.EAST]: "Đông",
+    [Orientation.WEST]: "Tây",
+    [Orientation.NORTHEAST]: "Đông Bắc",
+    [Orientation.NORTHWEST]: "Tây Bắc",
+    [Orientation.SOUTHEAST]: "Đông Nam",
+    [Orientation.SOUTHWEST]: "Tây Nam",
     [Orientation.UNDETERMINED]: "Chưa xác định",
 }
 
@@ -143,4 +143,5 @@ export const BUILDING_UNIT_STATUS_TRANSLATION: Record<BuildingUnitStatus, string
     [BuildingUnitStatus.RENTED]: "Đã cho thuê",
     [BuildingUnitStatus.RESERVED]: "Đã đặt cọc",
     [BuildingUnitStatus.UNDER_MAINTENANCE]: "Đang bảo trì",
+
 }

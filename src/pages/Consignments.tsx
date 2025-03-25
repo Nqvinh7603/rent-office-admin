@@ -43,6 +43,8 @@ const Consignments: React.FC = () => {
     staffName: searchParams.get("staffName") || undefined,
     status: (searchParams.get("status") as any) || undefined,
     orientation: searchParams.get("orientation") as Orientation | undefined,
+    maxArea: Number(searchParams.get("maxArea")) || undefined,
+    minArea: Number(searchParams.get("minArea")) || undefined,
   };
 
   const { data, isLoading } = useQuery({

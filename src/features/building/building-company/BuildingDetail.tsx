@@ -259,12 +259,13 @@ const BuildingDetail: React.FC = () => {
       const consignments = {
         ...building,
         ...values,
-        rentalPricing: [
-          ...building.rentalPricing,
-          {
-            price: values.rentalPricing[values.rentalPricing.length - 1]?.price,
-          },
-        ],
+        // rentalPricing: [
+        //   ...building.rentalPricing,
+        //   {
+        //     price: values.rentalPricing[values.rentalPricing.length - 1]?.price,
+        //   },
+        // ],
+
         paymentPolicies: [
           ...building.paymentPolicies,
           {
@@ -334,6 +335,11 @@ const BuildingDetail: React.FC = () => {
             ...area,
             area: area.area,
           })),
+          rentalPricing: [
+            {
+              price: unit.rentalPricing[unit.rentalPricing.length - 1]?.price,
+            },
+          ],
         })),
       };
       const formData = new FormData();
@@ -512,7 +518,7 @@ const BuildingDetail: React.FC = () => {
                   allowClear
                 />
               </Form.Item>
-              <Form.Item
+              {/* <Form.Item
                 label="Giá cho thuê"
                 name={[
                   "rentalPricing",
@@ -538,7 +544,7 @@ const BuildingDetail: React.FC = () => {
                     </span>
                   }
                 />
-              </Form.Item>
+              </Form.Item> */}
             </div>
             <div className="flex flex-wrap gap-4">
               <Form.Item
@@ -1034,6 +1040,21 @@ const BuildingDetail: React.FC = () => {
                         <div key={key} className="mb-2 flex flex-wrap gap-4">
                           <Form.Item
                             {...restField}
+                            name={[name, "floor"]}
+                            label="Tầng"
+                            rules={[
+                              { required: true, message: "Nhập số tầng!" },
+                            ]}
+                            className="w-14"
+                          >
+                            <InputNumber
+                              min={1}
+                              style={{ width: "100%" }}
+                              placeholder="Nhập số tầng"
+                            />
+                          </Form.Item>
+                          <Form.Item
+                            {...restField}
                             name={[name, "unitName"]}
                             label="Tên đơn vị"
                             rules={[
@@ -1046,44 +1067,39 @@ const BuildingDetail: React.FC = () => {
 
                           <Form.Item
                             {...restField}
-                            name={[name, "floor"]}
-                            label="Tầng"
-                            rules={[
-                              { required: true, message: "Nhập số tầng!" },
+                            name={[
+                              name,
+                              "rentalPricing",
+                              approveForm.getFieldValue([
+                                "buildingUnits",
+                                name,
+                                "rentalPricing",
+                              ])?.length - 1,
+                              "price",
                             ]}
-                            className="flex-1"
-                          >
-                            <InputNumber
-                              min={1}
-                              style={{ width: "100%" }}
-                              placeholder="Nhập số tầng"
-                            />
-                          </Form.Item>
-
-                          <Form.Item
-                            {...restField}
-                            name={[name, "buildingUnitStatus"]}
-                            label="Trạng thái"
+                            label="Giá cho thuê"
                             rules={[
                               {
                                 required: true,
-                                message: "Chọn trạng thái đơn vị!",
+                                message: "Giá cho thuê không được để trống!",
                               },
                             ]}
-                            className="flex-1"
+                            className="flex-[2]"
                           >
-                            <Select
-                              placeholder="Chọn trạng thái"
-                              options={Object.entries(
-                                BUILDING_UNIT_STATUS_TRANSLATION,
-                              ).map(([value, label]) => ({
-                                label,
-                                value,
-                              }))}
-                              allowClear
+                            <InputNumber
+                              min={0}
+                              style={{ width: "100%" }}
+                              formatter={(value) => formatCurrency(value)}
+                              parser={(value) =>
+                                parseCurrency(value) as unknown as 0
+                              }
+                              addonAfter={
+                                <span>
+                                  VND/m<sup>2</sup>/tháng
+                                </span>
+                              }
                             />
                           </Form.Item>
-
                           <Form.Item
                             {...restField}
                             name={[name, "rentAreas"]}
@@ -1150,7 +1166,29 @@ const BuildingDetail: React.FC = () => {
                               )}
                             </Form.List>
                           </Form.Item>
-
+                          <Form.Item
+                            {...restField}
+                            name={[name, "buildingUnitStatus"]}
+                            label="Trạng thái"
+                            rules={[
+                              {
+                                required: true,
+                                message: "Chọn trạng thái đơn vị!",
+                              },
+                            ]}
+                            className="flex-1"
+                          >
+                            <Select
+                              placeholder="Chọn trạng thái"
+                              options={Object.entries(
+                                BUILDING_UNIT_STATUS_TRANSLATION,
+                              ).map(([value, label]) => ({
+                                label,
+                                value,
+                              }))}
+                              allowClear
+                            />
+                          </Form.Item>
                           <Button
                             type="link"
                             onClick={() => remove(name)}
@@ -1267,41 +1305,53 @@ const BuildingDetail: React.FC = () => {
         {currentTab === "price" && (
           <>
             <h2 className="mb-8 text-xl font-semibold">Lịch sử giá thuê</h2>
-            <div className="flex gap-8">
-              <Timeline mode="left" style={{ paddingLeft: "20px" }}>
-                {Array.isArray(building?.rentalPricing) &&
-                  building.rentalPricing.map((history, index) => {
-                    return (
-                      <Timeline.Item
-                        key={index}
-                        color="blue"
-                        position={
-                          index === building.rentalPricing.length - 1
-                            ? "right"
-                            : "left"
-                        }
-                      >
-                        <div>
-                          <span>
-                            <strong>
-                              Giá thuê: {formatCurrency(history.price)} VND/m
-                              <sup>2</sup>/tháng
-                              {index === building.rentalPricing.length - 1 &&
-                                " (Đang áp dụng)"}
-                            </strong>
-                          </span>
-                          <br />
-                          <span>
-                            Ngày áp dụng:{" "}
-                            {dayjs(history.createdAt).format(
-                              "DD/MM/YYYY HH:mm",
-                            )}
-                          </span>
-                        </div>
-                      </Timeline.Item>
-                    );
-                  })}
-              </Timeline>
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {Array.isArray(building?.buildingUnits) &&
+                building.buildingUnits.map((unit, unitIndex) => (
+                  <div
+                    key={unitIndex}
+                    className="rounded-lg border p-4 shadow-md"
+                  >
+                    <h3 className="mb-4 text-lg font-semibold">
+                      Đơn vị: {unit.unitName} (Tầng: {unit.floor})
+                    </h3>
+                    <Timeline mode="left" style={{ paddingLeft: "20px" }}>
+                      {Array.isArray(unit.rentalPricing) &&
+                        unit.rentalPricing.map((history, index) => (
+                          <Timeline.Item
+                            key={index}
+                            color="blue"
+                            position={
+                              index === unit.rentalPricing.length - 1
+                                ? "right"
+                                : "left"
+                            }
+                          >
+                            <div>
+                              <span className="block font-medium">
+                                Giá thuê:{" "}
+                                <span className="">
+                                  {formatCurrency(history.price)} VND/m
+                                  <sup>2</sup>/tháng
+                                </span>
+                                {index === unit.rentalPricing.length - 1 && (
+                                  <span className="ml-2 text-green-500">
+                                    (Đang áp dụng)
+                                  </span>
+                                )}
+                              </span>
+                              <span className="block text-sm text-gray-500">
+                                Ngày áp dụng:{" "}
+                                {dayjs(history.createdAt).format(
+                                  "DD/MM/YYYY HH:mm",
+                                )}
+                              </span>
+                            </div>
+                          </Timeline.Item>
+                        ))}
+                    </Timeline>
+                  </div>
+                ))}
             </div>
           </>
         )}
