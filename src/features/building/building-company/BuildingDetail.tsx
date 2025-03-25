@@ -340,6 +340,7 @@ const BuildingDetail: React.FC = () => {
               price: unit.rentalPricing[unit.rentalPricing.length - 1]?.price,
             },
           ],
+          status: unit.status,
         })),
       };
       const formData = new FormData();
@@ -1168,7 +1169,7 @@ const BuildingDetail: React.FC = () => {
                           </Form.Item>
                           <Form.Item
                             {...restField}
-                            name={[name, "buildingUnitStatus"]}
+                            name={[name, "status"]}
                             label="Trạng thái"
                             rules={[
                               {

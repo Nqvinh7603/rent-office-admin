@@ -64,7 +64,7 @@ export interface IBuildingUnit {
     unitName?: string;
     rentalPricing: IRentalPricing[];
     floor: number;
-    buildingUnitStatus: BuildingUnitStatus;
+    status: BuildingUnitStatus;
     rentAreas: IRentArea[];
     createdAt: string;
     updatedAt?: string;
