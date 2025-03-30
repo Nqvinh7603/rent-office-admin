@@ -14,6 +14,7 @@ export enum Module {
     CUSTOMERS = "CUSTOMERS",
     NOTIFICATIONS = "NOTIFICATIONS",
     FEES = "FEES",
+    APPOINTMENTS = "APPOINTMENTS",
 }
 
 
@@ -31,12 +32,11 @@ export enum ConsignmentStatus {
 }
 
 export enum PotentialCustomerStatus {
-    CONTACTED_NO_RESPONSE = "CONTACTED_NO_RESPONSE", // đã liên hệ _ không phản hồi
-    CONTACTED_SCHEDULED = "CONTACTED_SCHEDULED", // đã liên hệ _ đã lên lịch
-    NOT_CONTACTED = "NOT_CONTACTED", // chưa liên hệ
-    DEAL_DONE = "DEAL_DONE", // đã có hợp đồng
-    IN_PROGRESS = "IN_PROGRESS", // đang trong quá trình làm việc
-    CANCELED = "CANCELED", // đã hủy
+    NOT_CONTACTED = "NOT_CONTACTED",         // Chưa liên hệ
+    CONTACTED = "CONTACTED",             // Đã liên hệ 
+    DEAL_IN_PROGRESS = "DEAL_IN_PROGRESS",      // Đang xử lý deal (đã vào phễu)
+    DEAL_DONE = "DEAL_DONE",             // Đã chốt thuê
+    CANCELED = "CANCELED"              // Không còn nhu cầu
 }
 
 
@@ -65,4 +65,22 @@ export enum BuildingUnitStatus {
     UNDER_MAINTENANCE = "UNDER_MAINTENANCE",  // Đang bảo trì
     RESERVED = "RESERVED",           // Đã có người đặt trước
     UNAVAILABLE = "UNAVAILABLE",         // Không thể cho thuê (chủ tòa nhà không muốn cho thuê)
+}
+
+export enum AppointmentStatus {
+    PENDING = "PENDING",        // Mới tạo
+    CONFIRMED = "CONFIRMED",      // Đã xác nhận
+    IN_PROGRESS = "IN_PROGRESS",    // Đang diễn ra
+    SUCCESSFUL = "SUCCESSFUL",     // Khách đã thuê sau cuộc hẹn
+    UNSUCCESSFUL = "UNSUCCESSFUL",   // Cuộc hẹn không thành công
+    CANCELLED = "CANCELLED"       // Cuộc hẹn bị hủy hoặc không diễn ra
+}
+
+export enum AppointmentBuildingStatus {
+    PENDING = "PENDING", // Mới tạo
+    CONFIRMED = "CONFIRMED", // Đã xác nhận
+    VIEWED = "VIEWED", // Đã xem
+    SUCCESSFUL = "SUCCESSFUL", // Khách đã thuê
+    UNSUCCESSFUL = "UNSUCESSFUL", // Khách không thuê
+    CANCELLED = "CANCELLED" // Cuộc hẹn bị hủy hoặc không diễn ra
 }

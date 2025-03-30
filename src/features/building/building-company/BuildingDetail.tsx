@@ -747,7 +747,7 @@ const BuildingDetail: React.FC = () => {
                                 "fees",
                                 name,
                                 "feePricing",
-                              ])?.length - 1,
+                              ])?.length - 1 || 0,
                               "priceValue",
                             ]}
                             className="flex-1"
@@ -789,23 +789,23 @@ const BuildingDetail: React.FC = () => {
                                       "fees",
                                       name,
                                       "feePricing",
-                                    ])?.length - 1,
+                                    ])?.length - 1 || 0,
                                     "priceUnit",
                                   ])}
                                   onChange={(value) => {
-                                    detailForm.setFieldValue(
-                                      [
+                                    const feePricing =
+                                      detailForm.getFieldValue([
                                         "fees",
                                         name,
                                         "feePricing",
-                                        detailForm.getFieldValue([
-                                          "fees",
-                                          name,
-                                          "feePricing",
-                                        ])?.length - 1,
-                                        "priceUnit",
-                                      ],
-                                      value,
+                                      ]) || [];
+                                    feePricing[feePricing.length - 1 || 0] = {
+                                      ...feePricing[feePricing.length - 1 || 0],
+                                      priceUnit: value,
+                                    };
+                                    detailForm.setFieldValue(
+                                      ["fees", name, "feePricing"],
+                                      feePricing,
                                     );
                                   }}
                                   filterOption={(input, option) =>
@@ -827,7 +827,7 @@ const BuildingDetail: React.FC = () => {
                                 "fees",
                                 name,
                                 "feePricing",
-                              ])?.length - 1,
+                              ])?.length - 1 || 0,
                               "description",
                             ]}
                             className="flex-1"
@@ -1075,7 +1075,7 @@ const BuildingDetail: React.FC = () => {
                                 "buildingUnits",
                                 name,
                                 "rentalPricing",
-                              ])?.length - 1,
+                              ])?.length - 1 || 0,
                               "price",
                             ]}
                             label="Giá cho thuê"
@@ -1306,7 +1306,7 @@ const BuildingDetail: React.FC = () => {
         {currentTab === "price" && (
           <>
             <h2 className="mb-8 text-xl font-semibold">Lịch sử giá thuê</h2>
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
               {Array.isArray(building?.buildingUnits) &&
                 building.buildingUnits.map((unit, unitIndex) => (
                   <div

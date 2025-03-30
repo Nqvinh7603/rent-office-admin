@@ -4,7 +4,7 @@ import { snakeCase } from "change-case";
 import dayjs from "dayjs";
 import { useEffect } from "react";
 import { FileType } from "../interfaces";
-import { BuildingStatus, BuildingUnitStatus, ConsignmentStatus, PotentialCustomerStatus } from "../interfaces/common/enums";
+import { AppointmentBuildingStatus, BuildingStatus, BuildingUnitStatus, ConsignmentStatus, PotentialCustomerStatus } from "../interfaces/common/enums";
 export function useDynamicTitle(title: string) {
     useEffect(() => {
         document.title = title;
@@ -152,6 +152,24 @@ export const colorConsignmentStatus = (status: string) => {
     }
 }
 
+
+export const colorAppointmentBuildingStatus = (status: string) => {
+    switch (status) {
+        case AppointmentBuildingStatus.PENDING:
+            return orange[5];
+        case AppointmentBuildingStatus.CONFIRMED:
+            return green[5];
+        case AppointmentBuildingStatus.CANCELLED:
+            return red[5];
+        case AppointmentBuildingStatus.SUCCESSFUL:
+            return blue[5];
+        case AppointmentBuildingStatus.UNSUCCESSFUL:
+            return grey[5];
+        case AppointmentBuildingStatus.VIEWED:
+            return grey[5];
+    }
+}
+
 export const colorBuildingStatus = (status: string) => {
     switch (status) {
         case BuildingStatus.REVIEWING:
@@ -164,18 +182,17 @@ export const colorBuildingStatus = (status: string) => {
 
 export const colorPotentialCustomerStatus = (status: string) => {
     switch (status) {
-        case PotentialCustomerStatus.CONTACTED_NO_RESPONSE:
-            return orange[5];
-        case PotentialCustomerStatus.CONTACTED_SCHEDULED:
-            return green[5];
+
         case PotentialCustomerStatus.NOT_CONTACTED:
             return grey[5];
         case PotentialCustomerStatus.DEAL_DONE:
             return blue[5];
-        case PotentialCustomerStatus.IN_PROGRESS:
-            return green[5];
         case PotentialCustomerStatus.CANCELED:
             return red[5];
+        case PotentialCustomerStatus.CONTACTED:
+            return green[5];
+        case PotentialCustomerStatus.DEAL_IN_PROGRESS:
+            return orange[5];
         default:
             return grey[10];
     }

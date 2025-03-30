@@ -1,6 +1,6 @@
 import { IUser } from "../auth";
 import { IBuildingLevel, IBuildingType, IBuildingUnit, IFeeType } from "../building";
-import { BuildingStatus, ConsignmentStatus, Orientation, PotentialCustomerStatus, RequireType } from "../common/enums";
+import { AppointmentBuildingStatus, BuildingStatus, ConsignmentStatus, Orientation, PotentialCustomerStatus, RequireType } from "../common/enums";
 
 export interface ICustomer {
     customerId: number;
@@ -13,6 +13,50 @@ export interface ICustomer {
     status?: PotentialCustomerStatus;
     createdAt: string;
     updatedAt?: string;
+}
+
+export interface ICustomerPotential {
+    customerId: number;
+    customerName: string;
+    phoneNumber: string;
+    email: string;
+    address: string;
+    requireType: RequireType;
+    note?: string;
+    status?: PotentialCustomerStatus;
+    appointments?: IAppointment[];
+    createdAt: string;
+    updatedAt?: string;
+}
+
+
+
+export interface IAppointment {
+    appointmentId: number;
+    // customer: ICustomer;
+    appointmentBuildings: IAppointmentBuilding[];
+    createdAt: string;
+    createdBy: string;
+}
+
+
+export interface IAppointmentBuildingStatusHistory {
+    appointmentBuildingStatusHistoryId: number;
+    note: string;
+    status: AppointmentBuildingStatus;
+    createdAt: string;
+    createdBy: string;
+}
+
+export interface IAppointmentBuilding {
+    appointmentBuildingId: number;
+    appointmentBuildingStatusHistories: IAppointmentBuildingStatusHistory[];
+    visitTime: string;
+    // appointment: IAppointment;
+    area: string;
+    building: IBuilding;
+    createdAt: string;
+    createdBy: string;
 }
 
 export interface PotentialCustomerFilterCriteria {
@@ -45,7 +89,7 @@ export interface IBuilding {
     createdAt: string;
     updatedAt?: string;
     paymentPolicies: IPaymentPolicy[];
-    customer: ICustomer;
+    customer?: ICustomer;
 }
 
 export interface IBuildingImage {

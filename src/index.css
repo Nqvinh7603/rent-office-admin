@@ -148,6 +148,13 @@
     @apply bg-[#2C2C2C] text-gray-300;
   }
 
+  .dark .ant-calendar {
+    @apply bg-[#2C2C2C] text-gray-300;
+  }
+  .dark .ant-calendar-picker {
+    @apply bg-[#2C2C2C] text-gray-300;
+  }
+
   /* Default toast (Light Mode) */
   .dark-toast .react-hot-toast {
     background-color: #333 !important;

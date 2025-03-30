@@ -12,8 +12,8 @@ import {
   Tooltip,
 } from "antd";
 import React, { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
-import { ICustomer, Page } from "../../interfaces";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { ICustomerPotential, Page } from "../../interfaces";
 import {
   PERMISSIONS,
   POTENTIAL_CUSTOMER_STATUS_TRANSLATION,
@@ -30,7 +30,6 @@ import {
 } from "../../utils";
 import Access from "../auth/Access";
 import AssignPotentialCustomer from "./AssignPotentialCustomer";
-import DeletePotentialCustomer from "./DeletePotentailCustomer";
 import UpdatePotentialCustomer from "./UpdatePotentialCustomer";
 
 interface TableParams {
@@ -38,7 +37,7 @@ interface TableParams {
 }
 
 interface PotentailCustomerTableProps {
-  potentialCustomerPage?: Page<ICustomer>;
+  potentialCustomerPage?: Page<ICustomerPotential>;
   isLoading: boolean;
 }
 
@@ -46,6 +45,7 @@ const PotentailCustomersTable: React.FC<PotentailCustomerTableProps> = ({
   potentialCustomerPage,
   isLoading,
 }) => {
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const [tableParams, setTableParams] = useState<TableParams>(() => ({
     pagination: {
@@ -66,10 +66,11 @@ const PotentailCustomersTable: React.FC<PotentailCustomerTableProps> = ({
           showTotal: (total) => `Tổng ${total} yêu cầu thuê`,
         },
       }));
+      console.log("potentialCustomerPage", potentialCustomerPage);
     }
   }, [potentialCustomerPage]);
 
-  const handleTableChange: TableProps<ICustomer>["onChange"] = (
+  const handleTableChange: TableProps<ICustomerPotential>["onChange"] = (
     pagination,
     filters,
     sorter,
@@ -121,7 +122,7 @@ const PotentailCustomersTable: React.FC<PotentailCustomerTableProps> = ({
     setSearchParams(searchParams);
   };
 
-  const columns: TableProps<ICustomer>["columns"] = [
+  const columns: TableProps<ICustomerPotential>["columns"] = [
     {
       key: "email",
       title: "Email",
@@ -160,7 +161,7 @@ const PotentailCustomersTable: React.FC<PotentailCustomerTableProps> = ({
       key: "status",
       title: "Trạng thái",
       dataIndex: "status",
-      width: "15%",
+      width: "10%",
       render: (status: PotentialCustomerStatus) => (
         <Tag color={colorPotentialCustomerStatus(status)}>
           {POTENTIAL_CUSTOMER_STATUS_TRANSLATION[status]}
@@ -178,6 +179,37 @@ const PotentailCustomersTable: React.FC<PotentailCustomerTableProps> = ({
       filterIcon: (filtered: boolean) => (
         <FilterFilled style={{ color: colorFilterIcon(filtered) }} />
       ),
+    },
+    {
+      key: "appointments",
+      title: "Tổng cuộc hẹn",
+      dataIndex: "appointments",
+      width: "5%",
+      render: (
+        appointments: Array<{
+          appointmentBuildings: Array<{ appointmentId: string }>;
+        }>,
+        record,
+      ) => {
+        const totalAppointments =
+          appointments?.reduce(
+            (sum, appointment) =>
+              sum + (appointment.appointmentBuildings?.length || 0),
+            0,
+          ) || 0;
+
+        return (
+          <Tooltip title="Chuyển sang cuộc hẹn chi tiết của khách hàng">
+            <Tag
+              color={totalAppointments > 0 ? "green" : "red"}
+              onClick={() => navigate(`/appointments?email=${record.email}`)}
+              style={{ cursor: "pointer" }}
+            >
+              {totalAppointments > 0 ? totalAppointments : "Chưa có cuộc hẹn"}
+            </Tag>
+          </Tooltip>
+        );
+      },
     },
     {
       key: "createdAt",
@@ -229,15 +261,9 @@ const PotentailCustomersTable: React.FC<PotentailCustomerTableProps> = ({
           </Access>
           <Access
             permission={PERMISSIONS[Module.CUSTOMERS].UPDATE_CUSTOMER_POTENTIAL}
-            hideChildren={false}
+            hideChildren={true}
           >
             <UpdatePotentialCustomer potentialCustomer={record} />
-          </Access>
-          <Access
-            permission={PERMISSIONS[Module.BUILDINGS].DELETE_BUILDING}
-            hideChildren={false}
-          >
-            <DeletePotentialCustomer potentialCustomerId={record.customerId} />
           </Access>
         </Space>
       ),
@@ -248,7 +274,7 @@ const PotentailCustomersTable: React.FC<PotentailCustomerTableProps> = ({
     <Table
       bordered={false}
       columns={columns}
-      rowKey={(record: ICustomer) => record.customerId}
+      rowKey={(record: ICustomerPotential) => record.customerId}
       pagination={tableParams.pagination}
       dataSource={potentialCustomerPage?.content || []}
       rowClassName={(_, index) =>

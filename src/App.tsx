@@ -4,6 +4,7 @@ import { ConfigProvider, theme } from "antd";
 import viVN from "antd/locale/vi_VN";
 import dayjs from "dayjs";
 import "dayjs/locale/vi";
+import customParseFormat from "dayjs/plugin/customParseFormat";
 import isBetween from "dayjs/plugin/isBetween";
 import isoWeek from "dayjs/plugin/isoWeek";
 import quarterOfYear from "dayjs/plugin/quarterOfYear";
@@ -21,6 +22,7 @@ dayjs.extend(timezone);
 dayjs.extend(isBetween);
 dayjs.extend(isoWeek);
 dayjs.extend(quarterOfYear);
+dayjs.extend(customParseFormat);
 dayjs.tz.setDefault(VIETNAM_TIMEZONE);
 
 const queryClient = new QueryClient({
@@ -57,6 +59,9 @@ function ThemedApp() {
             headerSortActiveBg: PRIMARY_COLOR,
             headerSortHoverBg: PRIMARY_COLOR,
           },
+          Calendar: {
+            fullBg: isDarkMode ? "#2C2C2C" : "#fff",
+          },
         },
       }}
     >
@@ -67,7 +72,9 @@ function ThemedApp() {
 
       <Toaster
         position="top-center"
-        containerClassName={isDarkMode ? "dark-toast" : ""}
+        containerClassName={
+          isDarkMode ? "dark-toast text-gray-300" : "text-gray-300"
+        }
         toastOptions={{
           success: {
             duration: 3000,
@@ -98,6 +105,7 @@ function ThemedApp() {
           fontSize: "0.85 rem",
           padding: "8px 12px",
         }}
+        className="text-gray-300"
       />
     </ConfigProvider>
   );

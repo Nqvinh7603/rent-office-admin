@@ -1,21 +1,26 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Button, Col, Form, Input, Row, Select, Space } from "antd";
+import { PlusOutlined } from "@ant-design/icons";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Button, Col, DatePicker, Form, Input, Row, Select, Space } from "antd";
+import dayjs from "dayjs";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
-import { ICustomer } from "../../interfaces";
-import { POTENTIAL_CUSTOMER_STATUS_TRANSLATION } from "../../interfaces/common/constants";
+import { ICustomer, ICustomerPotential } from "../../interfaces";
+import {
+  APPOINTMENT_BUILDING_STATUS_TRANSLATION,
+  POTENTIAL_CUSTOMER_STATUS_TRANSLATION,
+} from "../../interfaces/common/constants";
 import { PotentialCustomerStatus } from "../../interfaces/common/enums";
+import { buildingService } from "../../services/building/building-service";
 import { customerService } from "../../services/customer/customer-service";
-
 interface UpdatePotentialCustomerFormProps {
-  potentialCustomerToUpdate?: ICustomer;
+  potentialCustomerToUpdate?: ICustomerPotential;
   onCancel: () => void;
   viewOnly?: boolean;
 }
 
 interface UpdatePotentialCustomerArgs {
   potentialCustomerId: number;
-  updatedPotentialCustomer: ICustomer;
+  updatedPotentialCustomer: ICustomerPotential;
 }
 
 const UpdatePotentialCustomerForm: React.FC<
@@ -23,6 +28,16 @@ const UpdatePotentialCustomerForm: React.FC<
 > = ({ potentialCustomerToUpdate, onCancel, viewOnly = false }) => {
   const [form] = Form.useForm<ICustomer>();
   const queryClient = useQueryClient();
+
+  const { data: buildingsData } = useQuery({
+    queryKey: ["buildingss"],
+    queryFn: buildingService.getAllBuildingOfCompany,
+  });
+
+  const buildingOption = buildingsData?.payload?.map((buildingType) => ({
+    label: buildingType.buildingName,
+    value: buildingType.buildingId,
+  }));
 
   const { mutate: updatePotentialCustomer, isPending: isUpdating } =
     useMutation({
@@ -45,13 +60,29 @@ const UpdatePotentialCustomerForm: React.FC<
 
   useEffect(() => {
     if (potentialCustomerToUpdate) {
-      form.setFieldsValue({
+      const updatedFields = {
         ...potentialCustomerToUpdate,
-      });
+        appointments: potentialCustomerToUpdate.appointments?.map(
+          (appointment) => ({
+            ...appointment,
+            appointmentBuildings: appointment.appointmentBuildings?.map(
+              (building) => ({
+                ...building,
+                building: building.building.buildingId,
+                visitTime: building.visitTime
+                  ? dayjs(building.visitTime)
+                  : null,
+                area: building.area,
+              }),
+            ),
+          }),
+        ),
+      };
+      form.setFieldsValue(updatedFields);
     }
   }, [potentialCustomerToUpdate, form]);
 
-  function handleFinish(values: ICustomer) {
+  function handleFinish() {
     if (potentialCustomerToUpdate) {
       const updatedPotentialCustomer = {
         ...potentialCustomerToUpdate,
@@ -148,6 +179,168 @@ const UpdatePotentialCustomerForm: React.FC<
           </Form.Item>
         </Col>
       </Row>
+
+      <Form.Item label="Lịch hẹn">
+        <div className="rounded-md border p-4">
+          <Form.List name={["appointments"]}>
+            {(fields, { add, remove }) => (
+              <div>
+                {fields.length === 0 && (
+                  <div className="mb-2 text-gray-500">
+                    Chưa có lịch hẹn nào. Nhấn "Thêm lịch hẹn" để tạo mới.
+                  </div>
+                )}
+                {fields.map(({ key, name }) => (
+                  <div key={key} className="mb-4">
+                    <Form.List name={[name, "appointmentBuildings"]}>
+                      {(buildingFields, { remove: removeBuilding }) => (
+                        <div>
+                          {buildingFields.map(
+                            ({
+                              key: buildingKey,
+                              name: buildingName,
+                              ...buildingRestField
+                            }) => (
+                              <div
+                                key={buildingKey}
+                                className="mb-2 flex items-center gap-4"
+                              >
+                                <Form.Item
+                                  {...buildingRestField}
+                                  label="Tòa nhà cần xem"
+                                  name={[
+                                    buildingName,
+                                    "building",
+                                    "buildingId",
+                                  ]}
+                                  rules={[
+                                    { required: true, message: "Chọn tòa nhà" },
+                                  ]}
+                                  className="flex-1"
+                                >
+                                  <Select
+                                    placeholder="Chọn tòa nhà"
+                                    options={buildingOption}
+                                    allowClear
+                                  />
+                                </Form.Item>
+
+                                <Form.Item
+                                  {...buildingRestField}
+                                  label="Thời gian hẹn"
+                                  name={[buildingName, "visitTime"]}
+                                  rules={[
+                                    {
+                                      required: true,
+                                      message: "Chọn thời gian",
+                                    },
+                                  ]}
+                                  className="flex-2"
+                                >
+                                  <DatePicker
+                                    showTime
+                                    format="YYYY-MM-DD HH:mm:ss"
+                                    placeholder="Chọn thời gian"
+                                  />
+                                </Form.Item>
+
+                                <Form.Item
+                                  {...buildingRestField}
+                                  label="Diện tích cần xem"
+                                  name={[buildingName, "area"]}
+                                  rules={[
+                                    {
+                                      required: true,
+                                      message: "Nhập diện tích",
+                                    },
+                                  ]}
+                                  className="flex-1"
+                                >
+                                  <Input placeholder="Nhập diện tích (vd: 100m²)" />
+                                </Form.Item>
+
+                                <Form.Item
+                                  {...buildingRestField}
+                                  label="Trạng thái hiện tại"
+                                  name={[
+                                    buildingName,
+                                    "appointmentBuildingStatusHistories",
+                                    0,
+                                    "status",
+                                  ]}
+                                  className="flex-1"
+                                  initialValue="PENDING"
+                                >
+                                  <Select
+                                    placeholder="Chọn trạng thái"
+                                    options={Object.entries(
+                                      APPOINTMENT_BUILDING_STATUS_TRANSLATION,
+                                    ).map(([value, label]) => ({
+                                      label,
+                                      value,
+                                    }))}
+                                    allowClear
+                                    disabled
+                                  />
+                                </Form.Item>
+
+                                <Button
+                                  type="link"
+                                  onClick={() => removeBuilding(buildingName)}
+                                  className="items-center text-red-500"
+                                  icon={
+                                    <PlusOutlined
+                                      rotate={45}
+                                      className="mb-5"
+                                    />
+                                  }
+                                />
+                              </div>
+                            ),
+                          )}
+                        </div>
+                      )}
+                    </Form.List>
+                  </div>
+                ))}
+                <Button
+                  type="primary"
+                  htmlType="button"
+                  className="w-full bg-[#3162ad] hover:bg-[#3162ad]"
+                  onClick={() =>
+                    add({
+                      appointmentBuildings: [
+                        { buildingId: null, visitTime: null, area: null },
+                      ],
+                    })
+                  }
+                  block
+                >
+                  + Thêm lịch hẹn
+                </Button>
+                {fields.length > 0 && (
+                  <Button
+                    type="link"
+                    htmlType="button"
+                    className="mt-2 w-full"
+                    onClick={() => {
+                      const email = form.getFieldValue("email");
+                      if (email) {
+                        window.open(`/appointments?email=${email}`, "_blank");
+                      } else {
+                        toast.error("Không tìm thấy email để điều hướng.");
+                      }
+                    }}
+                    block
+                  >
+                    Điều hướng đến trang lịch hẹn
+                  </Button>
+                )}
+              </div>
+            )}
+          </Form.List>
+        </div>
+      </Form.Item>
 
       {!viewOnly && (
         <Form.Item className="text-right" wrapperCol={{ span: 24 }}>

@@ -1,4 +1,4 @@
-import { BuildingStatus, BuildingUnitStatus, ConsignmentStatus, Module, Orientation, PotentialCustomerStatus } from "../enums";
+import { AppointmentBuildingStatus, AppointmentStatus, BuildingStatus, BuildingUnitStatus, ConsignmentStatus, Module, Orientation, PotentialCustomerStatus } from "../enums";
 
 export const VIETNAM_TIMEZONE = "Asia/Ho_Chi_Minh";
 export const PRIMARY_COLOR = "#3162ad";
@@ -73,6 +73,7 @@ export const PERMISSIONS = {
         UPDATE_CUSTOMER_POTENTIAL: { method: "PUT", apiPath: "/api/v1/customers/potentials/{id}" },
         DELETE_CUSTOMER_POTENTIAL: { method: "DELETE", apiPath: "/api/v1/customers/potentials/{id}" },
         GET_ALL_CUSTOMER_POTENTIAL: { method: "GET", apiPath: "/api/v1/customers/potentials/all" },
+        GET_CUSTOMER_POTENTIAL_BY_ID: { method: "GET", apiPath: "/api/v1/customers/potentials/{id}" },
     },
     [Module.NOTIFICATIONS]: {
         MARK_ALL_AS_READ: { method: "PUT", apiPath: "/api/v1/notifications/mark-all-read" },
@@ -87,6 +88,14 @@ export const PERMISSIONS = {
         CREATE_FEE_TYPES: { method: "POST", apiPath: "/api/v1/fee-types" },
         UPDATE_FEE_TYPES: { method: "PUT", apiPath: "/api/v1/fee-types/{id}" },
         DELETE_FEE_TYPES: { method: "DELETE", apiPath: "/api/v1/fee-types/{id}" },
+    },
+    [Module.APPOINTMENTS]: {
+        // GET_APPOINTMENTS_PAGINATION: { method: "GET", apiPath: "/api/v1/appointments" },
+        // GET_APPOINTMENT_BY_ID: { method: "GET", apiPath: "/api/v1/appointments/{id}" },
+        // UPDATE_APPOINTMENT: { method: "PUT", apiPath: "/api/v1/appointments/{id}" },
+        // DELETE_APPOINTMENT: { method: "DELETE", apiPath: "/api/v1/appointments/{id}" },
+        GET_APPOINTMENT_CALENDAR: { method: "GET", apiPath: "/api/v1/appointments/calendar" },
+        GET_APPOINTMENTS_PAGINATION: { method: "GET", apiPath: "/api/v1/appointments" },
     },
 };
 
@@ -117,12 +126,13 @@ export const ROLE_STATUS_TRANSLATION: Record<string, string> = {
 };
 
 export const POTENTIAL_CUSTOMER_STATUS_TRANSLATION: Record<PotentialCustomerStatus, string> = {
-    [PotentialCustomerStatus.CONTACTED_NO_RESPONSE]: "Đã liên hệ - Không phản hồi",
-    [PotentialCustomerStatus.CONTACTED_SCHEDULED]: "Đã liên hệ - Hẹn gọi lại",
+
     [PotentialCustomerStatus.NOT_CONTACTED]: "Chưa liên hệ",
-    [PotentialCustomerStatus.DEAL_DONE]: "Tư vấn thành công",
-    [PotentialCustomerStatus.IN_PROGRESS]: "Đang trong quá trình làm việc",
-    [PotentialCustomerStatus.CANCELED]: "Đã hủy",
+    [PotentialCustomerStatus.DEAL_DONE]: "Đã chốt thuê",
+    [PotentialCustomerStatus.CANCELED]: "Không còn nhu cầu",
+    [PotentialCustomerStatus.CONTACTED]: "Đã liên hệ",
+    [PotentialCustomerStatus.DEAL_IN_PROGRESS]: "Đang thoả thuận",
+
 }
 
 export const ORENTATION_TRANSLATIONS: Record<Orientation, string> = {
@@ -143,5 +153,24 @@ export const BUILDING_UNIT_STATUS_TRANSLATION: Record<BuildingUnitStatus, string
     [BuildingUnitStatus.RENTED]: "Đã cho thuê",
     [BuildingUnitStatus.RESERVED]: "Đã đặt cọc",
     [BuildingUnitStatus.UNDER_MAINTENANCE]: "Đang bảo trì",
+
+}
+
+export const APPOINTMENT_STATUS_TRANSLATION: Record<AppointmentStatus, string> = {
+    [AppointmentStatus.PENDING]: "Chờ xác nhận",
+    [AppointmentStatus.CONFIRMED]: "Đã xác nhận",
+    [AppointmentStatus.CANCELLED]: "Đã hủy",
+    [AppointmentStatus.IN_PROGRESS]: "Đang diễn ra",
+    [AppointmentStatus.UNSUCCESSFUL]: "Không thành công",
+    [AppointmentStatus.SUCCESSFUL]: "Thành công",
+}
+
+export const APPOINTMENT_BUILDING_STATUS_TRANSLATION: Record<AppointmentBuildingStatus, string> = {
+    [AppointmentBuildingStatus.PENDING]: "Chờ xác nhận",
+    [AppointmentBuildingStatus.CONFIRMED]: "Đã xác nhận",
+    [AppointmentBuildingStatus.CANCELLED]: "Đã hủy",
+    [AppointmentBuildingStatus.VIEWED]: "Đã xem",
+    [AppointmentBuildingStatus.SUCCESSFUL]: "Thành công",
+    [AppointmentBuildingStatus.UNSUCCESSFUL]: "Không thành công",
 
 }

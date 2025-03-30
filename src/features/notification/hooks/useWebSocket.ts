@@ -8,7 +8,13 @@ const useWebSocket = (url: string) => {
     const navigate = useNavigate();
     const queryClient = useQueryClient();
     const socketRef = useRef<WebSocket | null>(null);
-    const audioRef = useRef(new Audio("/sound/noti.wav"));
+    const audioRef = useRef<HTMLAudioElement | null>(null);
+
+    useEffect(() => {
+        const audio = new Audio("/sound/noti.wav");
+        audio.preload = "auto";
+        audioRef.current = audio;
+    }, []);
 
     useEffect(() => {
         if (!url) return;
@@ -29,7 +35,9 @@ const useWebSocket = (url: string) => {
                 const data: INotificationEvent = JSON.parse(event.data);
 
                 try {
-                    audioRef.current.play();
+                    if (audioRef.current) {
+                        audioRef.current.play();
+                    }
                 } catch (error) {
                     console.warn("Không phát được âm thanh:", error);
                 }
@@ -79,13 +87,12 @@ const useWebSocket = (url: string) => {
             socket.close();
         };
     }, [url, navigate, queryClient]);
-
-    // Request permission on first load
     useEffect(() => {
         if ("Notification" in window && Notification.permission !== "granted") {
             Notification.requestPermission();
         }
     }, []);
+
 
     return null;
 };

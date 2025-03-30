@@ -1,7 +1,9 @@
 import { createBrowserRouter, RouterProvider } from "react-router";
 import ProtectedRoute from "../features/auth/ProtectedRoute";
+import BuildingDetail from "../features/building/building-company/BuildingDetail";
 import ConsignmentDetail from "../features/consignment/ConsignmentDetail";
 import AdminLayout from "../layout/AdminLayout";
+import Appointments from "../pages/Appointments";
 import BuildingCompany from "../pages/BuildingCompany";
 import BuildingLevels from "../pages/BuildingLevels";
 import BuildingTypes from "../pages/BuildingTypes";
@@ -18,7 +20,6 @@ import Profiles from "../pages/Profiles";
 import ResetPassword from "../pages/ResetPassword";
 import Roles from "../pages/Roles";
 import Users from "../pages/Users";
-import BuildingDetail from "../features/building/building-company/BuildingDetail";
 
 const router = createBrowserRouter([
   {
@@ -110,7 +111,25 @@ const router = createBrowserRouter([
       },
       {
         path: "/potential-customers",
-        element: <PotentialCustomers />,
+        children: [
+          {
+            path: "",
+            index: true,
+            element: <PotentialCustomers />,
+          },
+        ],
+      },
+      {
+        path: "/appointments",
+        children: [
+          {
+            path: "",
+            index: true,
+            element: <Appointments />,
+          },
+          // { path: ":date", element: <AppointmentDateDetail /> },
+          // { path: ":date/:id", element: <ConsignmentDetail /> }, // Added detailed appointment page
+        ],
       },
       {
         path: "/notifications",

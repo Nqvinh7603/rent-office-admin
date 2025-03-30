@@ -1,11 +1,11 @@
 import { EditOutlined } from "@ant-design/icons";
 import { Modal, Tooltip } from "antd";
 import { useState } from "react";
-import { ICustomer } from "../../interfaces";
+import { ICustomerPotential } from "../../interfaces";
 import UpdatePotentialCustomerForm from "./UpdatePotentailCustomerForm";
 
 interface UpdatePotentialCustomerProps {
-  potentialCustomer: ICustomer;
+  potentialCustomer: ICustomerPotential;
 }
 
 const UpdatePotentialCustomer: React.FC<UpdatePotentialCustomerProps> = ({
@@ -31,7 +31,7 @@ const UpdatePotentialCustomer: React.FC<UpdatePotentialCustomerProps> = ({
       </Tooltip>
       <Modal
         open={isOpenModal}
-        width="50%"
+        width="80%"
         title={<span className="text-lg">Chỉnh sửa trạng thái</span>}
         destroyOnClose
         onCancel={handleCloseModal}

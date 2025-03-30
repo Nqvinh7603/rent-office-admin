@@ -2,7 +2,7 @@ import { ProfileOutlined } from "@ant-design/icons";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button, Checkbox, message, Modal, Table, Tooltip } from "antd";
 import React, { useEffect, useState } from "react";
-import { IAssignCustomer, IBuilding, IUser } from "../../interfaces";
+import { IAssignCustomer, IBuilding, ICustomer, IUser } from "../../interfaces";
 import { customerService } from "../../services/customer/customer-service";
 interface AssignCustomerProps {
   building: IBuilding;
@@ -32,7 +32,9 @@ const AssignCustomerForConsignment: React.FC<AssignCustomerProps> = ({
   const { data: staffData, isLoading } = useQuery({
     queryKey: ["staffs", building.customer?.customerId],
     queryFn: () =>
-      customerService.getStaffsByCustomerId(building.customer?.customerId),
+      building.customer?.customerId !== undefined
+        ? customerService.getStaffsByCustomerId(building.customer.customerId)
+        : Promise.resolve({ payload: [], status: 200 }),
   });
 
   useEffect(() => {
@@ -69,7 +71,7 @@ const AssignCustomerForConsignment: React.FC<AssignCustomerProps> = ({
 
   const handleConfirm = () => {
     const assignData: IAssignCustomer = {
-      customer: building.customer,
+      customer: building.customer ?? ({} as ICustomer),
       users: tempSelectedStaffIds.map(
         (id) => staffList.find((user) => user.userId === id) as IUser,
       ),

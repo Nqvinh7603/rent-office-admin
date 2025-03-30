@@ -2,10 +2,10 @@ import { ProfileOutlined } from "@ant-design/icons";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button, Checkbox, message, Modal, Table, Tooltip } from "antd";
 import React, { useEffect, useState } from "react";
-import { IAssignCustomer, ICustomer, IUser } from "../../interfaces";
 import { customerService } from "../../services/customer/customer-service";
+import { IAssignCustomer, ICustomerPotential, IUser } from "../../interfaces";
 interface AssignCustomerProps {
-  customer: ICustomer;
+  customer: ICustomerPotential;
 }
 
 const AssignPotentialCustomer: React.FC<AssignCustomerProps> = ({

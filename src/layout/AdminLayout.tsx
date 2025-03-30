@@ -19,7 +19,13 @@ import {
   AiOutlineMenuUnfold,
 } from "react-icons/ai";
 import { BsBuildingsFill } from "react-icons/bs";
-import { FaKey, FaUser, FaUserCog, FaUsers } from "react-icons/fa";
+import {
+  FaKey,
+  FaRegCalendarAlt,
+  FaUser,
+  FaUserCog,
+  FaUsers,
+} from "react-icons/fa";
 import { FaRankingStar } from "react-icons/fa6";
 import { FiPhoneCall } from "react-icons/fi";
 import { HiOutlineHomeModern } from "react-icons/hi2";
@@ -193,6 +199,14 @@ const AdminLayout: React.FC = () => {
               .method,
       );
 
+      const viewAppiontmens = permissions.find(
+        (item) =>
+          item.apiPath ===
+            PERMISSIONS[Module.APPOINTMENTS].GET_APPOINTMENT_CALENDAR.apiPath &&
+          item.method ===
+            PERMISSIONS[Module.APPOINTMENTS].GET_APPOINTMENT_CALENDAR.method,
+      );
+
       const menuItems = [
         {
           label: (
@@ -314,6 +328,15 @@ const AdminLayout: React.FC = () => {
                 ),
                 key: "customers",
                 icon: <FiPhoneCall size={16} />,
+              },
+            ]
+          : []),
+        ...(viewAppiontmens
+          ? [
+              {
+                label: <NavLink to="/appointments">Cuộc hẹn</NavLink>,
+                key: "appointments",
+                icon: <FaRegCalendarAlt size={15} />,
               },
             ]
           : []),
@@ -608,7 +631,7 @@ const AdminLayout: React.FC = () => {
                 />
               </Dropdown>
               <p className="text-semibold cursor-pointer">
-                {user ? `${user.lastName} ${user.firstName}` : ""}
+                {user ? `${user.lastName || ""} ${user.firstName || ""}` : ""}
               </p>
             </div>
           </div>

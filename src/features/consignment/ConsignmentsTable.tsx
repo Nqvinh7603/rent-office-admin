@@ -263,7 +263,7 @@ const ConsignmentsTable: React.FC<BuildingTableProps> = ({
           </Access>
           <Access
             permission={PERMISSIONS[Module.BUILDINGS].GET_BUILDING_BY_ID}
-            hideChildren={false}
+            hideChildren={true}
           >
             <Tooltip title="Xem chi tiết">
               <FaArrowRightToBracket

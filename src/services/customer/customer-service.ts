@@ -1,30 +1,36 @@
-import { ApiResponse, IAssignCustomer, ICustomer, IUser, Page, PaginationParams, PotentialCustomerFilterCriteria, SortParams } from "../../interfaces";
+import { ApiResponse, IAssignCustomer, ICustomer, ICustomerPotential, IUser, Page, PaginationParams, PotentialCustomerFilterCriteria, SortParams } from "../../interfaces";
 import { createApiClient } from "../api-client";
 
 interface ICustomersService {
     getAllCustomerByRequireType(): Promise<ApiResponse<ICustomer[]>>;
     getStaffsByCustomerId(customerId: number): Promise<ApiResponse<IUser[]>>;
     assignmentCustomerToStaffs(assignCustomer: IAssignCustomer): Promise<ApiResponse<void>>;
-    updatePotentialCustomer(customerId: number, updatedCustomer: ICustomer): Promise<ApiResponse<ICustomer>>;
+    updatePotentialCustomer(customerId: number, updatedCustomer: ICustomerPotential): Promise<ApiResponse<ICustomer>>;
     deletePotentialCustomer(customerId: number): Promise<ApiResponse<void>>;
     getPotentialCustomers(
         pagination: PaginationParams,
         filter?: PotentialCustomerFilterCriteria,
         sort?: SortParams
     )
-        : Promise<ApiResponse<Page<ICustomer>>>;
-    getAllPotentialCustomers(): Promise<ApiResponse<ICustomer[]>>;
-
+        : Promise<ApiResponse<Page<ICustomerPotential>>>;
+    getAllPotentialCustomers(): Promise<ApiResponse<ICustomerPotential[]>>;
+    getCustomerPotentialById(customerId: number): Promise<ApiResponse<ICustomerPotential>>;
+    getAllCustomers(): Promise<ApiResponse<ICustomer[]>>;
 }
 
 const apiClient = createApiClient("customers");
 
 class CustomerService implements ICustomersService {
+
+    async getAllCustomers(): Promise<ApiResponse<ICustomer[]>> {
+        return (await apiClient.get("/all")).data;
+    }
+
     async getPotentialCustomers(
         pagination: PaginationParams,
         filter?: PotentialCustomerFilterCriteria,
         sort?: SortParams
-    ): Promise<ApiResponse<Page<ICustomer>>> {
+    ): Promise<ApiResponse<Page<ICustomerPotential>>> {
         return (
             await apiClient.get("/potentials", {
                 params: {
@@ -37,7 +43,11 @@ class CustomerService implements ICustomersService {
         ).data;
     }
 
-    async updatePotentialCustomer(customerId: number, updatedCustomer: ICustomer): Promise<ApiResponse<ICustomer>> {
+    async getCustomerPotentialById(customerId: number): Promise<ApiResponse<ICustomerPotential>> {
+        return (await apiClient.get(`/potentials/${customerId}`)).data;
+    }
+
+    async updatePotentialCustomer(customerId: number, updatedCustomer: ICustomerPotential): Promise<ApiResponse<ICustomerPotential>> {
         return (await apiClient.put(`/potentials/${customerId}`, updatedCustomer)).data;
     }
 
@@ -57,7 +67,7 @@ class CustomerService implements ICustomersService {
         return (await apiClient.post("/assign-customer", assignCustomer)).data;
     }
 
-    async getAllPotentialCustomers(): Promise<ApiResponse<ICustomer[]>> {
+    async getAllPotentialCustomers(): Promise<ApiResponse<ICustomerPotential[]>> {
         return (await apiClient.get("/potentials/all")).data;
     }
 }
