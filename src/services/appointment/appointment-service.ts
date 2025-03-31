@@ -1,4 +1,4 @@
-import { ApiResponse, Page, PaginationParams, SortParams } from "../../interfaces";
+import { ApiResponse, ICustomerPotential, Page, PaginationParams, SortParams } from "../../interfaces";
 import { AppointmentFilterCriteria, IAppointmentBuilding } from "../../interfaces/appointment";
 import { createApiClient } from "../api-client";
 
@@ -10,11 +10,22 @@ interface IAppointmentService {
         sort?: SortParams
     )
         : Promise<ApiResponse<Page<IAppointmentBuilding>>>;
+    getAppointmentsCalendarById(appointmentBuildingId: number): Promise<ApiResponse<IAppointmentBuilding>>;
+    delete(appointmentBuildingId: number): Promise<ApiResponse<void>>;
+    createAppointmentBuilding(appointmentBuilding: ICustomerPotential): Promise<ApiResponse<Void>>;
 }
 
 const apiClient = createApiClient("appointments");
 
 class AppointmentService implements IAppointmentService {
+
+    async createAppointmentBuilding(appointmentBuilding: ICustomerPotential): Promise<ApiResponse<Void>> {
+        return (await apiClient.post("/calendar", appointmentBuilding)).data;
+    }
+
+    async delete(appointmentBuildingId: number): Promise<ApiResponse<void>> {
+        return (await apiClient.delete(`/calendar/${appointmentBuildingId}`)).data;
+    }
 
     async getAppointmentCalendar(): Promise<ApiResponse<Map<string, IAppointmentBuilding[]>>> {
         return (await apiClient.get("/calendar")).data;
@@ -34,6 +45,9 @@ class AppointmentService implements IAppointmentService {
                 },
             })
         ).data;
+    }
+    async getAppointmentsCalendarById(appointmentBuildingId: number): Promise<ApiResponse<IAppointmentBuilding>> {
+        return (await apiClient.get(`/calendar/${appointmentBuildingId}`)).data;
     }
 }
 

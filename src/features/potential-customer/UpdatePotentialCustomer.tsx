@@ -36,10 +36,11 @@ const UpdatePotentialCustomer: React.FC<UpdatePotentialCustomerProps> = ({
         destroyOnClose
         onCancel={handleCloseModal}
         footer={null}
+        //maskClosable={true} // Prevent closing the modal by clicking outside
       >
         <UpdatePotentialCustomerForm
           potentialCustomerToUpdate={potentialCustomer}
-          onCancel={handleCloseModal}
+          // onCancel={handleCloseModal}
         />
       </Modal>
     </>

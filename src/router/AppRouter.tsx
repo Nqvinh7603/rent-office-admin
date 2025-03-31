@@ -1,4 +1,5 @@
 import { createBrowserRouter, RouterProvider } from "react-router";
+import AppointmentDetail from "../features/appointment/AppointmentDetail";
 import ProtectedRoute from "../features/auth/ProtectedRoute";
 import BuildingDetail from "../features/building/building-company/BuildingDetail";
 import ConsignmentDetail from "../features/consignment/ConsignmentDetail";
@@ -127,8 +128,7 @@ const router = createBrowserRouter([
             index: true,
             element: <Appointments />,
           },
-          // { path: ":date", element: <AppointmentDateDetail /> },
-          // { path: ":date/:id", element: <ConsignmentDetail /> }, // Added detailed appointment page
+          { path: ":id", element: <AppointmentDetail /> },
         ],
       },
       {

@@ -323,9 +323,7 @@ const AdminLayout: React.FC = () => {
         ...(viewPotentialCustomers
           ? [
               {
-                label: (
-                  <NavLink to="/potential-customers">Yêu cầu thuê</NavLink>
-                ),
+                label: <NavLink to="/potential-customers">Cơ hội</NavLink>,
                 key: "customers",
                 icon: <FiPhoneCall size={16} />,
               },

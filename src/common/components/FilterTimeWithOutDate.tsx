@@ -196,7 +196,7 @@ const FilterTimeWithoutDate: React.FC<FilterTimeWithoutDateProps> = ({
     <div>
       <Space direction="vertical" style={{ width: "100%" }}>
         <Button
-          type="primary"
+          type="default"
           onClick={showModal}
           icon={<FilterOutlined />}
           style={{ width: "100%", textAlign: "left" }}

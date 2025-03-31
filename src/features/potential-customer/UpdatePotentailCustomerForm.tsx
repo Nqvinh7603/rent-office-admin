@@ -14,7 +14,7 @@ import { buildingService } from "../../services/building/building-service";
 import { customerService } from "../../services/customer/customer-service";
 interface UpdatePotentialCustomerFormProps {
   potentialCustomerToUpdate?: ICustomerPotential;
-  onCancel: () => void;
+  //onCancel: () => void;
   viewOnly?: boolean;
 }
 
@@ -25,7 +25,7 @@ interface UpdatePotentialCustomerArgs {
 
 const UpdatePotentialCustomerForm: React.FC<
   UpdatePotentialCustomerFormProps
-> = ({ potentialCustomerToUpdate, onCancel, viewOnly = false }) => {
+> = ({ potentialCustomerToUpdate, viewOnly = false }) => {
   const [form] = Form.useForm<ICustomer>();
   const queryClient = useQueryClient();
 
@@ -68,7 +68,7 @@ const UpdatePotentialCustomerForm: React.FC<
             appointmentBuildings: appointment.appointmentBuildings?.map(
               (building) => ({
                 ...building,
-                building: building.building.buildingId,
+                building: building.building,
                 visitTime: building.visitTime
                   ? dayjs(building.visitTime)
                   : null,
@@ -84,10 +84,30 @@ const UpdatePotentialCustomerForm: React.FC<
 
   function handleFinish() {
     if (potentialCustomerToUpdate) {
+      const formValues = form.getFieldsValue(true);
+
+      const updatedAppointments = formValues.appointments?.map(
+        (appointment: any) => ({
+          ...appointment,
+          appointmentBuildings: appointment.appointmentBuildings?.map(
+            (building: any) => ({
+              ...building,
+              visitTime: building.visitTime
+                ? dayjs(building.visitTime).format("YYYY-MM-DDTHH:mm:ss")
+                : null,
+            }),
+          ),
+        }),
+      );
+
+      // Cập nhật lại dữ liệu của khách hàng
       const updatedPotentialCustomer = {
         ...potentialCustomerToUpdate,
-        ...form.getFieldsValue(true),
+        ...formValues,
+        appointments: updatedAppointments,
       };
+
+      // Gửi yêu cầu cập nhật
       updatePotentialCustomer(
         {
           potentialCustomerId: potentialCustomerToUpdate.customerId,
@@ -96,7 +116,6 @@ const UpdatePotentialCustomerForm: React.FC<
         {
           onSuccess: () => {
             toast.success("Cập nhật trạng thái thành công");
-            onCancel();
             form.resetFields();
           },
           onError: () => {
@@ -345,7 +364,7 @@ const UpdatePotentialCustomerForm: React.FC<
       {!viewOnly && (
         <Form.Item className="text-right" wrapperCol={{ span: 24 }}>
           <Space>
-            <Button onClick={onCancel}>Hủy</Button>
+            <Button>Hủy</Button>
             <Button type="primary" htmlType="submit" loading={isUpdating}>
               {potentialCustomerToUpdate ? "Cập nhật" : "Thêm mới"}
             </Button>

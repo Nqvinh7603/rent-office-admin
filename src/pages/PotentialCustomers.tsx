@@ -78,7 +78,7 @@ const PotentialCusstomers: React.FC = () => {
           className="mb-5 flex cursor-pointer items-center justify-between"
           onClick={() => setListOpen(!isListOpen)}
         >
-          <h2 className="text-xl font-semibold">Danh sách yêu cầu thuê</h2>
+          <h2 className="text-xl font-semibold">Danh sách cơ hội</h2>
         </div>
 
         <Access

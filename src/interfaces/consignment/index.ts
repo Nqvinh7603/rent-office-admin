@@ -24,23 +24,23 @@ export interface ICustomerPotential {
     requireType: RequireType;
     note?: string;
     status?: PotentialCustomerStatus;
-    appointments?: IAppointment[];
+    appointments?: IAppointmentPotential[];
     createdAt: string;
     updatedAt?: string;
 }
 
 
 
-export interface IAppointment {
+export interface IAppointmentPotential {
     appointmentId: number;
     // customer: ICustomer;
-    appointmentBuildings: IAppointmentBuilding[];
+    appointmentBuildings: IAppointmentBuildingPotential[];
     createdAt: string;
     createdBy: string;
 }
 
 
-export interface IAppointmentBuildingStatusHistory {
+export interface IAppointmentBuildingStatusHistoryPotential {
     appointmentBuildingStatusHistoryId: number;
     note: string;
     status: AppointmentBuildingStatus;
@@ -48,9 +48,9 @@ export interface IAppointmentBuildingStatusHistory {
     createdBy: string;
 }
 
-export interface IAppointmentBuilding {
+export interface IAppointmentBuildingPotential {
     appointmentBuildingId: number;
-    appointmentBuildingStatusHistories: IAppointmentBuildingStatusHistory[];
+    appointmentBuildingStatusHistories: IAppointmentBuildingStatusHistoryPotential[];
     visitTime: string;
     // appointment: IAppointment;
     area: string;

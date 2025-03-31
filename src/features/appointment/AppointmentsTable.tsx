@@ -3,16 +3,30 @@ import {
   CaretUpFilled,
   FilterFilled,
 } from "@ant-design/icons";
-import { Table, TablePaginationConfig, TableProps, Tag, Tooltip } from "antd";
+import {
+  Space,
+  Table,
+  TablePaginationConfig,
+  TableProps,
+  Tag,
+  Tooltip,
+} from "antd";
 import React, { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { FaArrowRightToBracket } from "react-icons/fa6";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Page } from "../../interfaces";
 import {
   IAppointmentBuilding,
   IAppointmentBuildingStatusHistory,
 } from "../../interfaces/appointment";
-import { APPOINTMENT_BUILDING_STATUS_TRANSLATION } from "../../interfaces/common/constants";
-import { AppointmentBuildingStatus } from "../../interfaces/common/enums";
+import {
+  APPOINTMENT_BUILDING_STATUS_TRANSLATION,
+  PERMISSIONS,
+} from "../../interfaces/common/constants";
+import {
+  AppointmentBuildingStatus,
+  Module,
+} from "../../interfaces/common/enums";
 import {
   colorAppointmentBuildingStatus,
   colorFilterIcon,
@@ -22,6 +36,8 @@ import {
   getDefaultSortOrder,
   getSortDirection,
 } from "../../utils";
+import Access from "../auth/Access";
+import DeleteAppointments from "./DeleteAppointment";
 
 interface TableParams {
   pagination: TablePaginationConfig;
@@ -44,6 +60,7 @@ const AppointmentsTable: React.FC<AppointmentTableProps> = ({
       showTotal: (total) => `Tổng ${total} cuộc hẹn`,
     },
   }));
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (appointmentPage) {
@@ -127,27 +144,27 @@ const AppointmentsTable: React.FC<AppointmentTableProps> = ({
       render: (_, record) => (
         <>
           <div style={{ fontWeight: "bold", fontSize: "15px" }}>
-            {record.appointment.customer.customerName || ""}
+            {record.appointment.customer?.customerName || ""}
           </div>
           <div style={{ fontSize: "13px", color: "#777" }}>
             <Tooltip title="Click chuyển sang zalo">
               <a
-                href={`https://zalo.me/${record.appointment.customer.phoneNumber || ""}`}
+                href={`https://zalo.me/${record.appointment.customer?.phoneNumber || ""}`}
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                {record.appointment.customer.phoneNumber || ""}
+                {record.appointment.customer?.phoneNumber || ""}
               </a>
             </Tooltip>
           </div>
           <div style={{ fontSize: "13px", color: "#777" }}>
             <Tooltip title="Click chuyển sang gmail">
               <a
-                href={`https://mail.google.com/mail/?view=cm&fs=1&to=${record.appointment.customer.email || ""}`}
+                href={`https://mail.google.com/mail/?view=cm&fs=1&to=${record.appointment.customer?.email || ""}`}
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                {record.appointment.customer.email || ""}
+                {record.appointment.customer?.email || ""}
               </a>
             </Tooltip>
           </div>
@@ -182,7 +199,7 @@ const AppointmentsTable: React.FC<AppointmentTableProps> = ({
       title: "Thời gian hẹn",
       key: "visitTime",
       dataIndex: "visitTime",
-      width: "15%",
+      width: "8%",
       render: (visitTime: string) =>
         visitTime ? formatTimestamp(visitTime) : "",
       sorter: true,
@@ -222,6 +239,48 @@ const AppointmentsTable: React.FC<AppointmentTableProps> = ({
       defaultFilteredValue: searchParams.get("status")?.split(",") || null,
       filterIcon: (filtered) => (
         <FilterFilled style={{ color: colorFilterIcon(filtered) }} />
+      ),
+    },
+    {
+      title: "Hành động",
+      key: "action",
+      width: "5%",
+      render: (record: IAppointmentBuilding) => (
+        <Space
+          style={{ display: "flex", justifyContent: "center", gap: "10px" }}
+        >
+          {/* <Access
+            permission={
+              PERMISSIONS[Module.BUILDINGS].GET_STAFFS_BY_BUILDING_ID &&
+              PERMISSIONS[Module.BUILDINGS].ASSIGN_BUILDING_TO_STAFFS
+            }
+            hideChildren={true}
+          >
+            <AssignBuildingForStaff building={record} />
+          </Access> */}
+          <Access
+            permission={
+              PERMISSIONS[Module.APPOINTMENTS].DELETE_APPOINTMENT_CALENDAR
+            }
+          >
+            <DeleteAppointments
+              appointmentBuildingId={record.appointmentBuildingId}
+            />
+          </Access>
+          <Access
+            permission={
+              PERMISSIONS[Module.APPOINTMENTS].GET_APPOINTMENTS_CALENDAR_BY_ID
+            }
+            hideChildren={false}
+          >
+            <Tooltip title="Xem chi tiết">
+              <FaArrowRightToBracket
+                onClick={() => navigate(`${record.appointmentBuildingId}`)}
+                size={19}
+              />
+            </Tooltip>
+          </Access>
+        </Space>
       ),
     },
   ];

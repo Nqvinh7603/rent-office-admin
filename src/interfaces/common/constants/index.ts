@@ -93,9 +93,12 @@ export const PERMISSIONS = {
         // GET_APPOINTMENTS_PAGINATION: { method: "GET", apiPath: "/api/v1/appointments" },
         // GET_APPOINTMENT_BY_ID: { method: "GET", apiPath: "/api/v1/appointments/{id}" },
         // UPDATE_APPOINTMENT: { method: "PUT", apiPath: "/api/v1/appointments/{id}" },
-        // DELETE_APPOINTMENT: { method: "DELETE", apiPath: "/api/v1/appointments/{id}" },
+        DELETE_APPOINTMENT_CALENDAR: { method: "DELETE", apiPath: "/api/v1/appointments/calendar/{id}" },
         GET_APPOINTMENT_CALENDAR: { method: "GET", apiPath: "/api/v1/appointments/calendar" },
         GET_APPOINTMENTS_PAGINATION: { method: "GET", apiPath: "/api/v1/appointments" },
+        GET_APPOINTMENTS_CALENDAR_BY_ID: { method: "GET", apiPath: "/api/v1/appointments/calendar/{id}" },
+        CREATE_APPOINTMENT_CALENDAR: { method: "POST", apiPath: "/api/v1/appointments/calendar" },
+
     },
 };
 

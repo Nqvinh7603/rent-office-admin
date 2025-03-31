@@ -30,6 +30,7 @@ import {
 } from "../../utils";
 import Access from "../auth/Access";
 import AssignPotentialCustomer from "./AssignPotentialCustomer";
+import DeletePotentialCustomer from "./DeletePotentailCustomer";
 import UpdatePotentialCustomer from "./UpdatePotentialCustomer";
 
 interface TableParams {
@@ -264,6 +265,12 @@ const PotentailCustomersTable: React.FC<PotentailCustomerTableProps> = ({
             hideChildren={true}
           >
             <UpdatePotentialCustomer potentialCustomer={record} />
+          </Access>
+          <Access
+            permission={PERMISSIONS[Module.CUSTOMERS].DELETE_CUSTOMER_POTENTIAL}
+            hideChildren={true}
+          >
+            <DeletePotentialCustomer potentialCustomerId={record.customerId} />
           </Access>
         </Space>
       ),
