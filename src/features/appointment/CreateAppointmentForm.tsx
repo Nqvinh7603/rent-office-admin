@@ -1,8 +1,9 @@
+import { PlusOutlined } from "@ant-design/icons";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button, Col, DatePicker, Form, Input, Row, Select, Space } from "antd";
 import dayjs from "dayjs";
 import toast from "react-hot-toast";
-import { IAppointmentBuilding } from "../../interfaces/appointment";
+import { ICustomerPotential } from "../../interfaces";
 import { APPOINTMENT_BUILDING_STATUS_TRANSLATION } from "../../interfaces/common/constants";
 import { appointmentService } from "../../services/appointment/appointment-service";
 import { buildingService } from "../../services/building/building-service";
@@ -15,7 +16,7 @@ interface CreateAppointmentBuildingFormProps {
 const CreateAppointmentBuildingForm: React.FC<
   CreateAppointmentBuildingFormProps
 > = ({ onCancel }) => {
-  const [form] = Form.useForm<IAppointmentBuilding>();
+  const [form] = Form.useForm<ICustomerPotential>();
   const queryClient = useQueryClient();
 
   // Fetch building options
@@ -29,7 +30,6 @@ const CreateAppointmentBuildingForm: React.FC<
     value: buildingType.buildingId,
   }));
 
-  // Fetch customer options
   const { data: customersData, isLoading: isCustomersLoading } = useQuery({
     queryKey: ["customers"],
     queryFn: customerService.getAllCustomers,
@@ -40,14 +40,40 @@ const CreateAppointmentBuildingForm: React.FC<
     label: customer.email,
   }));
 
-  // Mutation to create a new appointment building
-  const { mutate: createAppointmentBuilding, isLoading: isCreating } =
+  const { mutate: createAppointmentBuilding, isPending: isCreating } =
     useMutation({
-      mutationFn: (newAppointmentBuilding: IAppointmentBuilding) =>
-        appointmentService.createAppointmentBuilding(newAppointmentBuilding),
+      mutationFn: appointmentService.createAppointmentBuilding,
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          predicate: (query) => {
+            return query.queryKey.includes("appointments");
+          },
+        });
+      },
+    });
+
+  // Handle form submission
+  const handleFinish = (values: ICustomerPotential) => {
+    const formattedValues = {
+      ...values,
+      appointments: values.appointments?.map((appointment) => ({
+        ...appointment,
+        appointmentBuildings: appointment.appointmentBuildings?.map(
+          (building) => ({
+            ...building,
+            buildingId: building.building.buildingId,
+            building: building.building,
+            visitTime: building.visitTime
+              ? dayjs(building.visitTime).format("YYYY-MM-DDTHH:mm:ss")
+              : "",
+            area: building.area,
+          }),
+        ),
+      })),
+    };
+    createAppointmentBuilding(formattedValues, {
       onSuccess: () => {
         toast.success("Thêm mới lịch hẹn thành công");
-        queryClient.invalidateQueries(["appointments"]);
         form.resetFields();
         onCancel();
       },
@@ -55,16 +81,6 @@ const CreateAppointmentBuildingForm: React.FC<
         toast.error("Thêm mới lịch hẹn thất bại");
       },
     });
-
-  // Handle form submission
-  const handleFinish = (values: IAppointmentBuilding) => {
-    const formattedValues = {
-      ...values,
-      visitTime: values.visitTime
-        ? dayjs(values.visitTime).format("YYYY-MM-DDTHH:mm:ss")
-        : null,
-    };
-    createAppointmentBuilding(formattedValues);
   };
 
   return (
@@ -73,7 +89,7 @@ const CreateAppointmentBuildingForm: React.FC<
         <Col span={24}>
           <Form.Item
             label="Khách hàng"
-            name="customerEmail"
+            name="email"
             rules={[{ required: true, message: "Chọn khách hàng" }]}
           >
             <Select
@@ -85,69 +101,139 @@ const CreateAppointmentBuildingForm: React.FC<
           </Form.Item>
         </Col>
       </Row>
+      <Form.Item label="Lịch hẹn">
+        <Form.List name={["appointments"]}>
+          {(fields, { add, remove }) => (
+            <>
+              {fields.length === 0 && (
+                <div className="mb-2 text-gray-500">
+                  Chưa có lịch hẹn nào. Nhấn "Thêm lịch hẹn" để tạo mới.
+                </div>
+              )}
+              {fields.map(({ key, name }) => (
+                <div key={key} className="mb-4">
+                  <Form.List name={[name, "appointmentBuildings"]}>
+                    {(buildingFields, { remove: removeBuilding }) => (
+                      <>
+                        {buildingFields.map(
+                          ({
+                            key: buildingKey,
+                            name: buildingName,
+                            ...buildingRestField
+                          }) => (
+                            <div
+                              key={buildingKey}
+                              className="mb-2 flex items-center gap-4"
+                            >
+                              <Form.Item
+                                {...buildingRestField}
+                                label="Tòa nhà cần xem"
+                                name={[buildingName, "building", "buildingId"]}
+                                rules={[
+                                  { required: true, message: "Chọn tòa nhà" },
+                                ]}
+                                className="flex-1"
+                              >
+                                <Select
+                                  placeholder="Chọn tòa nhà"
+                                  options={buildingOption}
+                                  allowClear
+                                />
+                              </Form.Item>
 
-      <Row gutter={16}>
-        <Col span={24}>
-          <Form.Item
-            label="Tòa nhà cần xem"
-            name="buildingId"
-            rules={[{ required: true, message: "Chọn tòa nhà" }]}
-          >
-            <Select
-              placeholder="Chọn tòa nhà"
-              options={buildingOption}
-              allowClear
-            />
-          </Form.Item>
-        </Col>
-      </Row>
+                              <Form.Item
+                                {...buildingRestField}
+                                label="Thời gian hẹn"
+                                name={[buildingName, "visitTime"]}
+                                rules={[
+                                  {
+                                    required: true,
+                                    message: "Chọn thời gian",
+                                  },
+                                ]}
+                                className="flex-2"
+                              >
+                                <DatePicker
+                                  showTime
+                                  format="YYYY-MM-DD HH:mm:ss"
+                                  placeholder="Chọn thời gian"
+                                />
+                              </Form.Item>
 
-      <Row gutter={16}>
-        <Col span={12}>
-          <Form.Item
-            label="Thời gian hẹn"
-            name="visitTime"
-            rules={[{ required: true, message: "Chọn thời gian" }]}
-          >
-            <DatePicker
-              showTime
-              format="YYYY-MM-DD HH:mm:ss"
-              placeholder="Chọn thời gian"
-            />
-          </Form.Item>
-        </Col>
-        <Col span={12}>
-          <Form.Item
-            label="Diện tích cần xem"
-            name="area"
-            rules={[{ required: true, message: "Nhập diện tích" }]}
-          >
-            <Input placeholder="Nhập diện tích (vd: 100m²)" />
-          </Form.Item>
-        </Col>
-      </Row>
+                              <Form.Item
+                                {...buildingRestField}
+                                label="Diện tích cần xem"
+                                name={[buildingName, "area"]}
+                                rules={[
+                                  {
+                                    required: true,
+                                    message: "Nhập diện tích",
+                                  },
+                                ]}
+                                className="flex-1"
+                              >
+                                <Input placeholder="Nhập diện tích (vd: 100m²)" />
+                              </Form.Item>
 
-      <Row gutter={16}>
-        <Col span={24}>
-          <Form.Item
-            label="Trạng thái hiện tại"
-            name="status"
-            initialValue="PENDING"
-            rules={[{ required: true, message: "Chọn trạng thái" }]}
-          >
-            <Select
-              placeholder="Chọn trạng thái"
-              options={Object.entries(
-                APPOINTMENT_BUILDING_STATUS_TRANSLATION,
-              ).map(([value, label]) => ({
-                label,
-                value,
-              }))}
-              allowClear
-            />
-          </Form.Item>
-        </Col>
-      </Row>
+                              <Form.Item
+                                {...buildingRestField}
+                                label="Trạng thái hiện tại"
+                                name={[
+                                  buildingName,
+                                  "appointmentBuildingStatusHistories",
+                                  0,
+                                  "status",
+                                ]}
+                                className="flex-1"
+                                initialValue="PENDING"
+                              >
+                                <Select
+                                  placeholder="Chọn trạng thái"
+                                  options={Object.entries(
+                                    APPOINTMENT_BUILDING_STATUS_TRANSLATION,
+                                  ).map(([value, label]) => ({
+                                    label,
+                                    value,
+                                  }))}
+                                  allowClear
+                                  disabled
+                                />
+                              </Form.Item>
+                              <Button
+                                type="link"
+                                onClick={() => removeBuilding(buildingName)}
+                                className="items-center text-red-500"
+                                icon={
+                                  <PlusOutlined rotate={45} className="mb-5" />
+                                }
+                              />
+                            </div>
+                          ),
+                        )}
+                      </>
+                    )}
+                  </Form.List>
+                </div>
+              ))}
+              <Button
+                type="primary"
+                htmlType="button"
+                className="w-full bg-[#3162ad] hover:bg-[#3162ad]"
+                onClick={() =>
+                  add({
+                    appointmentBuildings: [
+                      { buildingId: null, visitTime: null, area: null },
+                    ],
+                  })
+                }
+                block
+              >
+                + Thêm lịch hẹn
+              </Button>
+            </>
+          )}
+        </Form.List>
+      </Form.Item>
 
       <Form.Item className="text-right" wrapperCol={{ span: 24 }}>
         <Space>

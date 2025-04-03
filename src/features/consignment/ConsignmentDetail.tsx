@@ -83,6 +83,10 @@ const ConsignmentDetail: React.FC = () => {
     queryKey: ["buildings", id],
   });
 
+  if (isLoading) {
+    return <Loading />;
+  }
+
   const building = data?.payload;
 
   useEffect(() => {
@@ -130,22 +134,6 @@ const ConsignmentDetail: React.FC = () => {
     }
   };
 
-  // const handleDistrictChange = (value: string) => {
-  //   const selectedDistrict = districts.find(
-  //     (district) => district.value === value,
-  //   );
-  //   if (selectedDistrict && selectedDistrict.wards) {
-  //     setWards(
-  //       selectedDistrict.wards.map((ward) => ({
-  //         label: ward.name,
-  //         value: ward.name,
-  //       })),
-  //     );
-  //   } else {
-  //     setWards([]);
-  //   }
-  // };
-
   useEffect(() => {
     const cityValue = form.getFieldValue("city");
     if (cityValue) {
@@ -171,13 +159,6 @@ const ConsignmentDetail: React.FC = () => {
       queryKey: ["building-types"],
       queryFn: buildingTypeService.getAllBuildingTypes,
     });
-
-  // const buildingTypeOption = buildingTypesData?.payload?.map(
-  //   (buildingType) => ({
-  //     label: buildingType.buildingTypeName,
-  //     value: buildingType.buildingTypeName,
-  //   }),
-  // );
 
   const { data: feeTypesData, isLoading: isFeeTypesLoading } = useQuery({
     queryKey: ["fee-types"],

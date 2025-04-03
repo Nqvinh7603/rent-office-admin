@@ -22,6 +22,7 @@ export interface IAppointmentBuilding {
     appointmentBuildingStatusHistories: IAppointmentBuildingStatusHistory[];
     visitTime: string;
     appointment: IAppointment;
+    area?: string;
     building: IBuilding;
     createdAt: string;
     createdBy: string;

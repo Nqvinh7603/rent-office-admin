@@ -4,6 +4,7 @@ import React from "react";
 import { useSearchParams } from "react-router";
 import FilterTimeWithoutDate from "../common/components/FilterTimeWithOutDate";
 import AppointmentsTable from "../features/appointment/AppointmentsTable";
+import CreateAppointment from "../features/appointment/CreateAppointment";
 import Access from "../features/auth/Access";
 import { PaginationParams, SortParams } from "../interfaces";
 import { AppointmentFilterCriteria } from "../interfaces/appointment";
@@ -14,7 +15,7 @@ import { customerService } from "../services/customer/customer-service";
 import { useDynamicTitle } from "../utils";
 
 const Appointments: React.FC = () => {
-  useDynamicTitle("Quản lý cuộc hẹn - DaViKa Airways");
+  useDynamicTitle("Quản lý cuộc hẹn - Cyber Real");
   const [searchParams, setSearchParams] = useSearchParams();
 
   const pagination: PaginationParams = {
@@ -49,7 +50,7 @@ const Appointments: React.FC = () => {
   };
 
   const { data: customersData, isLoading: isCustomersLoading } = useQuery({
-    queryKey: ["customers"],
+    queryKey: ["customers-all"],
     queryFn: customerService.getAllCustomers,
   });
   const customerOptions = customersData?.payload?.map((role) => ({
@@ -120,6 +121,7 @@ const Appointments: React.FC = () => {
               onChange={handleCustomerChange}
             />
             <FilterTimeWithoutDate onDateChange={handleDateChange} />
+            <CreateAppointment />
           </div>
         </div>
 

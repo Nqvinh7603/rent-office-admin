@@ -126,15 +126,6 @@ const AppointmentsTable: React.FC<AppointmentTableProps> = ({
 
     setSearchParams(searchParams);
   };
-
-  //   const { data: rolesData, isLoading: isRolesLoading } = useQuery({
-  //     queryKey: ["roles"],
-  //     queryFn: roleService.getAllRoles,
-  //   });
-  //   const roleOptions = rolesData?.payload?.map((role) => ({
-  //     value: role.roleId,
-  //     text: role.roleName,
-  //   }));
   const columns: TableProps<IAppointmentBuilding>["columns"] = [
     {
       title: "Khách hàng",
@@ -215,7 +206,7 @@ const AppointmentsTable: React.FC<AppointmentTableProps> = ({
       key: "status",
       title: "Trạng thái",
       dataIndex: "appointmentBuildingStatusHistories",
-      width: "5%",
+      width: "1%",
       render: (histories: IAppointmentBuildingStatusHistory[]) => {
         const latestStatus = histories?.[histories.length - 1];
         return latestStatus ? (
@@ -244,29 +235,9 @@ const AppointmentsTable: React.FC<AppointmentTableProps> = ({
     {
       title: "Hành động",
       key: "action",
-      width: "5%",
+      width: "2%",
       render: (record: IAppointmentBuilding) => (
-        <Space
-          style={{ display: "flex", justifyContent: "center", gap: "10px" }}
-        >
-          {/* <Access
-            permission={
-              PERMISSIONS[Module.BUILDINGS].GET_STAFFS_BY_BUILDING_ID &&
-              PERMISSIONS[Module.BUILDINGS].ASSIGN_BUILDING_TO_STAFFS
-            }
-            hideChildren={true}
-          >
-            <AssignBuildingForStaff building={record} />
-          </Access> */}
-          <Access
-            permission={
-              PERMISSIONS[Module.APPOINTMENTS].DELETE_APPOINTMENT_CALENDAR
-            }
-          >
-            <DeleteAppointments
-              appointmentBuildingId={record.appointmentBuildingId}
-            />
-          </Access>
+        <Space style={{ display: "flex", gap: "20px" }}>
           <Access
             permission={
               PERMISSIONS[Module.APPOINTMENTS].GET_APPOINTMENTS_CALENDAR_BY_ID
@@ -279,6 +250,15 @@ const AppointmentsTable: React.FC<AppointmentTableProps> = ({
                 size={19}
               />
             </Tooltip>
+          </Access>
+          <Access
+            permission={
+              PERMISSIONS[Module.APPOINTMENTS].DELETE_APPOINTMENT_CALENDAR
+            }
+          >
+            <DeleteAppointments
+              appointmentBuildingId={record.appointmentBuildingId}
+            />
           </Access>
         </Space>
       ),

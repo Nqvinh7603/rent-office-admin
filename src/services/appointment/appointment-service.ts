@@ -12,14 +12,25 @@ interface IAppointmentService {
         : Promise<ApiResponse<Page<IAppointmentBuilding>>>;
     getAppointmentsCalendarById(appointmentBuildingId: number): Promise<ApiResponse<IAppointmentBuilding>>;
     delete(appointmentBuildingId: number): Promise<ApiResponse<void>>;
-    createAppointmentBuilding(appointmentBuilding: ICustomerPotential): Promise<ApiResponse<Void>>;
+    createAppointmentBuilding(appointmentBuilding: ICustomerPotential): Promise<ApiResponse<void>>;
+    updateAppointmentBuilding(
+        appointmentBuildingId: number,
+        appointmentBuilding: IAppointmentBuilding
+    ): Promise<ApiResponse<IAppointmentBuilding>>;
 }
 
 const apiClient = createApiClient("appointments");
 
 class AppointmentService implements IAppointmentService {
 
-    async createAppointmentBuilding(appointmentBuilding: ICustomerPotential): Promise<ApiResponse<Void>> {
+    async updateAppointmentBuilding(
+        appointmentBuildingId: number,
+        appointmentBuilding: IAppointmentBuilding
+    ): Promise<ApiResponse<IAppointmentBuilding>> {
+        return (await apiClient.put(`/calendar/${appointmentBuildingId}`, appointmentBuilding)).data;
+    }
+
+    async createAppointmentBuilding(appointmentBuilding: ICustomerPotential): Promise<ApiResponse<void>> {
         return (await apiClient.post("/calendar", appointmentBuilding)).data;
     }
 

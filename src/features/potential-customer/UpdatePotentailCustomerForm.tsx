@@ -329,7 +329,7 @@ const UpdatePotentialCustomerForm: React.FC<
                   onClick={() =>
                     add({
                       appointmentBuildings: [
-                        { buildingId: null, visitTime: null, area: null },
+                        { building: null, visitTime: null, area: null },
                       ],
                     })
                   }

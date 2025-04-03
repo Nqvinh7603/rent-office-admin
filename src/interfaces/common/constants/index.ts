@@ -98,6 +98,7 @@ export const PERMISSIONS = {
         GET_APPOINTMENTS_PAGINATION: { method: "GET", apiPath: "/api/v1/appointments" },
         GET_APPOINTMENTS_CALENDAR_BY_ID: { method: "GET", apiPath: "/api/v1/appointments/calendar/{id}" },
         CREATE_APPOINTMENT_CALENDAR: { method: "POST", apiPath: "/api/v1/appointments/calendar" },
+        UPDATE_APPOINTMENT_CALENDAR: { method: "PUT", apiPath: "/api/v1/appointments/calendar/{id}" },
 
     },
 };
