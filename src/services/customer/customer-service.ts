@@ -16,11 +16,31 @@ interface ICustomersService {
     getAllPotentialCustomers(): Promise<ApiResponse<ICustomerPotential[]>>;
     getCustomerPotentialById(customerId: number): Promise<ApiResponse<ICustomerPotential>>;
     getAllCustomers(): Promise<ApiResponse<ICustomer[]>>;
+    getCustomerStatistic(params: Record<string, string>): Promise<ApiResponse<Record<string, string>>>;
+    getCustomerStatisticByTime(params: Record<string, string>): Promise<ApiResponse<Record<string, string>>>;
+    getCustomerStatisticByTimeAndTypeConsignment(params: Record<string, string>): Promise<ApiResponse<Record<string, string>>>;
+    getCustomerStatisticByTimeAndTypePotential(params: Record<string, string>): Promise<ApiResponse<Record<string, string>>>;
 }
 
 const apiClient = createApiClient("customers");
 
 class CustomerService implements ICustomersService {
+
+    async getCustomerStatisticByTimeAndTypeConsignment(params: Record<string, string>): Promise<ApiResponse<Record<string, string>>> {
+        return (await apiClient.get("/statistics-time-and-type-consignment", { params })).data;
+    }
+
+    async getCustomerStatisticByTimeAndTypePotential(params: Record<string, string>): Promise<ApiResponse<Record<string, string>>> {
+        return (await apiClient.get("/statistics-time-and-type-potential", { params })).data;
+    }
+
+    async getCustomerStatisticByTime(params: Record<string, string>): Promise<ApiResponse<Record<string, string>>> {
+        return (await apiClient.get("/statistics-time", { params })).data;
+    }
+
+    async getCustomerStatistic(params: Record<string, string>): Promise<ApiResponse<Record<string, string>>> {
+        return (await apiClient.get("/statistics", { params })).data;
+    }
 
     async getAllCustomers(): Promise<ApiResponse<ICustomer[]>> {
         return (await apiClient.get("/all")).data;

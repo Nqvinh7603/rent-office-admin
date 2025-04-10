@@ -13,10 +13,16 @@ interface IBuildingService {
     getAllBuildingOfCompany(): Promise<ApiResponse<IBuilding[]>>;
     getStaffsByBuildingId(buildingId: number): Promise<ApiResponse<IUser[]>>;
     assignmentBuildingToStaffs(assignBuilding: IAssignBuilding): Promise<ApiResponse<void>>;
+    getBuildingStatistic(params: Record<string, string>): Promise<ApiResponse<Record<string, string>>>;
+
 }
 
 const apiClient: AxiosInstance = createApiClient("buildings");
 class BuildingService implements IBuildingService {
+
+    async getBuildingStatistic(params: Record<string, string>): Promise<ApiResponse<Record<string, string>>> {
+        return (await apiClient.get("/statistics", { params })).data;
+    }
     async getStaffsByBuildingId(buildingId: number): Promise<ApiResponse<IUser[]>> {
         return (await apiClient.get(`/${buildingId}/staffs`)).data;
     }

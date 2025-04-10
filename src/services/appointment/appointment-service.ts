@@ -17,11 +17,21 @@ interface IAppointmentService {
         appointmentBuildingId: number,
         appointmentBuilding: IAppointmentBuilding
     ): Promise<ApiResponse<IAppointmentBuilding>>;
+    getAppointmentStatistic(params: Record<string, string>): Promise<ApiResponse<Record<string, string>>>;
+    getAppointmentsByTime(params: Record<string, string>): Promise<ApiResponse<Record<string, string>>>;
 }
 
 const apiClient = createApiClient("appointments");
 
 class AppointmentService implements IAppointmentService {
+
+    async getAppointmentStatistic(params: Record<string, string>): Promise<ApiResponse<Record<string, string>>> {
+        return (await apiClient.get("/statistics", { params })).data;
+    }
+
+    async getAppointmentsByTime(params: Record<string, string>): Promise<ApiResponse<Record<string, string>>> {
+        return (await apiClient.get("/statistics-time", { params })).data;
+    }
 
     async updateAppointmentBuilding(
         appointmentBuildingId: number,

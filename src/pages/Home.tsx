@@ -1,8 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
-import { Badge, Calendar, CalendarProps } from "antd";
+import { Badge, Calendar, CalendarProps, Tooltip } from "antd";
 import { BadgeProps } from "antd/lib";
 import { Dayjs } from "dayjs";
 import { useEffect, useState } from "react";
+import { FaArrowRightToBracket } from "react-icons/fa6";
+import { ImCalendar } from "react-icons/im";
+import { LuUsers } from "react-icons/lu";
+import { PiBuildingOfficeLight } from "react-icons/pi";
 import { useNavigate, useSearchParams } from "react-router";
 import Loading from "../common/components/Loading";
 import Access from "../features/auth/Access";
@@ -11,7 +15,6 @@ import { PERMISSIONS } from "../interfaces/common/constants";
 import { AppointmentBuildingStatus, Module } from "../interfaces/common/enums";
 import { appointmentService } from "../services/appointment/appointment-service";
 import { useDynamicTitle } from "../utils";
-
 const Home: React.FC = () => {
   useDynamicTitle("Trang chủ - Cyber Real");
   const [searchParams, setSearchParams] = useSearchParams();
@@ -175,13 +178,9 @@ const Home: React.FC = () => {
     );
 
     if (hasAppointments) {
-      // Truyền tham số vào URL
       searchParams.set("startDate", date.format("YYYY-MM-DD"));
-
       searchParams.set("type", "date");
       setSearchParams(searchParams);
-
-      // Điều hướng đến trang danh sách cuộc hẹn
       navigate(
         `/appointments?startDate=${date.format("YYYY-MM-DD")}&type=date`,
       );
@@ -194,42 +193,76 @@ const Home: React.FC = () => {
 
   return (
     <>
-      {/* <div className="mx-2 mt-3 rounded-lg bg-white px-2 py-3">
-        <div className="flex items-center justify-between px-2">
-          <h2 className="text-xl font-semibold">Biểu đồ</h2>
-          <FilterTimeWithoutDate onDateChange={handleDateChange} />
-        </div>
-        <div>
-          <SalesStatsChart />
-        </div>
-        <div className="flex items-center">
-          <div className="w-[40%]">
-            <PassengerStatsChart />
-          </div>
-          <div className="w-[60%]">
-            <TopDestinationsChart />
-          </div>
-        </div>
-      </div> */}
       <div className="px-4 py-4">
         {/* Thống kê tổng quan */}
-        <div className="mb-6 grid grid-cols-3 gap-4">
-          <div className="card">
-            <div className="card-body">
-              <h3 className="card-title">Tổng số cuộc hẹn</h3>
-              <p className="text-2xl font-bold">120</p>
+        <div className="mb-4 grid grid-cols-3 gap-4">
+          <Access
+            permission={PERMISSIONS[Module.CUSTOMERS].CUSTOMER_STATISTIC}
+            hideChildren={true}
+          >
+            <div className="card">
+              <div className="card-body flex items-center justify-between">
+                <LuUsers size={40} />
+                <div>
+                  <h3 className="card-title text-xl font-semibold">
+                    Khách hàng
+                  </h3>
+                  <p className="text-sm text-gray-500">
+                    Thống kê và phân đoạn khách hàng
+                  </p>
+                  {/* <p className="text-2xl font-bold">120</p> */}
+                </div>
+                <Tooltip title="Xem chi tiết">
+                  <FaArrowRightToBracket
+                    onClick={() => navigate("/dashboard-customer")}
+                    size={19}
+                    className="cursor-pointer"
+                  />
+                </Tooltip>
+              </div>
             </div>
-          </div>
-          <div className="card">
-            <div className="card-body">
-              <h3 className="card-title">Cuộc hẹn đang chờ</h3>
-              <p className="text-2xl font-bold">45</p>
+          </Access>
+          <Access
+            permission={PERMISSIONS[Module.APPOINTMENTS].STATISTIC_APPOINTMENT}
+            hideChildren={true}
+          >
+            <div className="card">
+              <div className="card-body flex items-center justify-between">
+                <ImCalendar size={34} />
+                <div>
+                  <h3 className="card-title text-xl font-semibold">Cuộc hẹn</h3>
+                  <p className="text-sm text-gray-500">
+                    Thống kê và phân tích cuộc hẹn
+                  </p>
+                  {/* <p className="text-2xl font-bold">45</p> */}
+                </div>
+                <Tooltip title="Xem chi tiết">
+                  <FaArrowRightToBracket
+                    onClick={() => navigate("/dashboard-appointment")}
+                    size={19}
+                    className="cursor-pointer"
+                  />
+                </Tooltip>
+              </div>
             </div>
-          </div>
+          </Access>
           <div className="card">
-            <div className="card-body">
-              <h3 className="card-title">Cuộc hẹn đã hoàn thành</h3>
-              <p className="text-2xl font-bold">75</p>
+            <div className="card-body flex items-center justify-between">
+              <PiBuildingOfficeLight size={40} />
+              <div>
+                <h3 className="card-title text-xl font-semibold">Tài sản</h3>
+                <p className="text-sm text-gray-500">
+                  Thống kê và phân tích tài sản
+                </p>
+                {/* <p className="text-2xl font-bold">75</p> */}
+              </div>
+              <Tooltip title="Xem chi tiết">
+                <FaArrowRightToBracket
+                  onClick={() => navigate("/dashboard-building")}
+                  size={19}
+                  className="cursor-pointer"
+                />
+              </Tooltip>
             </div>
           </div>
         </div>
@@ -238,6 +271,7 @@ const Home: React.FC = () => {
             permission={
               PERMISSIONS[Module.APPOINTMENTS].GET_APPOINTMENT_CALENDAR
             }
+            hideChildren={true}
           >
             <h3 className="text-xl font-semibold">Lịch hẹn</h3>
             <Calendar

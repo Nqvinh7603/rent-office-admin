@@ -18,6 +18,10 @@ export function createApiClient(
         }),
         {
             ignoreParams: true,
+            caseFunctions: {
+                camel: (key) => (/[^\w]/.test(key) ? key : key.replace(/_([a-z])/g, (_, char) => char.toUpperCase())),
+                snake: (key) => (/[^\w]/.test(key) ? key : key.replace(/[A-Z]/g, (char) => `_${char.toLowerCase()}`)),
+            },
         }
     );
 

@@ -1,4 +1,4 @@
-import { AppointmentBuildingStatus, AppointmentStatus, BuildingStatus, BuildingUnitStatus, ConsignmentStatus, Module, Orientation, PotentialCustomerStatus } from "../enums";
+import { AppointmentBuildingStatus, AppointmentStatus, BuildingStatus, BuildingUnitStatus, ConsignmentStatus, Module, Orientation, PotentialCustomerStatus, RequireType } from "../enums";
 
 export const VIETNAM_TIMEZONE = "Asia/Ho_Chi_Minh";
 export const PRIMARY_COLOR = "#3162ad";
@@ -40,6 +40,7 @@ export const PERMISSIONS = {
         UPDATE_BUILDING_TYPE: { method: "PUT", apiPath: "/api/v1/building-types/{id}" },
         DELETE_BUILDING_TYPE: { method: "DELETE", apiPath: "/api/v1/building-types/{id}" },
 
+
         // Building-level
         GET_BUILDING_LEVEL_PAGINATION: { method: "GET", apiPath: "/api/v1/building-levels" },
         GET_ALL_BUILDING_LEVEL: { method: "GET", apiPath: "/api/v1/building-levels/all" },
@@ -63,6 +64,7 @@ export const PERMISSIONS = {
         },
         GET_STAFFS_BY_BUILDING_ID: { method: "GET", apiPath: "/api/v1/buildings/{id}/staffs" },
         ASSIGN_BUILDING_TO_STAFFS: { method: "POST", apiPath: "/api/v1/buildings/assign-building" },
+        STATISTICS_BUILDING: { method: "GET", apiPath: "/api/v1/buildings/statistics" },
     },
     [Module.CUSTOMERS]: {
         GET_CUSTOMER_BY_REQUIRE_TYPE: { method: "GET", apiPath: "/api/v1/customers/require-type" },
@@ -74,6 +76,16 @@ export const PERMISSIONS = {
         DELETE_CUSTOMER_POTENTIAL: { method: "DELETE", apiPath: "/api/v1/customers/potentials/{id}" },
         GET_ALL_CUSTOMER_POTENTIAL: { method: "GET", apiPath: "/api/v1/customers/potentials/all" },
         GET_CUSTOMER_POTENTIAL_BY_ID: { method: "GET", apiPath: "/api/v1/customers/potentials/{id}" },
+        CUSTOMER_STATISTIC: { method: "GET", apiPath: "/api/v1/customers/statistics" },
+        CUSTOMER_STATISTIC_TIME: { method: "GET", apiPath: "/api/v1/customers/statistics-time" },
+        CUSTOMER_STATISTIC_TIME_AND_TYPE_CONSIGNMENT: {
+            method: "GET",
+            apiPath: "/api/v1/customers/statistics-time-and-type-consignment",
+        },
+        CUSTOMER_STATISTIC_TIME_AND_TYPE_POTENTIAL: {
+            method: "GET",
+            apiPath: "/api/v1/customers/statistics-time-and-type-potential",
+        },
     },
     [Module.NOTIFICATIONS]: {
         MARK_ALL_AS_READ: { method: "PUT", apiPath: "/api/v1/notifications/mark-all-read" },
@@ -90,16 +102,14 @@ export const PERMISSIONS = {
         DELETE_FEE_TYPES: { method: "DELETE", apiPath: "/api/v1/fee-types/{id}" },
     },
     [Module.APPOINTMENTS]: {
-        // GET_APPOINTMENTS_PAGINATION: { method: "GET", apiPath: "/api/v1/appointments" },
-        // GET_APPOINTMENT_BY_ID: { method: "GET", apiPath: "/api/v1/appointments/{id}" },
-        // UPDATE_APPOINTMENT: { method: "PUT", apiPath: "/api/v1/appointments/{id}" },
         DELETE_APPOINTMENT_CALENDAR: { method: "DELETE", apiPath: "/api/v1/appointments/calendar/{id}" },
         GET_APPOINTMENT_CALENDAR: { method: "GET", apiPath: "/api/v1/appointments/calendar" },
         GET_APPOINTMENTS_PAGINATION: { method: "GET", apiPath: "/api/v1/appointments" },
         GET_APPOINTMENTS_CALENDAR_BY_ID: { method: "GET", apiPath: "/api/v1/appointments/calendar/{id}" },
         CREATE_APPOINTMENT_CALENDAR: { method: "POST", apiPath: "/api/v1/appointments/calendar" },
         UPDATE_APPOINTMENT_CALENDAR: { method: "PUT", apiPath: "/api/v1/appointments/calendar/{id}" },
-
+        STATISTIC_APPOINTMENT: { method: "GET", apiPath: "/api/v1/appointments/statistics" },
+        STATISTIC_APPOINTMENT_BY_TIME: { method: "GET", apiPath: "/api/v1/appointments/statistics-time" },
     },
 };
 
@@ -137,6 +147,11 @@ export const POTENTIAL_CUSTOMER_STATUS_TRANSLATION: Record<PotentialCustomerStat
     [PotentialCustomerStatus.CONTACTED]: "Đã liên hệ",
     [PotentialCustomerStatus.DEAL_IN_PROGRESS]: "Đang thoả thuận",
 
+}
+
+export const REQUIRE_TYPE_TRANSLATION: Record<RequireType, string> = {
+    [RequireType.RENT]: "Khách hàng thuê",
+    [RequireType.CONSIGNMENT]: "Khách hàng ký gửi",
 }
 
 export const ORENTATION_TRANSLATIONS: Record<Orientation, string> = {

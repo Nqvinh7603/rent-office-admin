@@ -3,6 +3,9 @@ import AppointmentDetail from "../features/appointment/AppointmentDetail";
 import ProtectedRoute from "../features/auth/ProtectedRoute";
 import BuildingDetail from "../features/building/building-company/BuildingDetail";
 import ConsignmentDetail from "../features/consignment/ConsignmentDetail";
+import AppointmentStatistic from "../features/statistics/appointment/AppointmentStatistic";
+import BuildingStatistic from "../features/statistics/building/BuildingStatistic";
+import CustomerStatistic from "../features/statistics/customer/CustomerStatistic";
 import AdminLayout from "../layout/AdminLayout";
 import Appointments from "../pages/Appointments";
 import BuildingCompany from "../pages/BuildingCompany";
@@ -134,6 +137,18 @@ const router = createBrowserRouter([
       {
         path: "/notifications",
         element: <Notifications />,
+      },
+      {
+        path: "/dashboard-customer",
+        element: <CustomerStatistic />,
+      },
+      {
+        path: "/dashboard-appointment",
+        element: <AppointmentStatistic />,
+      },
+      {
+        path: "/dashboard-building",
+        element: <BuildingStatistic />,
       },
       {
         path: "*",

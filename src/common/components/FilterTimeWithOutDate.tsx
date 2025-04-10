@@ -174,7 +174,7 @@ const FilterTimeWithoutDate: React.FC<FilterTimeWithoutDateProps> = ({
             onChange={handleTypeChange}
             style={{ width: "103%" }}
           >
-            <Option value="date">Ngày</Option>
+            {/* <Option value="date">Ngày</Option> */}
             <Option value="month">Tháng</Option>
             <Option value="quarter">Quý</Option>
             <Option value="year">Năm</Option>
@@ -195,17 +195,19 @@ const FilterTimeWithoutDate: React.FC<FilterTimeWithoutDateProps> = ({
   return (
     <div>
       <Space direction="vertical" style={{ width: "100%" }}>
-        <Button
-          type="default"
-          onClick={showModal}
-          icon={<FilterOutlined />}
-          style={{ width: "100%", textAlign: "left" }}
-        >
+        {/* <Button type="primary" onClick={showModal} icon={<FilterOutlined />}>
           {type === "range"
-            ? `${searchParams.get("startDate") || ""} đến ${
+            ? `${searchParams.get("startDate") || ""} - ${
                 searchParams.get("endDate") || ""
               }`
             : searchParams.get("startDate") || "Lọc thời gian"}
+        </Button> */}
+        <Button type="primary" onClick={showModal} icon={<FilterOutlined />}>
+          {selectedDates[0]
+            ? type === "range"
+              ? `${selectedDates[0]} - ${selectedDates[1] || ""}`
+              : selectedDates[0]
+            : "Lọc thời gian"}
         </Button>
         <Modal
           title="Chọn thời gian"
@@ -215,7 +217,6 @@ const FilterTimeWithoutDate: React.FC<FilterTimeWithoutDateProps> = ({
           centered
           okText="Xác nhận"
           cancelText="Bỏ lọc"
-          width={600}
         >
           {modalContent}
         </Modal>
