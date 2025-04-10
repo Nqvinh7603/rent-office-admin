@@ -94,14 +94,14 @@ const CustomerStatistic: React.FC = () => {
 
   // Dữ liệu cho khách hàng thuê (Pie Chart)
   const { data: customerStatsData } = useQuery({
-    queryKey: ["customer", "statistics", filterRent],
+    queryKey: ["customer", "statistics-rent", filterRent],
     queryFn: () => customerService.getCustomerStatistic(filterRent),
     select: (data) => data.payload,
   });
 
   // Dữ liệu cho khách hàng ký gửi (Pie Chart)
   const { data: customerStatsDataConsignment } = useQuery({
-    queryKey: ["customer", "statistics", filterConsignment],
+    queryKey: ["customer", "statistics-consignment", filterConsignment],
     queryFn: () => customerService.getCustomerStatistic(filterConsignment),
     select: (data) => data.payload,
   });

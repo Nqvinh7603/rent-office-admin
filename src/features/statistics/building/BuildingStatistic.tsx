@@ -98,7 +98,7 @@ const BuildingStatistic: React.FC<BuildingStatisticProps> = () => {
       searchParams.get("barStartDateTop10") ||
       dayjs().startOf("month").format("YYYY-MM"),
     endDate: searchParams.get("barEndDateTop10") || undefined,
-    type: searchParams.get("barTypeStatusTop10") || undefined,
+    type: searchParams.get("barTypeTop10") || undefined,
   } as Record<string, string>;
 
   const { data: top10Data } = useQuery({
