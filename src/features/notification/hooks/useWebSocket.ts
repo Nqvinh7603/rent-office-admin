@@ -29,19 +29,69 @@ const useWebSocket = (url: string) => {
             }
         };
 
+        // socket.onmessage = async (event) => {
+        //     const isDarkMode = document.documentElement.classList.contains("dark");
+        //     try {
+        //         const data: INotificationEvent = JSON.parse(event.data);
+
+        //         try {
+        //             if (audioRef.current) {
+        //                 audioRef.current.play();
+        //             }
+        //         } catch (error) {
+        //             console.warn("Không phát được âm thanh:", error);
+        //         }
+
+        //         if (!document.hidden) {
+        //             toast(`🔔 ${data.message}`, {
+        //                 onClick: () => navigate(`/buildings/${data.buildingId}`),
+        //                 autoClose: 10000,
+        //                 pauseOnHover: true,
+        //                 closeOnClick: true,
+        //                 position: "top-right",
+        //                 theme: isDarkMode ? "dark" : "light",
+        //             });
+        //         } else if (Notification.permission === "granted") {
+
+        //             const notification = new Notification("🔔 Thông báo mới", {
+        //                 body: data.message,
+        //                 icon: "/favicon.ico",
+        //             });
+
+        //             notification.onclick = () => {
+        //                 window.focus();
+        //                 navigate(`/consignments/${data.buildingId}`);
+        //                 notification.close();
+        //             };
+        //         }
+
+        //         queryClient.invalidateQueries({ queryKey: ["notifications"] });
+        //     } catch (error) {
+        //         console.error("❌ Lỗi khi xử lý thông báo:", error);
+        //         toast.error("❌ Không thể xử lý thông báo mới!", {
+        //             autoClose: 10000,
+        //             theme: document.documentElement.classList.contains("dark") ? "dark" : "light",
+        //         });
+        //     }
+        // };
+
         socket.onmessage = async (event) => {
             const isDarkMode = document.documentElement.classList.contains("dark");
             try {
                 const data: INotificationEvent = JSON.parse(event.data);
 
-                try {
-                    if (audioRef.current) {
-                        audioRef.current.play();
+                console.log("Notification Data: ", data); // Check the message content
+
+                // Play the notification sound if available
+                if (audioRef.current) {
+                    try {
+                        await audioRef.current.play();
+                    } catch (error) {
+                        console.warn("Không phát được âm thanh:", error);
                     }
-                } catch (error) {
-                    console.warn("Không phát được âm thanh:", error);
                 }
 
+                // Check if the document is hidden or not
                 if (!document.hidden) {
                     toast(`🔔 ${data.message}`, {
                         onClick: () => navigate(`/buildings/${data.buildingId}`),
@@ -52,7 +102,6 @@ const useWebSocket = (url: string) => {
                         theme: isDarkMode ? "dark" : "light",
                     });
                 } else if (Notification.permission === "granted") {
-
                     const notification = new Notification("🔔 Thông báo mới", {
                         body: data.message,
                         icon: "/favicon.ico",
@@ -65,6 +114,7 @@ const useWebSocket = (url: string) => {
                     };
                 }
 
+                // Invalidate queries to fetch fresh data if necessary
                 queryClient.invalidateQueries({ queryKey: ["notifications"] });
             } catch (error) {
                 console.error("❌ Lỗi khi xử lý thông báo:", error);
@@ -74,7 +124,6 @@ const useWebSocket = (url: string) => {
                 });
             }
         };
-
         socket.onclose = () => {
             console.warn("⚠️ WebSocket connection closed");
         };

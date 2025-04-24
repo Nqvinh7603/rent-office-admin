@@ -102,26 +102,40 @@ const Appointments: React.FC = () => {
         <div className="mb-5 flex items-center justify-between">
           <h2 className="text-xl font-semibold">Danh sách cuộc hẹn</h2>
           <div className="flex items-center gap-4">
-            <Select
-              allowClear
-              showSearch
-              placeholder="Nhập email khách hàng"
-              options={customerOptions}
-              optionFilterProp="label"
-              filterOption={(input, option) =>
-                option?.label.toLowerCase().includes(input.toLowerCase()) ??
-                false
+            <Access
+              permission={
+                PERMISSIONS[Module.CUSTOMERS].GET_ALL_CUSTOMER_POTENTIAL
               }
-              filterSort={(optionA, optionB) =>
-                (optionA?.label ?? "")
-                  .toLowerCase()
-                  .localeCompare((optionB?.label ?? "").toLowerCase())
-              }
-              value={searchParams.get("email") || undefined} // Map email from URL to Select
-              onChange={handleCustomerChange}
-            />
+              hideChildren={true}
+            >
+              <Select
+                allowClear
+                showSearch
+                placeholder="Nhập email khách hàng"
+                options={customerOptions}
+                optionFilterProp="label"
+                filterOption={(input, option) =>
+                  option?.label.toLowerCase().includes(input.toLowerCase()) ??
+                  false
+                }
+                filterSort={(optionA, optionB) =>
+                  (optionA?.label ?? "")
+                    .toLowerCase()
+                    .localeCompare((optionB?.label ?? "").toLowerCase())
+                }
+                value={searchParams.get("email") || undefined} // Map email from URL to Select
+                onChange={handleCustomerChange}
+              />
+            </Access>
             <FilterTimeWithoutDate onDateChange={handleDateChange} />
-            <CreateAppointment />
+            <Access
+              permission={
+                PERMISSIONS[Module.APPOINTMENTS].CREATE_APPOINTMENT_CALENDAR
+              }
+              hideChildren={true}
+            >
+              <CreateAppointment />
+            </Access>
           </div>
         </div>
 

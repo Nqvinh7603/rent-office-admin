@@ -110,6 +110,7 @@ export const PERMISSIONS = {
         UPDATE_APPOINTMENT_CALENDAR: { method: "PUT", apiPath: "/api/v1/appointments/calendar/{id}" },
         STATISTIC_APPOINTMENT: { method: "GET", apiPath: "/api/v1/appointments/statistics" },
         STATISTIC_APPOINTMENT_BY_TIME: { method: "GET", apiPath: "/api/v1/appointments/statistics-time" },
+        CREATE_APPOINTMENT: { method: "POST", apiPath: "/api/v1/appointments/calendar" },
     },
 };
 

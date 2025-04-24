@@ -75,7 +75,12 @@ const Consignments: React.FC = () => {
             permission={PERMISSIONS[Module.BUILDINGS].GET_BUILDING_PAGINATION}
             hideChildren
           >
-            <SearchConsignment />
+            <Access
+              permission={PERMISSIONS[Module.BUILDINGS].GET_ALL_BUILDING_TYPE}
+              hideChildren={true}
+            >
+              <SearchConsignment />
+            </Access>
           </Access>
         )}
       </div>

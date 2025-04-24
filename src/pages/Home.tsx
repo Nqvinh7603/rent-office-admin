@@ -67,8 +67,7 @@ const Home: React.FC = () => {
   }, [data, isLoading]);
 
   const getListData = (value: Dayjs) => {
-    const dateKey = value.format("YYYY_MM_DD");
-    console.log("Date key:", dateKey);
+    const dateKey = value.format("YYYY-MM-DD");
 
     const appointmentList: IAppointmentBuilding[] = [];
     appointments.forEach((value, key) => {
@@ -118,8 +117,7 @@ const Home: React.FC = () => {
   };
 
   const getMonthData = (value: Dayjs) => {
-    const monthKey = value.format("YYYY_MM");
-    console.log("Month key:", monthKey);
+    const monthKey = value.format("YYYY-MM");
 
     const appointmentList: IAppointmentBuilding[] = [];
     appointments.forEach((value, key) => {
@@ -172,7 +170,7 @@ const Home: React.FC = () => {
   };
 
   const handleDateSelect = (date: Dayjs) => {
-    const selectedDateKey = date.format("YYYY_MM_DD");
+    const selectedDateKey = date.format("YYYY-MM-DD");
     const hasAppointments = Array.from(appointments.keys()).some((key) =>
       key.startsWith(selectedDateKey),
     );
@@ -246,25 +244,30 @@ const Home: React.FC = () => {
               </div>
             </div>
           </Access>
-          <div className="card">
-            <div className="card-body flex items-center justify-between">
-              <PiBuildingOfficeLight size={40} />
-              <div>
-                <h3 className="card-title text-xl font-semibold">Tài sản</h3>
-                <p className="text-sm text-gray-500">
-                  Thống kê và phân tích tài sản
-                </p>
-                {/* <p className="text-2xl font-bold">75</p> */}
+          <Access
+            permission={PERMISSIONS[Module.BUILDINGS].STATISTICS_BUILDING}
+            hideChildren={true}
+          >
+            <div className="card">
+              <div className="card-body flex items-center justify-between">
+                <PiBuildingOfficeLight size={40} />
+                <div>
+                  <h3 className="card-title text-xl font-semibold">Tài sản</h3>
+                  <p className="text-sm text-gray-500">
+                    Thống kê và phân tích tài sản
+                  </p>
+                  {/* <p className="text-2xl font-bold">75</p> */}
+                </div>
+                <Tooltip title="Xem chi tiết">
+                  <FaArrowRightToBracket
+                    onClick={() => navigate("/dashboard-building")}
+                    size={19}
+                    className="cursor-pointer"
+                  />
+                </Tooltip>
               </div>
-              <Tooltip title="Xem chi tiết">
-                <FaArrowRightToBracket
-                  onClick={() => navigate("/dashboard-building")}
-                  size={19}
-                  className="cursor-pointer"
-                />
-              </Tooltip>
             </div>
-          </div>
+          </Access>
         </div>
         <div className="card">
           <Access

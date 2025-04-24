@@ -3,9 +3,9 @@ import AppointmentDetail from "../features/appointment/AppointmentDetail";
 import ProtectedRoute from "../features/auth/ProtectedRoute";
 import BuildingDetail from "../features/building/building-company/BuildingDetail";
 import ConsignmentDetail from "../features/consignment/ConsignmentDetail";
-import AppointmentStatistic from "../features/statistics/appointment/AppointmentStatistic";
-import BuildingStatistic from "../features/statistics/building/BuildingStatistic";
-import CustomerStatistic from "../features/statistics/customer/CustomerStatistic";
+// import AppointmentStatistic from "../features/statistics/appointment/AppointmentStatistic";
+// import BuildingStatistic from "../features/statistics/building/BuildingStatistic";
+// import CustomerStatistic from "../features/statistics/customer/CustomerStatistic";
 import AdminLayout from "../layout/AdminLayout";
 import Appointments from "../pages/Appointments";
 import BuildingCompany from "../pages/BuildingCompany";
@@ -24,6 +24,9 @@ import Profiles from "../pages/Profiles";
 import ResetPassword from "../pages/ResetPassword";
 import Roles from "../pages/Roles";
 import Users from "../pages/Users";
+import CustomerStatistic from "../features/statistics/customer/CustomerStatistic";
+import AppointmentStatistic from "../features/statistics/appointment/AppointmentStatistic";
+import BuildingStatistic from "../features/statistics/building/BuildingStatistic";
 
 const router = createBrowserRouter([
   {
